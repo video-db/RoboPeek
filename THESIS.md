@@ -2,7 +2,7 @@
 
 > Preview one robot-learning episode from its source, without downloading the entire dataset.
 
-**Repository name:** `robopeek`. The name emphasizes lightweight robotics-data previews and leaves room for dataset overviews, episode playback, and additional format adapters. Repository and package-name availability have not been checked.
+**Repository:** [video-db/RoboPeek](https://github.com/video-db/RoboPeek). The name emphasizes lightweight robotics-data previews and leaves room for dataset overviews, episode playback, and additional format adapters.
 
 ## What we're solving
 
