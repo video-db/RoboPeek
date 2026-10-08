@@ -78,8 +78,7 @@
   .top { height: 66px; display: flex; align-items: center; gap: 22px; padding: 0 32px; background: var(--panel); border-bottom: 1px solid var(--line); }
   .brand { display: inline-flex; align-items: center; gap: 10px; }
   .brand strong { font-size: 17px; font-weight: 600; letter-spacing: -0.6px; }
-  .brand-mark { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; background: #27272a; color: #fff; }
-  .brand-mark svg { width: 19px; height: 19px; margin-right: 2px; }
+  .brand-mark { width: 44px; height: 44px; display: block; object-fit: contain; flex-shrink: 0; }
   .brand-divider { height: 20px; width: 1px; background: var(--line); }
   .brand-caption { font-size: 12px; color: var(--muted); }
   .docs-link { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12px; color: #52525b; padding: 7px 0; }
@@ -157,24 +156,24 @@
   .rp-episodes ol { padding: 0 8px 12px; }
   .rp-episodes li + li { margin-top: 4px; }
   .rp-episodes li button { padding: 11px 12px; gap: 5px; }
-  .rp-episodes li button[aria-current='true'] { background: #fff; border-color: #d4d4d8; box-shadow: 0 1px 3px rgb(0 0 0 / 4%); }
+  .rp-episodes li button[aria-current='true'] { background: var(--rp-accent-soft); border-color: var(--rp-line-hover); box-shadow: 0 1px 3px rgb(0 0 0 / 4%); }
   .rp-episodes-head { font-size: 10px; font-weight: 500; }
   .rp-episodes-title { font-size: 12px; line-height: 1.6; }
-  .rp-player { background: #fafafa; }
+  .rp-player { background: var(--rp-sunken); }
   .rp-stage { padding: 22px; gap: 18px; }
   .rp-instruction { font-size: 15px; font-weight: 500; }
-  .rp-frame canvas { height: min(43vh, 440px); border-radius: 5px; }
+  .rp-frame canvas { height: min(43vh, 440px); border-radius: var(--rp-radius); }
   .rp-frame figcaption { font-size: 10px; }
   .rp-transport { gap: 8px; }
   .rp-transport-button { border-radius: 6px; }
-  .rp-transport-button.rp-play { border-radius: 6px; width: 36px; height: 36px; }
-  .rp-transport-button.rp-play:hover:not(:disabled) { background: #d4d4d8; border-color: #d4d4d8; }
+  .rp-transport-button.rp-play { border-radius: var(--rp-radius); width: 36px; height: 36px; }
+  .rp-transport-button.rp-play:hover:not(:disabled) { filter: brightness(0.9); }
   .rp-options { font-size: 11px; gap: 14px; }
   .rp-flag { font-size: 9px; border-radius: 4px; letter-spacing: 0.03em; }
   .rp-tracks { padding: 20px; gap: 14px; }
   .rp-chart, .rp-metadata { padding: 16px; gap: 12px; box-shadow: 0 1px 2px rgb(0 0 0 / 2%); }
   .rp-chart h3, .rp-metadata h3 { font-size: 12px; }
-  .rp-chart-legend button { border: 1px solid var(--line); background: #fff; padding: 3px 7px; }
+  .rp-chart-legend button { border: 1px solid var(--rp-line); background: var(--rp-panel); padding: 3px 7px; }
   .rp-btn { font-size: 12px; box-shadow: 0 1px 2px rgb(0 0 0 / 3%); }
   .rp-waiting { padding: 24px; text-align: center; font-size: 13px; overflow-wrap: anywhere; }
 

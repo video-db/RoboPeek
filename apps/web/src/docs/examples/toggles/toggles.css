@@ -1,0 +1,5 @@
+/* The viewer's own chrome has no show/hide props; its class names are public API, so CSS does it. */
+.hide-status .rp-status,
+.hide-drawer .rp-episodes,
+.hide-drawer-filter .rp-episodes > input { display: none; }
+.hide-drawer .rp-shard-viewer-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }

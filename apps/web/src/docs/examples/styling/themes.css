@@ -1,0 +1,42 @@
+/* Level 1: tokens. RoboPeek's CSS sits in @layer robopeek, so any plain (unlayered) rule here wins. */
+.theme-indigo {
+  --rp-accent: #4f46e5;
+  --rp-accent-hover: #4338ca;
+  --rp-accent-ink: #eef2ff;
+  --rp-accent-soft: #eef2ff;
+  --rp-progress: #e0e7ff;
+  --rp-stage: #1e1b4b;
+  --rp-stage-accent: #818cf8;
+  --rp-stage-accent-ink: #1e1b4b;
+  --rp-series-0: #4f46e5;
+  --rp-series-1: #e11d48;
+}
+
+.theme-terminal {
+  --rp-font-sans: 'JetBrains Mono', ui-monospace, monospace;
+  --rp-radius: 0;
+  --rp-radius-card: 0;
+  --rp-panel: #050a05;
+  --rp-sidebar: #000;
+  --rp-sunken: #0a140a;
+  --rp-ink: #a7f3a0;
+  --rp-ink-secondary: #86efac;
+  --rp-muted: #4ade80;
+  --rp-line: #14532d;
+  --rp-accent: #22c55e;
+  --rp-accent-ink: #000;
+  --rp-accent-soft: #052e16;
+  --rp-stage: #000;
+  --rp-stage-accent: #22c55e;
+  --rp-stage-accent-ink: #000;
+  --rp-series-0: #22c55e;
+  --rp-series-1: #facc15;
+  --rp-series-2: #38bdf8;
+}
+
+/* Level 2: CSS. Class names and data-* attributes are public API. */
+.theme-minimal .rp-options,
+.theme-minimal .rp-episodes > input { display: none; }
+.theme-minimal .rp-transport-button.rp-play { border-radius: 8px; width: 56px; }
+.theme-minimal .rp-frame canvas { border-radius: 12px; }
+.theme-minimal .rp-player[data-playing] .rp-tracks { opacity: 0.45; transition: opacity 0.2s; }

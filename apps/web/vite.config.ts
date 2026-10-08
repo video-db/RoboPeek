@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react'
 import { defaultClientConditions, defineConfig } from 'vite'
 import { resolve } from 'node:path'
 
-// Two pages: the full shard viewer and the single-episode viewer.
+// Product homepage, developer guide, and standalone viewers.
 // robopeek-source resolves workspace packages to their src/, so no package build is needed in dev.
 // CSS @import ignores resolve.conditions, so the stylesheet needs its own alias.
 export default defineConfig({
@@ -15,6 +15,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
+        rlds: resolve(import.meta.dirname, 'RLDS/index.html'),
+        viewer: resolve(import.meta.dirname, 'viewer.html'),
         episode: resolve(import.meta.dirname, 'episode.html'),
       },
     },

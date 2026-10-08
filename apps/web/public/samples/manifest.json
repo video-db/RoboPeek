@@ -1,0 +1,32 @@
+[
+  {
+    "id": "furniture",
+    "title": "Furniture Bench",
+    "originalShard": "furniture_bench_dataset_converted_externally_to_rlds-train.tfrecord-00000-of-01016",
+    "episodes": 1,
+    "bytes": 13497227,
+    "steps": 438,
+    "cameras": 2,
+    "image": "/previews/furniture.jpg"
+  },
+  {
+    "id": "navigation",
+    "title": "Berkeley navigation",
+    "originalShard": "robotics_berkeley_gnm_cory_hall_0.1.0_berkeley_gnm_cory_hall-train.tfrecord-00006-of-00016",
+    "episodes": 3,
+    "bytes": 700120,
+    "steps": 37,
+    "cameras": 1,
+    "image": "/previews/navigation.png"
+  },
+  {
+    "id": "pusht",
+    "title": "Push-T",
+    "originalShard": "columbia_cairlab_pusht_real-train.tfrecord-00001-of-00032",
+    "episodes": 1,
+    "bytes": 30793962,
+    "steps": 271,
+    "cameras": 2,
+    "image": "/previews/pusht.png"
+  }
+]

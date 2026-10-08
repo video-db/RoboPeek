@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Badge, Button, Icon } from './ui.tsx'
+import { SiteHeader } from './SiteChrome.tsx'
 
 export const SAMPLE_URL =
   'https://huggingface.co/datasets/ArtemLykov/CognitiveDrone_dataset/resolve/main/data/rlds/train/cognitive_drone-train.tfrecord-00005-of-00128'
@@ -14,21 +15,13 @@ export function AppShell({ mode, url, episode = 0, sourceBar, children }: {
   const single = mode === 'episode'
   return (
     <>
-      <header className="top">
-        <a className="brand" href="./" aria-label="RoboPeek home">
-          <span className="brand-mark"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 5v14l8-7-8-7Zm10 0v14l8-7-8-7Z" /></svg></span>
-          <strong>RoboPeek</strong>
-        </a>
-        <span className="brand-divider" />
-        <span className="brand-caption">Robot-learning data, in view.</span>
-        <a className="docs-link" href="https://github.com/video-db/RoboPeek/blob/main/docs/guide.md" target="_blank" rel="noreferrer"><Icon name="book" /><span>Documentation</span><Icon name="external" /></a>
-      </header>
+      <SiteHeader />
       <main className="workspace">
         <div className="workspace-heading">
           <div><h1>{single ? 'Episode viewer' : 'Dataset explorer'}</h1><p>{single ? 'Go straight to the episode you want to inspect.' : 'Explore camera frames, actions, and states from your RLDS datasets.'}</p></div>
           <nav className="view-switch" aria-label="Viewer mode">
-            <a aria-current={!single ? 'page' : undefined} href={`./${url ? `?url=${encodeURIComponent(url)}` : ''}`}><Icon name="layers" />Full dataset</a>
-            <a aria-current={single ? 'page' : undefined} href={`episode.html${url ? `?url=${encodeURIComponent(url)}&episode=${episode}` : ''}`}><Icon name="film" />Single episode</a>
+            <a aria-current={!single ? 'page' : undefined} href={`/viewer.html${url ? `?url=${encodeURIComponent(url)}` : ''}`}><Icon name="layers" />Full dataset</a>
+            <a aria-current={single ? 'page' : undefined} href={`/episode.html${url ? `?url=${encodeURIComponent(url)}&episode=${episode}` : ''}`}><Icon name="film" />Single episode</a>
           </nav>
         </div>
         <section className="viewer-card" aria-label={single ? 'Episode workspace' : 'Dataset workspace'}>

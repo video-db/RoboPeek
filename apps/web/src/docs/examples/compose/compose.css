@@ -1,0 +1,49 @@
+/* Your own styles for your own parts. They use the library's --rp-* tokens, so they follow its theme. */
+.mm-player { display: grid; gap: 16px; padding: 16px; align-content: start; background: var(--rp-panel); color: var(--rp-ink); }
+.mm-wait { padding: 24px; color: var(--rp-muted); }
+
+.mm-header { display: grid; gap: 12px; }
+.mm-kicker { margin: 0; font-size: 12px; font-weight: 600; color: var(--rp-accent); text-transform: uppercase; letter-spacing: 0.06em; }
+.mm-header h3 { margin: 2px 0; font-size: 18px; font-weight: 600; }
+.mm-facts { margin: 0; color: var(--rp-muted); font-size: 13px; }
+.mm-progress { height: 4px; border-radius: 2px; background: var(--rp-sunken); overflow: hidden; }
+.mm-progress span { display: block; height: 100%; background: var(--rp-accent); }
+
+.mm-main { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+.mm-main .rp-stage { border-radius: var(--rp-radius-card); }
+.mm-side { display: grid; gap: 12px; min-width: 0; }
+@media (max-width: 1100px) { .mm-main { grid-template-columns: 1fr; } }
+
+.mm-play {
+  min-width: 84px; padding: 6px 16px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--rp-stage-accent); color: var(--rp-stage-accent-ink); font-weight: 600;
+}
+.mm-chips { display: flex; gap: 6px; justify-content: center; }
+.mm-chips button {
+  padding: 3px 10px; border-radius: 999px; border: 1px solid var(--rp-stage-line);
+  background: transparent; color: var(--rp-stage-soft); cursor: pointer; font-size: 12px;
+}
+.mm-chips button[aria-pressed='true'] { background: var(--rp-stage-ink); color: var(--rp-stage); border-color: var(--rp-stage-ink); }
+
+.mm-card { border: 1px solid var(--rp-line); border-radius: var(--rp-radius-card); padding: 14px; background: var(--rp-panel); min-width: 0; }
+.mm-card h4 { margin: 0 0 10px; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+.mm-card h4 span { font-weight: 400; color: var(--rp-muted); font-variant-numeric: tabular-nums; }
+.mm-empty { margin: 0; color: var(--rp-muted); font-size: 13px; }
+
+.mm-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 12px; }
+.mm-bars li { display: grid; grid-template-columns: 2ch 1fr 7ch; gap: 8px; align-items: center; }
+.mm-dim { color: var(--rp-muted); }
+.mm-track { position: relative; height: 8px; background: var(--rp-sunken); border-radius: 4px; }
+.mm-track::after { content: ''; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--rp-line-hover); }
+.mm-fill { position: absolute; left: 50%; top: 0; bottom: 0; background: var(--rp-series-0); border-radius: 0 4px 4px 0; }
+.mm-fill[data-neg] { left: auto; right: 50%; background: var(--rp-series-1); border-radius: 4px 0 0 4px; }
+.mm-val { text-align: right; font-variant-numeric: tabular-nums; }
+
+.mm-meta { margin: 0; display: grid; gap: 8px; font-size: 12px; }
+.mm-meta div { min-width: 0; }
+.mm-meta dt { color: var(--rp-muted); }
+.mm-meta dd { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.mm-scalar { display: flex; align-items: center; justify-content: space-between; }
+.mm-scalar h4 { margin: 0; }
+.mm-scalar strong { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }

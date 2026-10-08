@@ -1,0 +1,37 @@
+/* A deliberately different look: this UI owes nothing to RoboPeek's styles. */
+.cv {
+  --cv-ink: #0f172a; --cv-muted: #64748b; --cv-line: #e2e8f0; --cv-soft: #f1f5f9; --cv-brand: #2563eb;
+  height: 100%; display: grid; grid-template-rows: auto 1fr; min-height: 0;
+  font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; color: var(--cv-ink); background: #fff;
+}
+.cv-status { margin: 0; padding: 8px 14px; border-bottom: 1px solid var(--cv-line); color: var(--cv-muted); }
+.cv-status[data-state='error'] { color: #b91c1c; }
+.cv-body { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 0; }
+.cv-empty { padding: 24px; color: var(--cv-muted); }
+
+.cv-gallery { list-style: none; margin: 0; padding: 10px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; border-right: 1px solid var(--cv-line); background: var(--cv-soft); }
+.cv-gallery button { width: 100%; padding: 0; border: 2px solid transparent; border-radius: 6px; background: #fff; text-align: left; cursor: pointer; overflow: hidden; display: grid; font: inherit; color: inherit; }
+.cv-gallery button[aria-pressed='true'] { border-color: var(--cv-brand); }
+.cv-gallery img, .cv-noimg { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: #cbd5e1; }
+.cv-gallery-title { padding: 6px 8px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.cv-gallery-sub { padding: 0 8px 6px; color: var(--cv-muted); }
+
+.cv-detail { overflow-y: auto; padding: 16px; display: grid; gap: 12px; align-content: start; }
+.cv-screen { position: relative; background: #020617; border-radius: 6px; display: grid; place-items: center; min-height: 240px; color: #94a3b8; }
+.cv-screen img { max-width: 100%; max-height: 380px; image-rendering: pixelated; display: block; }
+.cv-caption { position: absolute; left: 12px; right: 12px; bottom: 12px; margin: 0; padding: 6px 10px; background: rgb(2 6 23 / 0.75); color: #f8fafc; border-radius: 4px; text-align: center; }
+.cv-controls { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+.cv-controls input { accent-color: var(--cv-brand); }
+.cv-play { padding: 6px 14px; border: 0; border-radius: 4px; background: var(--cv-brand); color: #fff; font: inherit; cursor: pointer; min-width: 72px; }
+.cv-step { color: var(--cv-muted); font-variant-numeric: tabular-nums; }
+.cv-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.cv-pills button { padding: 4px 10px; border: 1px solid var(--cv-line); border-radius: 4px; background: #fff; font: inherit; cursor: pointer; }
+.cv-pills button[aria-pressed='true'] { background: var(--cv-ink); color: #fff; border-color: var(--cv-ink); }
+.cv-panel { display: grid; gap: 8px; border: 1px solid var(--cv-line); border-radius: 6px; padding: 10px; }
+.cv-panel select { justify-self: start; font: inherit; padding: 3px 6px; }
+.cv-chart { width: 100%; height: 140px; cursor: crosshair; }
+.cv-chart path { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.cv-playhead { stroke: var(--cv-ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.cv-table { border-collapse: collapse; width: 100%; }
+.cv-table th, .cv-table td { border-top: 1px solid var(--cv-line); padding: 6px 4px; text-align: left; vertical-align: top; word-break: break-all; }
+.cv-table th { color: var(--cv-muted); font-weight: 400; width: 34%; }
