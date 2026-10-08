@@ -1,0 +1,16 @@
+{
+  "name": "@rlds-viewer/core",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test 'test/*.test.ts'"
+  },
+  "type": "module",
+  "private": true,
+  "types": "./src/index.ts",
+  "exports": "./src/index.ts",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

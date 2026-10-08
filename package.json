@@ -1,0 +1,11 @@
+{
+  "name": "rlds-viewer",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "pnpm --filter @rlds-viewer/web dev",
+    "build": "pnpm --filter @rlds-viewer/web build",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "private": true
+}
