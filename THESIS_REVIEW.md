@@ -4,28 +4,15 @@
 
 RLDS datasets ship as large shard files, each holding many episodes. RoboPeek ([THESIS.md](THESIS.md)) lets you preview one episode in the browser without downloading the whole shard. The thesis asked for a framework-independent library plus a small demo app, a UI package only if embedding needed one, and MCAP as the next format.
 
-## What we built
+## What we built, and why
 
-`@robopeek/rlds` reads RLDS. It started life as `core` and was renamed before publishing, because everything in it is RLDS-specific. It splits a TFRecord file into records, decodes each `tf.train.Example`, and groups the keys into an episode (camera frames, numeric tracks, text, metadata). All ten public datasets we tried load.
+We split the work into a reader and a UI, because they serve different people. A Node script, a Python bridge or a Vue app needs to read episodes but has no use for React. A React app needs both.
 
-Why it's built this way:
+`@robopeek/rlds` is the reader. It turns an RLDS shard (or one episode of it) into camera frames, numeric tracks, text and metadata, in the browser, with no backend. It started life as `core`. We renamed it before publishing because nothing in it is generic: every line is about RLDS, and calling it `core` would have implied otherwise once a second format arrives. All ten public datasets we tried load.
 
-- It has its own small protobuf decoder instead of TensorFlow or a protobuf library. The whole point is to run in a browser with no backend, and those dependencies are far heavier than the one message type we need.
-- To fetch one episode, it reads straight through the file and skips the earlier episodes without decoding them. TFRecord has no index, so we have to find the episode somehow. Jumping between record headers with range requests sounds cheaper, but each request costs about 600 ms on Hugging Face's CDN, while streaming past a typical 1.4 MB episode takes about 90 ms.
-- It reads the dataset's `features.json` when one exists. The shard itself doesn't store tensor shapes, so without it a depth image arrives as a flat list of 30,000 numbers.
-- It never guesses the playback rate. RLDS doesn't record one, so fps is left to the caller.
+`@robopeek/react` is the UI: data hooks, small components, a player made of rearrangeable parts, and two ready-made viewers. The thesis said to add a UI package only if embedding needed one. We added it because embedding is the point: datasets.bot and other apps should be able to drop the viewer in and make it look like their own without forking it. That's also why it's built in layers. Some teams will take the whole viewer, some the player with their own layout, and some only the hooks under their own design system.
 
-`@robopeek/react` is the UI: data hooks, small components, a player made of parts, and two ready-made viewers. The thesis said to add a UI package only if embedding needed one. We added it because embedding is the goal: datasets.bot and others should be able to drop the viewer in and make it look like their own product without forking it.
-
-Why it's built this way:
-
-- It comes in layers (hooks, small components, player parts, full viewers), so a team can use as much or as little as it wants: the whole viewer, the player with its own layout, or just the hooks under its own design system.
-- The player is made of parts that share state, and each part is also exposed as a hook. Changing one button doesn't mean rebuilding the player.
-- All styling goes through CSS variables inside a CSS layer, so the host app's styles, Tailwind included, win without any hacks. The defaults follow the VideoDB design system.
-
-`apps/web` is the demo and test harness. It's two thin pages over the ready-made viewers, which keeps it honest: if the demo needs something, the library has to provide it.
-
-Reading and drawing live in separate packages so a Node script or a Vue app can use the reader without pulling in React.
+`apps/web` is the demo and test harness. We kept it to thin pages over the ready-made viewers, so anything the demo needs has to exist in the library first.
 
 ## What changes for MCAP
 
