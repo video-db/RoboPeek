@@ -1,0 +1,58 @@
+/* Layer order: page base < library < app. Library CSS is imported from CSS so bundler order can't move it. */
+@layer base, rlds, app;
+@import '@rlds-viewer/react/styles.css' layer(rlds);
+
+@layer base {
+  /* VideoDB Design System v2: page canvas recipe. Light only, as the DS defines. */
+  :root {
+    --bg: #ffffff;          /* Background/Neutral/Primary */
+    --panel: #ffffff;       /* Background/Neutral/Primary */
+    --ink: #1d1a22;         /* Text/Neutral/Primary */
+    --muted: #525252;       /* Text/Neutral/Tertiary */
+    --line: #efefef;        /* Border/Neutral/Primary */
+    --line-hover: #d4d4d4;  /* Greyscale/300 */
+    --accent: #ec5b16;      /* Background/Brand/Primary, Text/Brand/Primary */
+    --accent-hover: #c14103; /* Orange/700 */
+    --accent-ink: #fff5ec;  /* Text/Brand/Inverse */
+    --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html, body, #root { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--sans); }
+  button, input, select { font: inherit; color: inherit; }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  button {
+    border: 1px solid var(--line); background: var(--panel); border-radius: 8px;
+    padding: 6px 12px; cursor: pointer; white-space: nowrap;
+  }
+  button:hover:not(:disabled) { border-color: var(--line-hover); }
+  button:disabled { opacity: 0.4; cursor: default; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+  button.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+}
+
+@layer app {
+  :root { --rlds-font-sans: var(--sans); }
+
+  .top {
+    display: flex; align-items: center; gap: 24px; padding: 10px 16px;
+    background: var(--panel); color: var(--ink); border-bottom: 1px solid var(--line); flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand strong { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+  .brand span { font-size: 12px; color: var(--muted); }
+  .nav { color: var(--accent); text-decoration: none; font-weight: 500; white-space: nowrap; }
+  .nav:hover { text-decoration: underline; }
+
+  .welcome { max-width: 640px; padding: 64px 16px; margin: 0 auto; display: grid; gap: 16px; justify-items: start; align-content: start; }
+  .welcome h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.015em; }
+  .welcome p { margin: 0; color: var(--muted); max-width: 62ch; }
+  .keys { display: grid; gap: 6px; margin: 16px 0 0; font-size: 13px; }
+  .keys div { display: flex; gap: 12px; }
+  .keys dt { font-weight: 500; min-width: 6ch; }
+  .keys dd { margin: 0; color: var(--muted); }
+}

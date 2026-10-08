@@ -1,0 +1,6 @@
+/* Tweak mine: layer order for Tailwind, tokens, one CSS override. */
+@layer theme, base, rlds, components, utilities;
+@import '@rlds-viewer/react/styles.css' layer(rlds);
+
+:root { --rlds-accent: #4f46e5; --rlds-stage: #000; --rlds-series-0: #e11d48; }
+.rlds-player[data-playing] .rlds-options { opacity: 0.5; }

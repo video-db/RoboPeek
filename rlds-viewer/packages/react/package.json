@@ -1,0 +1,60 @@
+{
+  "name": "@rlds-viewer/react",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@rlds-viewer/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "react": "^19",
+    "react-dom": "^19",
+    "vitest-browser-react": "^2.3.0"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "rlds-source": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./styles.css": {
+      "rlds-source": "./src/styles/styles.css",
+      "default": "./dist/styles.css"
+    },
+    "./structure.css": {
+      "rlds-source": "./src/styles/structure.css",
+      "default": "./dist/structure.css"
+    },
+    "./theme.css": {
+      "rlds-source": "./src/styles/theme.css",
+      "default": "./dist/theme.css"
+    }
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json",
+      "./styles.css": "./dist/styles.css",
+      "./structure.css": "./dist/structure.css",
+      "./theme.css": "./dist/theme.css"
+    }
+  }
+}
