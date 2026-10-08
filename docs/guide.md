@@ -78,13 +78,15 @@ import { ShardViewer, EpisodeViewer } from '@robopeek/react'
 import '@robopeek/react/styles.css' // or from CSS, see "CSS layer order"
 
 // Episode drawer + player, streams the whole shard
-<ShardViewer defaultSource={url} defaultFps={10} autoFocus />
+<ShardViewer source={url} defaultFps={10} autoFocus />
 
 // Single episode by number, controlled
-<EpisodeViewer source={url} onSourceChange={setUrl} episode={n} onEpisodeChange={setN} />
+<EpisodeViewer source={url} episode={n} onEpisodeChange={setN} />
 ```
 
-Both viewers: `source` / `defaultSource` / `onSourceChange`, `specs` (`'auto'` default: reads the `features.json` next to a URL shard), `defaultFps`, `colorScheme`, `autoFocus`, `empty` (shown before a source is opened), `renderHeader(bar, state)` (wrap or replace the source bar), `playerProps` (passed to `Player.Root`), `children` (your player layout). `ShardViewer` adds `selected` / `defaultSelected` / `onSelectedChange` and `renderTitle`; `EpisodeViewer` adds `episode` / `defaultEpisode` / `onEpisodeChange`.
+A viewer is a load-status strip plus the drawer and player. It has no URL field, file picker or drop target: choosing the file is your app's job, and you pass the result as `source` (a URL string or a `File`). `apps/web` shows one way to do it (`SourceBar.tsx`, `DropTarget.tsx`).
+
+Both viewers: `source` (required; `null` shows `empty`), `specs` (`'auto'` default: reads the `features.json` next to a URL shard), `defaultFps`, `colorScheme`, `autoFocus`, `empty`, `playerProps` (passed to `Player.Root`), `children` (your player layout). `ShardViewer` adds `selected` / `defaultSelected` / `onSelectedChange` and `renderTitle`; `EpisodeViewer` adds `episode` / `defaultEpisode` / `onEpisodeChange`.
 
 ## React: compose your own player
 
@@ -184,7 +186,7 @@ Each built-in part is its hook plus thin markup (`usePlayButton`, `useStepButton
 ## React: drop-in viewer, your player layout
 
 ```tsx
-<ShardViewer defaultSource={url}>
+<ShardViewer source={url}>
   <Player.Stage />
   <MyMetadataCard /> {/* uses usePlayer() */}
 </ShardViewer>
@@ -212,9 +214,7 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 | | `usePlayback(opts)` | Frame clock; `step` / `playing` / `fps` each controlled or uncontrolled; `resetKey` resets on episode change |
 | | `usePlayerHotkeys(ref, ctl, enabled?)` | Space, ←/→ (Shift = 10), Home/End, ↑/↓ episodes; scoped to `ref`, never `window` |
 | Primitives | `EpisodeList` | Episode drawer with filter; `selected`, `onSelect`, `renderTitle`, `renderItem(ep, fallback)` |
-| | `SourceBar` | URL + file input; `episode` shows a number field |
 | | `LoadStatus` | Progress strip; children add counts |
-| | `DropZone` | Drop target with overlay; `onFile` |
 | | `FrameCanvas` | One image track (encoded or raw); on-demand `ImageBitmap` decode + 8-frame lookahead |
 | | `VectorChart` | One vector track; click/drag to seek, legend toggles dims; `maxSeries` (32) collapses wider tracks |
 | Player | `Player.Root` | Owns a small store (`useSyncExternalStore`, no dependency): episode, step, playing, fps, autoNext, plus `onPrevEpisode` / `onNextEpisode`; `hotkeys` (true / false / a ref), `colorScheme` |
@@ -224,8 +224,8 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 | | `Player.FpsSelect` `.AutoNext` `.Flags` | Sub-parts of `Options` |
 | | `usePlayButton` `useStepButton(delta)` `useEpisodeButton(dir)` `useScrubber` `useFpsSelect(options?)` `useAutoNext` | Per-part hooks: state + spreadable props (handlers, aria) |
 | | `Player` | Default composition of the parts |
-| Viewers | `ShardViewer` | Source bar + status + drawer + player |
-| | `EpisodeViewer` | Source bar with episode field + status + player |
+| Viewers | `ShardViewer` | Status + drawer + player; takes `source` |
+| | `EpisodeViewer` | Status + player for one episode; takes `source` + `episode` |
 | Types | `PlayerRootProps`, `FramesProps`, `EpisodeListProps`, `ShardViewerProps`, … | Props type exported for every component |
 | Core | everything from `@robopeek/rlds` | Re-exported |
 

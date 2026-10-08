@@ -6,7 +6,7 @@ function MyMetadataCard() {
 }
 
 export const YoursInsideMine = ({ url }: { url: string }) => (
-  <ShardViewer defaultSource={url}>
+  <ShardViewer source={url}>
     <Player.Stage />
     <MyMetadataCard />
     <Player.Tracks renderItem={(key, _track, fallback) => (key === 'action' ? <p>my action plot</p> : fallback)} />

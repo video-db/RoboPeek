@@ -10,7 +10,7 @@ npm install @robopeek/react
 import { ShardViewer } from '@robopeek/react'
 import '@robopeek/react/styles.css'
 
-<ShardViewer defaultSource="https://…/train.tfrecord-00000-of-00128" />
+<ShardViewer source="https://…/train.tfrecord-00000-of-00128" />
 ```
 
 Or arrange the player yourself:

@@ -1,12 +1,8 @@
 /* Layout only: display, grids, sizing, spacing. Pair with theme.css or your own look. */
 @layer robopeek {
-  .rp-viewer { height: 100%; display: grid; grid-template-rows: auto auto 1fr; position: relative; min-height: 0; }
-
-  /* Source bar */
-  .rp-source { display: flex; gap: 8px; flex: 1; min-width: min(100%, 320px); }
-  .rp-source-url { flex: 1; }
-  .rp-source-episode { display: flex; align-items: center; gap: 6px; }
-  .rp-source-episode input { width: 7ch; }
+  /* Status strip on top, then the body (or `empty`) fills the rest. */
+  .rp-viewer { height: 100%; display: flex; flex-direction: column; position: relative; min-height: 0; }
+  .rp-viewer > :last-child { flex: 1; min-height: 0; }
 
   /* Load status */
   .rp-status { position: relative; }
@@ -67,9 +63,6 @@
   .rp-chart-legend .rp-mono { min-width: 7ch; text-align: right; }
   .rp-metadata dl { margin: 0; display: grid; gap: 6px; }
   .rp-metadata dd { margin: 0; overflow-wrap: anywhere; }
-
-  .rp-dropzone { position: relative; }
-  .rp-dropzone-overlay { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
 
   @media (max-width: 760px) {
     .rp-shard-viewer-body { grid-template-columns: 1fr; grid-template-rows: 180px 1fr; }

@@ -3,21 +3,16 @@ import type { Episode, Source } from '@robopeek/rlds'
 import { useEpisodeStream } from '../hooks/useEpisodeStream.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import type { SpecsOption } from '../hooks/specs.ts'
-import { DropZone } from '../components/DropZone.tsx'
 import { EpisodeList } from '../components/EpisodeList.tsx'
 import { LoadStatus } from '../components/LoadStatus.tsx'
-import { SourceBar } from '../components/SourceBar.tsx'
 import { cx } from '../components/cx.ts'
 import { Root, mergeRefs, type ColorScheme, type PlayerRootProps } from '../player/parts.tsx'
 
 const mb = (n: number) => (n / 1e6).toFixed(1)
 
-export type ShardViewerState = { source: Source | null; selected: number; episode?: Episode }
-
 export type ShardViewerProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & {
-  source?: Source | null
-  defaultSource?: Source | null
-  onSourceChange?: (src: Source) => void
+  /** The shard to stream: a URL or a File. null shows `empty`. Choosing the file is the host's job. */
+  source: Source | null
   selected?: number
   defaultSelected?: number
   onSelectedChange?: (index: number) => void
@@ -27,10 +22,8 @@ export type ShardViewerProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & 
   colorScheme?: ColorScheme
   /** Focus the viewer on mount so hotkeys work before the first click. */
   autoFocus?: boolean
-  /** Wrap or replace the source bar; `bar` is the built-in one. */
-  renderHeader?: (bar: ReactNode, state: ShardViewerState) => ReactNode
   renderTitle?: (episode: Episode) => string | undefined
-  /** Shown before any source is opened. */
+  /** Shown while `source` is null. */
   empty?: ReactNode
   /** Passed through to `Player.Root` (e.g. `defaultAutoNext`). */
   playerProps?: Partial<PlayerRootProps>
@@ -41,8 +34,6 @@ export type ShardViewerProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & 
 /** Episode drawer + player for a whole shard, streamed as it downloads. */
 export function ShardViewer({
   source,
-  defaultSource = null,
-  onSourceChange,
   selected: selectedProp,
   defaultSelected = 0,
   onSelectedChange,
@@ -50,7 +41,6 @@ export function ShardViewer({
   defaultFps,
   colorScheme,
   autoFocus,
-  renderHeader,
   renderTitle,
   empty,
   playerProps,
@@ -59,41 +49,34 @@ export function ShardViewer({
   ref,
   ...rest
 }: ShardViewerProps) {
-  const [src, setSrc] = useControllable<Source | null>(source, defaultSource, onSourceChange as (s: Source | null) => void)
   const [selected, setSelected] = useControllable(selectedProp, defaultSelected, onSelectedChange)
-  const { episodes, status, load, cancel, reset } = useEpisodeStream({ specs })
+  const { episodes, status, load, reset } = useEpisodeStream({ specs })
   const own = useRef<HTMLDivElement>(null)
 
+  // A new shard starts at its first episode; the first run keeps defaultSelected.
+  const seen = useRef(source)
   useEffect(() => {
-    if (src) load(src)
+    if (source) load(source)
     else reset()
-  }, [src, load, reset])
+    if (seen.current !== source) setSelected(0)
+    seen.current = source
+  }, [source, load, reset, setSelected])
 
   useEffect(() => {
     if (autoFocus) own.current?.focus()
   }, [autoFocus])
 
-  const open = (next: Source) => {
-    setSelected(0)
-    setSrc(next)
-  }
-
   const episode = episodes[selected]
   const loading = status.phase === 'loading'
-  const bar = (
-    <SourceBar key={typeof src === 'string' ? src : undefined} defaultUrl={typeof src === 'string' ? src : ''} loading={loading} onOpen={open} onCancel={cancel} />
-  )
 
   return (
-    <DropZone
+    <div
       ref={mergeRefs(own, ref)}
       className={cx('rp-viewer', 'rp-shard-viewer', className)}
       data-rp-scheme={colorScheme}
       tabIndex={-1}
-      onFile={open}
       {...rest}
     >
-      {renderHeader ? renderHeader(bar, { source: src, selected, episode }) : bar}
       {status.phase !== 'idle' && (
         <LoadStatus phase={status.phase} source={status.source} loaded={status.loaded} total={status.total} error={status.error}>
           <span className="rp-mono">
@@ -123,6 +106,6 @@ export function ShardViewer({
           )}
         </div>
       )}
-    </DropZone>
+    </div>
   )
 }

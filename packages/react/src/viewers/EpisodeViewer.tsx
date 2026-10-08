@@ -1,21 +1,17 @@
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react'
-import type { Episode, Source } from '@robopeek/rlds'
+import type { Source } from '@robopeek/rlds'
 import { useEpisode } from '../hooks/useEpisode.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import { sourceName, type SpecsOption } from '../hooks/specs.ts'
 import { LoadStatus } from '../components/LoadStatus.tsx'
-import { SourceBar } from '../components/SourceBar.tsx'
 import { cx } from '../components/cx.ts'
 import { Root, mergeRefs, type ColorScheme, type PlayerRootProps } from '../player/parts.tsx'
 
 const mb = (n: number) => (n / 1e6).toFixed(1)
 
-export type EpisodeViewerState = { source: Source | null; episode: number; loaded?: Episode }
-
 export type EpisodeViewerProps = Omit<ComponentPropsWithRef<'div'>, 'children'> & {
-  source?: Source | null
-  defaultSource?: Source | null
-  onSourceChange?: (src: Source) => void
+  /** The shard to read from: a URL (needs HTTP Range support) or a File. null shows `empty`. */
+  source: Source | null
   episode?: number
   defaultEpisode?: number
   onEpisodeChange?: (n: number) => void
@@ -23,7 +19,6 @@ export type EpisodeViewerProps = Omit<ComponentPropsWithRef<'div'>, 'children'> 
   defaultFps?: number
   colorScheme?: ColorScheme
   autoFocus?: boolean
-  renderHeader?: (bar: ReactNode, state: EpisodeViewerState) => ReactNode
   empty?: ReactNode
   playerProps?: Partial<PlayerRootProps>
   children?: ReactNode
@@ -32,8 +27,6 @@ export type EpisodeViewerProps = Omit<ComponentPropsWithRef<'div'>, 'children'> 
 /** One episode by number, fetched without loading the rest of the shard. */
 export function EpisodeViewer({
   source,
-  defaultSource = null,
-  onSourceChange,
   episode: episodeProp,
   defaultEpisode = 0,
   onEpisodeChange,
@@ -41,7 +34,6 @@ export function EpisodeViewer({
   defaultFps,
   colorScheme,
   autoFocus,
-  renderHeader,
   empty,
   playerProps,
   children,
@@ -49,9 +41,8 @@ export function EpisodeViewer({
   ref,
   ...rest
 }: EpisodeViewerProps) {
-  const [src, setSrc] = useControllable<Source | null>(source, defaultSource, onSourceChange as (s: Source | null) => void)
   const [n, setN] = useControllable(episodeProp, defaultEpisode, onEpisodeChange)
-  const { episode, status, known } = useEpisode(src, n, { specs })
+  const { episode, status, known } = useEpisode(source, n, { specs })
   const own = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -61,15 +52,6 @@ export function EpisodeViewer({
   const ready = status.phase === 'ready' && episode
   const hasNext = !!ready && !(known.complete && episode.index >= known.count - 1)
   const progress = status.phase === 'loading' || status.phase === 'ready' ? status.progress : undefined
-  const bar = (
-    <SourceBar
-      key={typeof src === 'string' ? src : undefined}
-      defaultUrl={typeof src === 'string' ? src : ''}
-      episode={n}
-      currentFile={src instanceof File ? src : undefined}
-      onOpen={(next, ep) => { setSrc(next); setN(ep ?? 0) }}
-    />
-  )
 
   return (
     <div
@@ -79,9 +61,8 @@ export function EpisodeViewer({
       tabIndex={-1}
       {...rest}
     >
-      {renderHeader ? renderHeader(bar, { source: src, episode: n, loaded: episode }) : bar}
-      {src && (
-        <LoadStatus phase={status.phase === 'loading' ? 'loading' : 'done'} source={sourceName(src)} loaded={progress?.loaded} total={progress?.total}>
+      {source && (
+        <LoadStatus phase={status.phase === 'loading' ? 'loading' : 'done'} source={sourceName(source)} loaded={progress?.loaded} total={progress?.total}>
           {ready && (
             <span className="rp-mono">Episode {episode.index} · {episode.length} steps · {mb(episode.byteSize)} MB</span>
           )}

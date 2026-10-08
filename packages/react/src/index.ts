@@ -7,9 +7,7 @@ export { usePlayerHotkeys, type HotkeyControls } from './hooks/usePlayerHotkeys.
 export type { SpecsOption } from './hooks/specs.ts'
 
 export { EpisodeList, type EpisodeListProps } from './components/EpisodeList.tsx'
-export { SourceBar, type SourceBarProps } from './components/SourceBar.tsx'
 export { LoadStatus, type LoadStatusProps } from './components/LoadStatus.tsx'
-export { DropZone, type DropZoneProps } from './components/DropZone.tsx'
 export { FrameCanvas, type FrameCanvasProps } from './components/FrameCanvas.tsx'
 export { VectorChart, type VectorChartProps } from './components/VectorChart.tsx'
 
@@ -44,5 +42,5 @@ export type {
   Include,
 } from './player/parts.tsx'
 
-export { ShardViewer, type ShardViewerProps, type ShardViewerState } from './viewers/ShardViewer.tsx'
-export { EpisodeViewer, type EpisodeViewerProps, type EpisodeViewerState } from './viewers/EpisodeViewer.tsx'
+export { ShardViewer, type ShardViewerProps } from './viewers/ShardViewer.tsx'
+export { EpisodeViewer, type EpisodeViewerProps } from './viewers/EpisodeViewer.tsx'

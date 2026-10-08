@@ -9,12 +9,12 @@ How the packages are built and why. For naming and the plan for MCAP, see [THESI
 | Layered, each layer usable alone | rlds → hooks → primitives → `Player` parts → viewers |
 | Composition over configuration | Compound `Player.*` parts over a growing prop list |
 | Splittable, not just swappable | Composite parts take children; every built-in part = hook + thin markup |
-| Controlled or uncontrolled | `value` + `onChange` or `defaultValue` for source, episode, selected, step, playing, fps, autoNext |
+| Controlled or uncontrolled | `value` + `onChange` or `defaultValue` for episode, selected, step, playing, fps, autoNext |
 | No global side effects | No `window` listeners, no `history` writes; deep links belong to the app |
 | Cheap re-renders | Player state in a store read through selectors; only frame/step-bound parts re-render per frame |
 | One install | `react` depends on `rlds` and re-exports its whole public API |
 | Wrappable | Every part: `className`, `ref`, rest props; exported props types |
-| Slots where content varies | `renderTitle`, `renderEmpty`, `renderHeader`, `include`; `renderItem` receives the default as `fallback` |
+| Slots where content varies | `renderTitle`, `renderEmpty`, `include`; `renderItem` receives the default as `fallback` |
 | Overridable styling | CSS in `@layer robopeek`; `rp-*` classes; `data-*` state; `--rp-*` tokens on `:root`; no `!important` |
 | Accessible controls | Play is one button whose label switches Play ↔ Pause (no `aria-pressed`); scrubber is a native range input |
 | No guessed data | fps is a display choice (`defaultFps`, 10); RLDS records no rate |

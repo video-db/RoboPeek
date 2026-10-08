@@ -1,30 +1,34 @@
 import { useState } from 'react'
 import { ShardViewer, type Source } from '@robopeek/react'
 import { Brand, SAMPLE_URL } from './shared.tsx'
+import { SourceBar } from './SourceBar.tsx'
+import { DropTarget } from './DropTarget.tsx'
 
 export default function App() {
   const [source, setSource] = useState<Source | null>(() => new URLSearchParams(location.search).get('url'))
+  const [selected, setSelected] = useState(0)
   const open = (src: Source) => {
     setSource(src)
+    setSelected(0)
     if (typeof src === 'string') history.replaceState(null, '', `?url=${encodeURIComponent(src)}`)
   }
+  const url = typeof source === 'string' ? source : undefined
 
   return (
-    <ShardViewer
-      source={source}
-      onSourceChange={open}
-      autoFocus
-      empty={<Welcome onSample={() => open(SAMPLE_URL)} />}
-      renderHeader={(bar, { source, episode }) => (
-        <header className="top">
-          <Brand sub="TFRecord episodes" />
-          {bar}
-          <a className="nav" href={`episode.html${typeof source === 'string' ? `?url=${encodeURIComponent(source)}&episode=${episode?.index ?? 0}` : ''}`}>
-            Single episode
-          </a>
-        </header>
-      )}
-    />
+    <DropTarget className="app" onFile={open}>
+      <header className="top">
+        <Brand sub="TFRecord episodes" />
+        <SourceBar key={url} defaultUrl={url} onOpen={open} />
+        <a className="nav" href={`episode.html${url ? `?url=${encodeURIComponent(url)}&episode=${selected}` : ''}`}>Single episode</a>
+      </header>
+      <ShardViewer
+        source={source}
+        selected={selected}
+        onSelectedChange={setSelected}
+        autoFocus
+        empty={<Welcome onSample={() => open(SAMPLE_URL)} />}
+      />
+    </DropTarget>
   )
 }
 

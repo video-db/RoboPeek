@@ -53,7 +53,7 @@ import { ShardViewer } from '@robopeek/react'
 import '@robopeek/react/styles.css'
 
 export default function App() {
-  return <ShardViewer defaultSource="https://huggingface.co/datasets/…/train.tfrecord-00000-of-00128" />
+  return <ShardViewer source="https://huggingface.co/datasets/…/train.tfrecord-00000-of-00128" />
 }
 ```
 
