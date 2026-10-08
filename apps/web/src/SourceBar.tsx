@@ -1,18 +1,16 @@
-import { useRef, useState } from 'react'
+import { useId, useState, type RefObject } from 'react'
+import { Button, Icon, Input } from './ui.tsx'
 
 type Props = {
-  /** `episode` is passed when the episode field is shown. */
   onOpen: (src: File | string, episode?: number) => void
-  /** Prefills the URL field; remount (key) to reset it. */
   defaultUrl?: string
-  /** Shows an episode-number field, seeded with this value. */
   episode?: number
-  /** Lets submit reuse an already-opened local file when the URL field is empty. */
   currentFile?: File
+  fileRef: RefObject<HTMLInputElement | null>
 }
 
-/** URL field + file picker (+ optional episode number). The app's way in; the viewers only take a source. */
-export function SourceBar({ onOpen, defaultUrl = '', episode, currentFile }: Props) {
+/** URL field + file picker (+ optional episode number). */
+export function SourceBar({ onOpen, defaultUrl = '', episode, currentFile, fileRef }: Props) {
   const [url, setUrl] = useState(defaultUrl)
   const [num, setNum] = useState(String(episode ?? 0))
   const [seen, setSeen] = useState(episode)
@@ -20,45 +18,34 @@ export function SourceBar({ onOpen, defaultUrl = '', episode, currentFile }: Pro
     setSeen(episode)
     setNum(String(episode ?? 0))
   }
-  const file = useRef<HTMLInputElement>(null)
+  const urlId = useId()
   const withEpisode = episode !== undefined
   const n = Math.max(0, Math.floor(Number(num) || 0))
   const target = url.trim() || currentFile
 
   return (
-    <form
-      className="source"
-      onSubmit={(e) => {
-        e.preventDefault()
-        if (target) onOpen(target, withEpisode ? n : undefined)
-      }}
-    >
-      <input
-        className="source-url"
-        type="url"
-        aria-label="TFRecord URL"
-        placeholder={withEpisode ? 'Paste a .tfrecord URL' : 'Paste a .tfrecord URL, or drop a file anywhere'}
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-      />
-      {withEpisode && (
-        <label className="source-episode">
-          <span>Episode</span>
-          <input type="number" min={0} step={1} value={num} onChange={(e) => setNum(e.target.value)} />
-        </label>
-      )}
-      <button type="submit" className="primary" disabled={!target}>{withEpisode ? 'Show' : 'Stream'}</button>
-      <button type="button" onClick={() => file.current?.click()}>Open file…</button>
-      <input
-        ref={file}
-        type="file"
-        hidden
-        onChange={(e) => {
-          const f = e.target.files?.[0]
-          if (f) { setUrl(''); onOpen(f, withEpisode ? n : undefined) }
-          e.target.value = ''
-        }}
-      />
+    <form className="source" onSubmit={(e) => {
+      e.preventDefault()
+      if (target) onOpen(target, withEpisode ? n : undefined)
+    }}>
+      <div className="source-heading"><label htmlFor={urlId}>Dataset source</label><span><Icon name="shield" />Runs locally in your browser</span></div>
+      <div className="source-controls">
+        <div className="source-url-wrap">
+          <Icon name={currentFile ? 'file' : 'link'} />
+          <Input id={urlId} className="source-url" type="url" aria-label="TFRecord URL"
+            placeholder={currentFile ? currentFile.name : 'Paste a TFRecord URL, e.g. https://huggingface.co/datasets/…'}
+            title={currentFile?.name} spellCheck={false} autoComplete="off" value={url} onChange={(e) => setUrl(e.target.value)} />
+        </div>
+        {withEpisode && <label className="source-episode"><span>Episode</span><Input aria-label="Episode number" type="number" min={0} step={1} value={num} onChange={(e) => setNum(e.target.value)} /></label>}
+        <Button type="submit" variant="primary" disabled={!target}>{withEpisode ? 'Open episode' : 'Load dataset'}<Icon name="arrow" /></Button>
+        <span className="source-separator" />
+        <Button onClick={() => fileRef.current?.click()}><Icon name="upload" />Open file</Button>
+      </div>
+      <input ref={fileRef} type="file" aria-label="Open TFRecord file" hidden onChange={(e) => {
+        const f = e.target.files?.[0]
+        if (f) { setUrl(''); onOpen(f, withEpisode ? n : undefined) }
+        e.target.value = ''
+      }} />
     </form>
   )
 }
