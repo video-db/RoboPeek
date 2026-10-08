@@ -6,11 +6,26 @@ RLDS datasets ship as large shard files, each holding many episodes. RoboPeek ([
 
 ## What we built
 
-`@robopeek/rlds` reads RLDS. It started life as `core` and was renamed before publishing, because everything in it is RLDS-specific. It splits a TFRecord file into records, decodes each `tf.train.Example`, and groups the keys into an episode (camera frames, numeric tracks, text, metadata). It can stream a whole shard, or fetch one episode by reading past the earlier ones without decoding them. All ten public datasets we tried load.
+`@robopeek/rlds` reads RLDS. It started life as `core` and was renamed before publishing, because everything in it is RLDS-specific. It splits a TFRecord file into records, decodes each `tf.train.Example`, and groups the keys into an episode (camera frames, numeric tracks, text, metadata). All ten public datasets we tried load.
 
-`@robopeek/react` is the UI: data hooks, small components, a player made of parts you can rearrange, and two ready-made viewers. We added it because embedding was the goal. `apps/web` is the demo.
+Why it's built this way:
 
-We kept reading and drawing separate so a Node script or a Vue app can use the reader without React.
+- It has its own small protobuf decoder instead of TensorFlow or a protobuf library. The whole point is to run in a browser with no backend, and those dependencies are far heavier than the one message type we need.
+- To fetch one episode, it reads straight through the file and skips the earlier episodes without decoding them. TFRecord has no index, so we have to find the episode somehow. Jumping between record headers with range requests sounds cheaper, but each request costs about 600 ms on Hugging Face's CDN, while streaming past a typical 1.4 MB episode takes about 90 ms.
+- It reads the dataset's `features.json` when one exists. The shard itself doesn't store tensor shapes, so without it a depth image arrives as a flat list of 30,000 numbers.
+- It never guesses the playback rate. RLDS doesn't record one, so fps is left to the caller.
+
+`@robopeek/react` is the UI: data hooks, small components, a player made of parts, and two ready-made viewers. The thesis said to add a UI package only if embedding needed one. We added it because embedding is the goal: datasets.bot and others should be able to drop the viewer in and make it look like their own product without forking it.
+
+Why it's built this way:
+
+- It comes in layers (hooks, small components, player parts, full viewers), so a team can use as much or as little as it wants: the whole viewer, the player with its own layout, or just the hooks under its own design system.
+- The player is made of parts that share state, and each part is also exposed as a hook. Changing one button doesn't mean rebuilding the player.
+- All styling goes through CSS variables inside a CSS layer, so the host app's styles, Tailwind included, win without any hacks. The defaults follow the VideoDB design system.
+
+`apps/web` is the demo and test harness. It's two thin pages over the ready-made viewers, which keeps it honest: if the demo needs something, the library has to provide it.
+
+Reading and drawing live in separate packages so a Node script or a Vue app can use the reader without pulling in React.
 
 ## What changes for MCAP
 
