@@ -4,7 +4,6 @@
 [![react version][react-shield]][react-url]
 [![CI][ci-shield]][ci-url]
 [![Issues][issues-shield]][issues-url]
-[![Website][website-shield]][website-url]
 
 <br />
 <p align="center">
@@ -280,5 +279,3 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, how
 [ci-url]: https://github.com/video-db/RoboPeek/actions/workflows/ci.yml
 [issues-shield]: https://img.shields.io/github/issues/video-db/RoboPeek.svg?style=for-the-badge
 [issues-url]: https://github.com/video-db/RoboPeek/issues
-[website-shield]: https://img.shields.io/website?url=https%3A%2F%2Fvideodb.io%2F&style=for-the-badge&label=videodb.io
-[website-url]: https://videodb.io/
