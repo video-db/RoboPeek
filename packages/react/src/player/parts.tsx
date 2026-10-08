@@ -10,7 +10,7 @@ import {
   type Ref,
   type RefObject,
 } from 'react'
-import { formatFeature, vectorAt, type Episode, type Feature, type ImageTrack, type VectorTrack } from '@rlds-viewer/core'
+import { formatFeature, vectorAt, type Episode, type Feature, type ImageTrack, type VectorTrack } from '@robopeek/core'
 import { usePlayback, type PlaybackOptions } from '../hooks/usePlayback.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import { usePlayerHotkeys } from '../hooks/usePlayerHotkeys.ts'
@@ -140,9 +140,9 @@ export function Root({
   return (
     <div
       ref={mergeRefs(own, ref)}
-      className={cx('rlds-player', className)}
+      className={cx('rp-player', className)}
       data-playing={pb.playing || undefined}
-      data-rlds-scheme={colorScheme}
+      data-rp-scheme={colorScheme}
       tabIndex={hotkeys === true ? -1 : undefined}
       {...rest}
     >
@@ -168,7 +168,7 @@ export type StageProps = ComponentPropsWithRef<'div'>
 
 export function Stage({ className, children, ...rest }: StageProps) {
   return (
-    <div className={cx('rlds-stage', className)} {...rest}>
+    <div className={cx('rp-stage', className)} {...rest}>
       {children ?? (
         <>
           <Instruction />
@@ -190,8 +190,8 @@ export function Instruction({ include, className, ...rest }: InstructionProps) {
   const lines = Object.entries(text).filter(([k, v]) => included(k, include) && v[step])
   if (!lines.length) return null
   return (
-    <div className={cx('rlds-instructions', className)} {...rest}>
-      {lines.map(([k, v]) => <p key={k} className="rlds-instruction" title={k}>{v[step]}</p>)}
+    <div className={cx('rp-instructions', className)} {...rest}>
+      {lines.map(([k, v]) => <p key={k} className="rp-instruction" title={k}>{v[step]}</p>)}
     </div>
   )
 }
@@ -207,12 +207,12 @@ export function Frames({ include, renderItem, renderEmpty, className, ...rest }:
   const step = usePlayer((s) => s.step)
   const list = Object.entries(images).filter(([k]) => included(k, include))
   return (
-    <div className={cx('rlds-frames', className)} data-count={Math.min(list.length, 3)} {...rest}>
+    <div className={cx('rp-frames', className)} data-count={Math.min(list.length, 3)} {...rest}>
       {list.map(([k, track]) => {
         const fallback = <FrameCanvas key={k} name={k} track={track} step={step} />
         return renderItem ? <Keyed key={k}>{renderItem(k, track, fallback)}</Keyed> : fallback
       })}
-      {list.length === 0 && (renderEmpty ? renderEmpty() : <p className="rlds-frames-empty">No image features in this episode.</p>)}
+      {list.length === 0 && (renderEmpty ? renderEmpty() : <p className="rp-frames-empty">No image features in this episode.</p>)}
     </div>
   )
 }
@@ -226,7 +226,7 @@ export type TransportProps = ComponentPropsWithRef<'div'>
 /** No children → prev/step/play/step/next, scrubber and counter. */
 export function Transport({ className, children, ...rest }: TransportProps) {
   return (
-    <div className={cx('rlds-transport', className)} {...rest}>
+    <div className={cx('rp-transport', className)} {...rest}>
       {children ?? (
         <>
           <PrevEpisode />
@@ -247,7 +247,7 @@ export type TransportButtonProps = Omit<ComponentPropsWithRef<'button'>, 'onClic
 export function Play({ className, children, ...rest }: TransportButtonProps) {
   const { playing, buttonProps } = usePlayButton()
   return (
-    <button {...buttonProps} className={cx('rlds-transport-button', 'rlds-play', className)} {...rest}>
+    <button {...buttonProps} className={cx('rp-transport-button', 'rp-play', className)} {...rest}>
       {children ?? (playing ? <PauseIcon /> : <PlayIcon />)}
     </button>
   )
@@ -255,29 +255,29 @@ export function Play({ className, children, ...rest }: TransportButtonProps) {
 
 export function StepBack({ className, children, ...rest }: TransportButtonProps) {
   const { buttonProps } = useStepButton(-1)
-  return <button {...buttonProps} className={cx('rlds-transport-button', className)} {...rest}>{children ?? <StepIcon back />}</button>
+  return <button {...buttonProps} className={cx('rp-transport-button', className)} {...rest}>{children ?? <StepIcon back />}</button>
 }
 
 export function StepForward({ className, children, ...rest }: TransportButtonProps) {
   const { buttonProps } = useStepButton(1)
-  return <button {...buttonProps} className={cx('rlds-transport-button', className)} {...rest}>{children ?? <StepIcon />}</button>
+  return <button {...buttonProps} className={cx('rp-transport-button', className)} {...rest}>{children ?? <StepIcon />}</button>
 }
 
 export function PrevEpisode({ className, children, ...rest }: TransportButtonProps) {
   const { buttonProps } = useEpisodeButton('prev')
-  return <button {...buttonProps} className={cx('rlds-transport-button', className)} {...rest}>{children ?? <SkipIcon back />}</button>
+  return <button {...buttonProps} className={cx('rp-transport-button', className)} {...rest}>{children ?? <SkipIcon back />}</button>
 }
 
 export function NextEpisode({ className, children, ...rest }: TransportButtonProps) {
   const { buttonProps } = useEpisodeButton('next')
-  return <button {...buttonProps} className={cx('rlds-transport-button', className)} {...rest}>{children ?? <SkipIcon />}</button>
+  return <button {...buttonProps} className={cx('rp-transport-button', className)} {...rest}>{children ?? <SkipIcon />}</button>
 }
 
 export type ScrubberProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'value' | 'onChange'>
 
 export function Scrubber({ className, ...rest }: ScrubberProps) {
   const { inputProps } = useScrubber()
-  return <input {...inputProps} className={cx('rlds-scrubber', className)} {...rest} />
+  return <input {...inputProps} className={cx('rp-scrubber', className)} {...rest} />
 }
 
 export type CounterProps = Omit<ComponentPropsWithRef<'span'>, 'children'>
@@ -286,8 +286,8 @@ export function Counter({ className, ...rest }: CounterProps) {
   const step = usePlayer((s) => s.step)
   const length = usePlayer((s) => s.length)
   return (
-    <span className={cx('rlds-counter', 'rlds-mono', className)} {...rest}>
-      {step}<span className="rlds-dim"> / {length - 1}</span>
+    <span className={cx('rp-counter', 'rp-mono', className)} {...rest}>
+      {step}<span className="rp-dim"> / {length - 1}</span>
     </span>
   )
 }
@@ -299,7 +299,7 @@ export type OptionsProps = ComponentPropsWithRef<'div'>
 /** No children → fps select, auto-next toggle, step flags. */
 export function Options({ className, children, ...rest }: OptionsProps) {
   return (
-    <div className={cx('rlds-options', className)} {...rest}>
+    <div className={cx('rp-options', className)} {...rest}>
       {children ?? (
         <>
           <FpsSelect />
@@ -316,7 +316,7 @@ export type FpsSelectProps = Omit<ComponentPropsWithRef<'select'>, 'value' | 'on
 export function FpsSelect({ options, className, ...rest }: FpsSelectProps) {
   const { selectProps, options: all } = useFpsSelect(options)
   return (
-    <select {...selectProps} className={cx('rlds-fps', className)} {...rest}>
+    <select {...selectProps} className={cx('rp-fps', className)} {...rest}>
       {all.map((f) => <option key={f} value={f}>{f} fps</option>)}
     </select>
   )
@@ -327,7 +327,7 @@ export type AutoNextProps = Omit<ComponentPropsWithRef<'label'>, 'children'> & {
 export function AutoNext({ label = 'Continue to next episode', className, ...rest }: AutoNextProps) {
   const { inputProps } = useAutoNext()
   return (
-    <label className={cx('rlds-autonext', className)} {...rest}>
+    <label className={cx('rp-autonext', className)} {...rest}>
       <input {...inputProps} />
       {label}
     </label>
@@ -342,9 +342,9 @@ export function Flags({ keys = FLAG_KEYS, className, ...rest }: FlagsProps) {
   const step = usePlayer((s) => s.step)
   const present = keys.filter((k) => vectors[k])
   return (
-    <span className={cx('rlds-flags', className)} {...rest}>
+    <span className={cx('rp-flags', className)} {...rest}>
       {present.map((k) => (
-        <span key={k} className="rlds-flag" data-on={!!vectorAt(vectors[k], step)[0] || undefined}>{k.replace('is_', '')}</span>
+        <span key={k} className="rp-flag" data-on={!!vectorAt(vectors[k], step)[0] || undefined}>{k.replace('is_', '')}</span>
       ))}
     </span>
   )
@@ -367,7 +367,7 @@ export function Tracks({ include, renderItem, maxSeries, className, children, ..
   const setStep = usePlayer((s) => s.setStep)
   const list = Object.entries(vectors).filter(([k]) => !FLAG_KEYS.includes(k) && included(k, include))
   return (
-    <div className={cx('rlds-tracks', className)} {...rest}>
+    <div className={cx('rp-tracks', className)} {...rest}>
       {list.map(([k, track]) => {
         const fallback = <VectorChart key={k} name={k} track={track} length={length} step={step} onSeek={setStep} maxSeries={maxSeries} />
         return renderItem ? <Keyed key={k}>{renderItem(k, track, fallback)}</Keyed> : fallback
@@ -389,11 +389,11 @@ export function Metadata({ include, renderItem, title = 'Other features', classN
   const list = Object.entries(metadata).filter(([k]) => included(k, include))
   if (!list.length) return null
   return (
-    <section className={cx('rlds-metadata', className)} {...rest}>
+    <section className={cx('rp-metadata', className)} {...rest}>
       <h3>{title}</h3>
       <dl>
         {list.map(([k, f]) => {
-          const fallback = <div key={k}><dt>{k}</dt><dd className="rlds-mono">{formatFeature(f)}</dd></div>
+          const fallback = <div key={k}><dt>{k}</dt><dd className="rp-mono">{formatFeature(f)}</dd></div>
           return renderItem ? <Keyed key={k}>{renderItem(k, f, fallback)}</Keyed> : fallback
         })}
       </dl>

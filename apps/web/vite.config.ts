@@ -3,13 +3,13 @@ import { defaultClientConditions, defineConfig } from 'vite'
 import { resolve } from 'node:path'
 
 // Two pages: the full shard viewer and the single-episode viewer.
-// rlds-source resolves workspace packages to their src/, so no package build is needed in dev.
+// robopeek-source resolves workspace packages to their src/, so no package build is needed in dev.
 // CSS @import ignores resolve.conditions, so the stylesheet needs its own alias.
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    conditions: ['rlds-source', ...defaultClientConditions],
-    alias: { '@rlds-viewer/react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css') },
+    conditions: ['robopeek-source', ...defaultClientConditions],
+    alias: { '@robopeek/react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css') },
   },
   build: {
     rollupOptions: {

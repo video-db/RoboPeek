@@ -1,4 +1,4 @@
-import { Player, useEpisode } from '@rlds-viewer/react'
+import { Player, useEpisode } from '@robopeek/react'
 
 export function MineInsideYours({ url, n }: { url: string; n: number }) {
   const { episode } = useEpisode(url, n)

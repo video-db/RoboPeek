@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
-import { episodeTitle, type Episode } from '@rlds-viewer/core'
+import { episodeTitle, type Episode } from '@robopeek/core'
 import { cx } from './cx.ts'
 
 export type EpisodeListProps = Omit<ComponentPropsWithRef<'aside'>, 'onSelect' | 'children'> & {
@@ -41,9 +41,9 @@ export function EpisodeList({
   }, [selected])
 
   return (
-    <aside className={cx('rlds-episodes', className)} {...rest}>
+    <aside className={cx('rp-episodes', className)} {...rest}>
       <input
-        className="rlds-input"
+        className="rp-input"
         type="search"
         placeholder={filterPlaceholder}
         aria-label={filterPlaceholder}
@@ -54,11 +54,11 @@ export function EpisodeList({
         {rows.map(({ ep, title }) => {
           const body = (
             <>
-              <span className="rlds-episodes-head rlds-mono">
+              <span className="rp-episodes-head rp-mono">
                 <span>#{ep.index}</span>
-                <span className="rlds-dim">{ep.length} steps</span>
+                <span className="rp-dim">{ep.length} steps</span>
               </span>
-              <span className="rlds-episodes-title">{title ?? 'Untitled episode'}</span>
+              <span className="rp-episodes-title">{title ?? 'Untitled episode'}</span>
             </>
           )
           return (
@@ -69,8 +69,8 @@ export function EpisodeList({
             </li>
           )
         })}
-        {loading && <li className="rlds-episodes-pending">Receiving episode {episodes.length}…</li>}
-        {!loading && rows.length === 0 && episodes.length > 0 && <li className="rlds-episodes-pending">No episode matches “{query}”.</li>}
+        {loading && <li className="rp-episodes-pending">Receiving episode {episodes.length}…</li>}
+        {!loading && rows.length === 0 && episodes.length > 0 && <li className="rp-episodes-pending">No episode matches “{query}”.</li>}
       </ol>
     </aside>
   )

@@ -4,7 +4,7 @@ export const SAMPLE_URL =
 export function Brand({ sub }: { sub: string }) {
   return (
     <div className="brand">
-      <strong>RLDS Viewer</strong>
+      <strong>RoboPeek</strong>
       <span>{sub}</span>
     </div>
   )

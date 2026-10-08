@@ -1,5 +1,5 @@
 {
-  "name": "@rlds-viewer/react",
+  "name": "@robopeek/react",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,9 +7,6 @@
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "@rlds-viewer/core": "workspace:^"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
@@ -31,20 +28,20 @@
   ],
   "exports": {
     ".": {
-      "rlds-source": "./src/index.ts",
+      "robopeek-source": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./styles.css": {
-      "rlds-source": "./src/styles/styles.css",
+      "robopeek-source": "./src/styles/styles.css",
       "default": "./dist/styles.css"
     },
     "./structure.css": {
-      "rlds-source": "./src/styles/structure.css",
+      "robopeek-source": "./src/styles/structure.css",
       "default": "./dist/structure.css"
     },
     "./theme.css": {
-      "rlds-source": "./src/styles/theme.css",
+      "robopeek-source": "./src/styles/theme.css",
       "default": "./dist/theme.css"
     }
   },
@@ -56,5 +53,8 @@
       "./structure.css": "./dist/structure.css",
       "./theme.css": "./dist/theme.css"
     }
+  },
+  "dependencies": {
+    "@robopeek/core": "workspace:^"
   }
 }

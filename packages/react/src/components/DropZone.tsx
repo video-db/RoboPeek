@@ -12,7 +12,7 @@ export function DropZone({ onFile, label = 'Drop a TFRecord file to stream it', 
   const [dragging, setDragging] = useState(false)
   return (
     <div
-      className={cx('rlds-dropzone', className)}
+      className={cx('rp-dropzone', className)}
       data-dragging={dragging || undefined}
       onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
       onDragLeave={(e) => { if (e.currentTarget === e.target) setDragging(false) }}
@@ -25,7 +25,7 @@ export function DropZone({ onFile, label = 'Drop a TFRecord file to stream it', 
       {...rest}
     >
       {children}
-      {dragging && <div className="rlds-dropzone-overlay">{label}</div>}
+      {dragging && <div className="rp-dropzone-overlay">{label}</div>}
     </div>
   )
 }

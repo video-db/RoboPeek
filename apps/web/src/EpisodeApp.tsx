@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { EpisodeViewer, type Source } from '@rlds-viewer/react'
+import { EpisodeViewer, type Source } from '@robopeek/react'
 import { Brand, SAMPLE_URL } from './shared.tsx'
 
 /** One episode by number without loading the rest of the shard. Shareable as ?url=…&episode=N. */

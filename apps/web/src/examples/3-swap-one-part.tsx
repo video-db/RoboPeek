@@ -1,4 +1,4 @@
-import { Player, usePlayButton, type Episode } from '@rlds-viewer/react'
+import { Player, usePlayButton, type Episode } from '@robopeek/react'
 
 function MyPlay() {
   const { playing, buttonProps } = usePlayButton()

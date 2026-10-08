@@ -35,7 +35,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@rlds-viewer/react':
+      '@robopeek/react':
         specifier: workspace:^
         version: link:../../packages/react
       react:
@@ -68,7 +68,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@rlds-viewer/core':
+      '@robopeek/core':
         specifier: workspace:^
         version: link:../core
     devDependencies:

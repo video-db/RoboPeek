@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ComponentPropsWithRef } from 'react'
-import { vectorAt, type VectorTrack } from '@rlds-viewer/core'
+import { vectorAt, type VectorTrack } from '@robopeek/core'
 import { cx } from './cx.ts'
 
 const W = 600
@@ -32,15 +32,15 @@ export function VectorChart({ name, track, length, step, onSeek, maxSeries = 32,
     return min === max ? ([min - 1, max + 1] as const) : ([min, max] as const)
   }, [track])
   return (
-    <section className={cx('rlds-chart', className)} data-collapsed={collapsed || undefined} {...rest}>
+    <section className={cx('rp-chart', className)} data-collapsed={collapsed || undefined} {...rest}>
       <header>
         <h3>{name}</h3>
-        <span className="rlds-mono rlds-dim">[{track.shape.join('×') || 1}] · {fmt(range[0])} … {fmt(range[1])}</span>
+        <span className="rp-mono rp-dim">[{track.shape.join('×') || 1}] · {fmt(range[0])} … {fmt(range[1])}</span>
       </header>
       {collapsed ? (
-        <p className="rlds-chart-collapsed">
-          <span className="rlds-dim">{track.dim} values per step</span>
-          <button type="button" className="rlds-btn" onClick={() => setExpanded(true)}>Chart all</button>
+        <p className="rp-chart-collapsed">
+          <span className="rp-dim">{track.dim} values per step</span>
+          <button type="button" className="rp-btn" onClick={() => setExpanded(true)}>Chart all</button>
         </p>
       ) : (
         <Plot track={track} length={length} step={step} onSeek={onSeek} range={range} />
@@ -83,23 +83,23 @@ function Plot({ track, length, step, onSeek, range: [min, max] }: PlotProps) {
         onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); seekFrom(e) }}
         onPointerMove={(e) => { if (e.buttons) seekFrom(e) }}
       >
-        <line className="rlds-chart-zero" x1={0} x2={W} y1={zero} y2={zero} />
-        {paths.map((d, i) => !hidden.has(i) && <path key={i} d={d} style={{ stroke: `var(--rlds-series-${i % SERIES})` }} />)}
-        <line className="rlds-chart-cursor" x1={cursor} x2={cursor} y1={0} y2={H} />
+        <line className="rp-chart-zero" x1={0} x2={W} y1={zero} y2={zero} />
+        {paths.map((d, i) => !hidden.has(i) && <path key={i} d={d} style={{ stroke: `var(--rp-series-${i % SERIES})` }} />)}
+        <line className="rp-chart-cursor" x1={cursor} x2={cursor} y1={0} y2={H} />
       </svg>
-      <ul className="rlds-chart-legend">
+      <ul className="rp-chart-legend">
         {Array.from(now, (v, i) => (
           <li key={i}>
             <button
               type="button"
-              className="rlds-btn"
+              className="rp-btn"
               data-off={hidden.has(i) || undefined}
               onClick={() => setHidden((h) => { const n = new Set(h); if (!n.delete(i)) n.add(i); return n })}
               title={hidden.has(i) ? 'Show dimension' : 'Hide dimension'}
             >
-              <i style={{ background: `var(--rlds-series-${i % SERIES})` }} />
-              <span className="rlds-dim">{i}</span>
-              <span className="rlds-mono">{fmt(v)}</span>
+              <i style={{ background: `var(--rp-series-${i % SERIES})` }} />
+              <span className="rp-dim">{i}</span>
+              <span className="rp-mono">{fmt(v)}</span>
             </button>
           </li>
         ))}

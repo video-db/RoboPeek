@@ -1,5 +1,5 @@
 {
-  "name": "@rlds-viewer/core",
+  "name": "@robopeek/core",
   "version": "0.1.0",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -10,7 +10,7 @@
   "private": true,
   "exports": {
     ".": {
-      "rlds-source": "./src/index.ts",
+      "robopeek-source": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"

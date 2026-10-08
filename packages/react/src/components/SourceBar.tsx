@@ -43,23 +43,23 @@ export function SourceBar({
 
   return (
     <form
-      className={cx('rlds-source', className)}
+      className={cx('rp-source', className)}
       onSubmit={(e) => {
         e.preventDefault()
         if (target) onOpen(target, withEpisode ? n : undefined)
       }}
       {...rest}
     >
-      <input className="rlds-input rlds-source-url" type="url" aria-label="TFRecord URL" placeholder={placeholder} value={url} onChange={(e) => setUrl(e.target.value)} />
+      <input className="rp-input rp-source-url" type="url" aria-label="TFRecord URL" placeholder={placeholder} value={url} onChange={(e) => setUrl(e.target.value)} />
       {withEpisode && (
-        <label className="rlds-source-episode">
-          <span className="rlds-dim">Episode</span>
-          <input className="rlds-input" type="number" min={0} step={1} value={num} onChange={(e) => setNum(e.target.value)} />
+        <label className="rp-source-episode">
+          <span className="rp-dim">Episode</span>
+          <input className="rp-input" type="number" min={0} step={1} value={num} onChange={(e) => setNum(e.target.value)} />
         </label>
       )}
-      <button type="submit" className="rlds-btn rlds-btn-primary" disabled={!target}>{submitLabel}</button>
-      <button type="button" className="rlds-btn" onClick={() => file.current?.click()}>Open file…</button>
-      {loading && onCancel && <button type="button" className="rlds-btn" onClick={onCancel}>Stop</button>}
+      <button type="submit" className="rp-btn rp-btn-primary" disabled={!target}>{submitLabel}</button>
+      <button type="button" className="rp-btn" onClick={() => file.current?.click()}>Open file…</button>
+      {loading && onCancel && <button type="button" className="rp-btn" onClick={onCancel}>Stop</button>}
       <input
         ref={file}
         type="file"

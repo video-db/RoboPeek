@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ShardViewer, type Source } from '@rlds-viewer/react'
+import { ShardViewer, type Source } from '@robopeek/react'
 import { Brand, SAMPLE_URL } from './shared.tsx'
 
 export default function App() {

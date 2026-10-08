@@ -9,11 +9,11 @@ export default defineConfig({
   platform: 'browser',
   banner: { js: "'use client';" },
   exports: {
-    devExports: 'rlds-source',
+    devExports: 'robopeek-source',
     customExports: (exports, { isPublish }) => {
       for (const s of ['styles', ...sheets]) {
         const dist = `./dist/${s}.css`
-        exports[`./${s}.css`] = isPublish ? dist : { 'rlds-source': `./src/styles/${s}.css`, default: dist }
+        exports[`./${s}.css`] = isPublish ? dist : { 'robopeek-source': `./src/styles/${s}.css`, default: dist }
       }
       return exports
     },

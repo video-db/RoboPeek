@@ -1,12 +1,12 @@
 {
-  "name": "rlds-viewer",
+  "name": "robopeek",
   "version": "0.0.0",
   "scripts": {
-    "dev": "pnpm --filter @rlds-viewer/web dev",
-    "build": "pnpm -r --filter './packages/*' build && pnpm --filter @rlds-viewer/web build",
+    "dev": "pnpm --filter @robopeek/web dev",
+    "build": "pnpm -r --filter './packages/*' build && pnpm --filter @robopeek/web build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @rlds-viewer/core exec attw --pack . --profile esm-only && pnpm --filter @rlds-viewer/react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
+    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @robopeek/core exec attw --pack . --profile esm-only && pnpm --filter @robopeek/react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
     "changeset": "changeset"
   },
   "packageManager": "pnpm@10.33.0",

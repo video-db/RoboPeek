@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react'
-import type { Episode, Source } from '@rlds-viewer/core'
+import type { Episode, Source } from '@robopeek/core'
 import { useEpisodeStream } from '../hooks/useEpisodeStream.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import type { SpecsOption } from '../hooks/specs.ts'
@@ -87,8 +87,8 @@ export function ShardViewer({
   return (
     <DropZone
       ref={mergeRefs(own, ref)}
-      className={cx('rlds-viewer', 'rlds-shard-viewer', className)}
-      data-rlds-scheme={colorScheme}
+      className={cx('rp-viewer', 'rp-shard-viewer', className)}
+      data-rp-scheme={colorScheme}
       tabIndex={-1}
       onFile={open}
       {...rest}
@@ -96,7 +96,7 @@ export function ShardViewer({
       {renderHeader ? renderHeader(bar, { source: src, selected, episode }) : bar}
       {status.phase !== 'idle' && (
         <LoadStatus phase={status.phase} source={status.source} loaded={status.loaded} total={status.total} error={status.error}>
-          <span className="rlds-mono">
+          <span className="rp-mono">
             {episodes.length} episodes · {episodes.reduce((s, e) => s + e.length, 0).toLocaleString()} steps · {mb(status.loaded)}
             {status.total ? ` of ${mb(status.total)}` : ''} MB
           </span>
@@ -105,7 +105,7 @@ export function ShardViewer({
       {status.phase === 'idle' ? (
         empty
       ) : (
-        <div className="rlds-shard-viewer-body">
+        <div className="rp-shard-viewer-body">
           <EpisodeList episodes={episodes} selected={selected} loading={loading} onSelect={setSelected} renderTitle={renderTitle} />
           {episode ? (
             <Root
@@ -119,7 +119,7 @@ export function ShardViewer({
               {children}
             </Root>
           ) : (
-            <div className="rlds-waiting">{loading ? 'Waiting for the first episode…' : 'This file has no episodes.'}</div>
+            <div className="rp-waiting">{loading ? 'Waiting for the first episode…' : 'This file has no episodes.'}</div>
           )}
         </div>
       )}

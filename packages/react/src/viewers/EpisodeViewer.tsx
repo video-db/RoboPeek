@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react'
-import type { Episode, Source } from '@rlds-viewer/core'
+import type { Episode, Source } from '@robopeek/core'
 import { useEpisode } from '../hooks/useEpisode.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import { sourceName, type SpecsOption } from '../hooks/specs.ts'
@@ -74,8 +74,8 @@ export function EpisodeViewer({
   return (
     <div
       ref={mergeRefs(own, ref)}
-      className={cx('rlds-viewer', 'rlds-episode-viewer', className)}
-      data-rlds-scheme={colorScheme}
+      className={cx('rp-viewer', 'rp-episode-viewer', className)}
+      data-rp-scheme={colorScheme}
       tabIndex={-1}
       {...rest}
     >
@@ -83,22 +83,22 @@ export function EpisodeViewer({
       {src && (
         <LoadStatus phase={status.phase === 'loading' ? 'loading' : 'done'} source={sourceName(src)} loaded={progress?.loaded} total={progress?.total}>
           {ready && (
-            <span className="rlds-mono">Episode {episode.index} · {episode.length} steps · {mb(episode.byteSize)} MB</span>
+            <span className="rp-mono">Episode {episode.index} · {episode.length} steps · {mb(episode.byteSize)} MB</span>
           )}
           {progress && (
-            <span className="rlds-mono rlds-dim">read to {mb(progress.loaded)}{progress.total ? ` of ${mb(progress.total)}` : ''} MB</span>
+            <span className="rp-mono rp-dim">read to {mb(progress.loaded)}{progress.total ? ` of ${mb(progress.total)}` : ''} MB</span>
           )}
-          {ready && !progress && <span className="rlds-mono rlds-dim">fetched by range request</span>}
+          {ready && !progress && <span className="rp-mono rp-dim">fetched by range request</span>}
           {known.count > 0 && (
-            <span className="rlds-mono rlds-dim">{known.complete ? `${known.count} episodes in shard` : `${known.count} episodes located so far`}</span>
+            <span className="rp-mono rp-dim">{known.complete ? `${known.count} episodes in shard` : `${known.count} episodes located so far`}</span>
           )}
         </LoadStatus>
       )}
       {status.phase === 'idle' && empty}
-      {status.phase === 'loading' && <div className="rlds-waiting">Finding episode {status.n}…</div>}
-      {status.phase === 'error' && <div className="rlds-waiting" data-tone="error">{status.error}</div>}
+      {status.phase === 'loading' && <div className="rp-waiting">Finding episode {status.n}…</div>}
+      {status.phase === 'error' && <div className="rp-waiting" data-tone="error">{status.error}</div>}
       {ready && (
-        <div className="rlds-episode-viewer-body">
+        <div className="rp-episode-viewer-body">
           <Root
             episode={episode}
             defaultFps={defaultFps}

@@ -1,6 +1,6 @@
 /* Layer order: page base < library < app. Library CSS is imported from CSS so bundler order can't move it. */
-@layer base, rlds, app;
-@import '@rlds-viewer/react/styles.css' layer(rlds);
+@layer base, robopeek, app;
+@import '@robopeek/react/styles.css' layer(robopeek);
 
 @layer base {
   /* VideoDB Design System v2: page canvas recipe. Light only, as the DS defines. */
@@ -36,7 +36,7 @@
 }
 
 @layer app {
-  :root { --rlds-font-sans: var(--sans); }
+  :root { --rp-font-sans: var(--sans); }
 
   .top {
     display: flex; align-items: center; gap: 24px; padding: 10px 16px;

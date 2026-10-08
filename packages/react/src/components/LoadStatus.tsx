@@ -14,13 +14,13 @@ export type LoadStatusProps = ComponentPropsWithRef<'div'> & {
 export function LoadStatus({ phase, source, loaded = 0, total, error, className, children, ...rest }: LoadStatusProps) {
   const pct = total ? Math.min(100, (loaded / total) * 100) : phase === 'loading' ? 0 : 100
   return (
-    <div className={cx('rlds-status', className)} data-phase={phase} {...rest}>
-      <div className="rlds-status-bar" style={{ width: `${pct}%` }} />
-      <div className="rlds-status-text">
-        {source && <span className="rlds-status-name" title={source}>{source.split('/').pop()}</span>}
+    <div className={cx('rp-status', className)} data-phase={phase} {...rest}>
+      <div className="rp-status-bar" style={{ width: `${pct}%` }} />
+      <div className="rp-status-text">
+        {source && <span className="rp-status-name" title={source}>{source.split('/').pop()}</span>}
         {children}
-        {phase === 'cancelled' && <span className="rlds-status-note">Stopped</span>}
-        {phase === 'error' && <span className="rlds-status-note" data-tone="error">{error}</span>}
+        {phase === 'cancelled' && <span className="rp-status-note">Stopped</span>}
+        {phase === 'error' && <span className="rp-status-note" data-tone="error">{error}</span>}
       </div>
     </div>
   )

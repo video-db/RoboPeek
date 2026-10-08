@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ComponentPropsWithRef } from 'react'
-import type { ImageTrack } from '@rlds-viewer/core'
+import type { ImageTrack } from '@robopeek/core'
 import { cx } from './cx.ts'
 
 const PREFETCH = 8
@@ -88,11 +88,11 @@ export function FrameCanvas({ name, track, step, className, ...rest }: FrameCanv
   }, [track, step, range, count])
 
   return (
-    <figure className={cx('rlds-frame', className)} data-kind={track.kind} {...rest}>
+    <figure className={cx('rp-frame', className)} data-kind={track.kind} {...rest}>
       <canvas ref={canvas} aria-label={`${name}, step ${step}`} />
       <figcaption>
         <span>{name}</span>
-        {size && <span className="rlds-mono">{size[0]}×{size[1]} · {track.kind === 'encoded' ? track.mime.split('/')[1] : 'raw'}</span>}
+        {size && <span className="rp-mono">{size[0]}×{size[1]} · {track.kind === 'encoded' ? track.mime.split('/')[1] : 'raw'}</span>}
       </figcaption>
     </figure>
   )

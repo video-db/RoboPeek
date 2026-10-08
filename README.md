@@ -1,15 +1,15 @@
-# rlds-viewer
+# RoboPeek
 
 > **Status:** built and verified locally, **not published**. Open before the first publish: npm scope, repo visibility, license, `changeset init` (see [Build plan](#build-plan)).
 >
 > **Stability:** 0.x. Until 1.0, minor versions may break the API, including markup.
 
-Read and play RLDS episodes (TFRecord shards) in the browser. No Python, no TensorFlow, no backend.
+Preview robot-learning episodes in the browser, straight from their source. No Python, no TensorFlow, no backend. RLDS (TFRecord shards) today; MCAP is next. Scope and reasoning: [THESIS.md](THESIS.md).
 
 | Package | What it is | Published |
 |---|---|---|
-| `@rlds-viewer/core` | TFRecord → `tf.train.Example` → `Episode` decoder; streaming, single-episode random access, `features.json` specs | yes (pending) |
-| `@rlds-viewer/react` | Hooks, components and drop-in viewers built on `core`; re-exports all of `core` | yes (pending) |
+| `@robopeek/core` | TFRecord → `tf.train.Example` → `Episode` decoder; streaming, single-episode random access, `features.json` specs | yes (pending) |
+| `@robopeek/react` | Hooks, components and drop-in viewers built on `core`; re-exports all of `core` | yes (pending) |
 | `apps/web` | Demo site: full shard viewer (`index.html`) + single-episode page (`episode.html`) | no |
 
 ## Quickstart
@@ -17,11 +17,11 @@ Read and play RLDS episodes (TFRecord shards) in the browser. No Python, no Tens
 ### Core only (any framework, or none)
 
 ```sh
-pnpm add @rlds-viewer/core
+pnpm add @robopeek/core
 ```
 
 ```ts
-import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@rlds-viewer/core'
+import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@robopeek/core'
 
 const url = 'https://huggingface.co/datasets/…/train.tfrecord-00005-of-00128'
 const specs = await loadFeatureSpecs(url) // sibling features.json, or undefined
@@ -72,7 +72,7 @@ type Feature =
 Reading metadata:
 
 ```ts
-import { readText, readNumbers, formatFeature } from '@rlds-viewer/core'
+import { readText, readNumbers, formatFeature } from '@robopeek/core'
 
 readText(ep.metadata['episode_metadata/file_path'])     // string[] | undefined (undefined if not UTF-8)
 readNumbers(ep.metadata['episode_metadata/episode_id']) // Float32Array | Float64Array | undefined (exact int64: feature.values)
@@ -82,12 +82,12 @@ formatFeature(ep.metadata['episode_metadata/file_path']) // display string, what
 ### React: drop-in viewers
 
 ```sh
-pnpm add @rlds-viewer/react   # brings core with it; core's API is re-exported
+pnpm add @robopeek/react   # brings core with it; core's API is re-exported
 ```
 
 ```tsx
-import { ShardViewer, EpisodeViewer } from '@rlds-viewer/react'
-import '@rlds-viewer/react/styles.css' // or from CSS, see "CSS layer order"
+import { ShardViewer, EpisodeViewer } from '@robopeek/react'
+import '@robopeek/react/styles.css' // or from CSS, see "CSS layer order"
 
 // Episode drawer + player, streams the whole shard
 <ShardViewer defaultSource={url} defaultFps={10} autoFocus />
@@ -101,7 +101,7 @@ Both viewers: `source` / `defaultSource` / `onSourceChange`, `specs` (`'auto'` d
 ### React: compose your own player
 
 ```tsx
-import { Player, useEpisode } from '@rlds-viewer/react'
+import { Player, useEpisode } from '@robopeek/react'
 
 function MyPlayer({ url, n, go }: { url: string; n: number; go: (n: number) => void }) {
   const { episode, status } = useEpisode(url, n)
@@ -140,7 +140,7 @@ Every composite part (`Stage`, `Transport`, `Options`) renders its defaults with
 Any component inside `Player.Root` reads live state with `usePlayer(selector)`. It re-renders only when the selected value changes, so a component that doesn't read `step` stays still during playback:
 
 ```tsx
-import { Player, usePlayer, readText, vectorAt } from '@rlds-viewer/react'
+import { Player, usePlayer, readText, vectorAt } from '@robopeek/react'
 
 function EpisodeCard() {
   const episode = usePlayer((s) => s.episode) // no re-render per frame
@@ -177,7 +177,7 @@ Every `renderItem` gets the built-in element as its last argument, so overriding
 ### React: swap one sub-part
 
 ```tsx
-import { Player, usePlayButton } from '@rlds-viewer/react'
+import { Player, usePlayButton } from '@robopeek/react'
 
 function MyPlay() {
   const { playing, buttonProps } = usePlayButton() // type, onClick, aria-label ("Play" / "Pause"), title
@@ -207,7 +207,7 @@ Children go inside the viewer's `Player.Root`. Viewer source (`packages/react/sr
 ### React: hooks only (bring your own UI)
 
 ```tsx
-import { useEpisodeStream, usePlayback, usePlayerHotkeys } from '@rlds-viewer/react'
+import { useEpisodeStream, usePlayback, usePlayerHotkeys } from '@robopeek/react'
 
 const { episodes, status, load, cancel, reset } = useEpisodeStream({ specs: 'auto' })
 const { step, setStep, playing, toggle, fps, setFps } = usePlayback({ length: ep.length, defaultFps: 10, resetKey: ep })
@@ -215,7 +215,7 @@ const ref = useRef<HTMLDivElement>(null)
 usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active only while focus is inside ref
 ```
 
-## API surface (`@rlds-viewer/react`)
+## API surface (`@robopeek/react`)
 
 | Layer | Export | Notes |
 |---|---|---|
@@ -239,7 +239,7 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 | Viewers | `ShardViewer` | Source bar + status + drawer + player |
 | | `EpisodeViewer` | Source bar with episode field + status + player |
 | Types | `PlayerRootProps`, `FramesProps`, `EpisodeListProps`, `ShardViewerProps`, … | Props type exported for every component |
-| Core | everything from `@rlds-viewer/core` | Re-exported |
+| Core | everything from `@robopeek/core` | Re-exported |
 
 ## Design rules
 
@@ -254,7 +254,7 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 | One install | `react` depends on `core` and re-exports its whole public API |
 | Wrappable | Every part: `className`, `ref`, rest props; exported props types |
 | Slots where content varies | `renderTitle`, `renderEmpty`, `renderHeader`, `include`; `renderItem` receives the default as `fallback` |
-| Overridable styling | CSS in `@layer rlds`; `rlds-*` classes; `data-*` state; `--rlds-*` tokens on `:root`; no `!important` |
+| Overridable styling | CSS in `@layer robopeek`; `rp-*` classes; `data-*` state; `--rp-*` tokens on `:root`; no `!important` |
 | Accessible controls | Play is one button whose label switches Play ↔ Pause (no `aria-pressed`); scrubber is a native range input |
 | No guessed data | fps is a display choice (`defaultFps`, 10); RLDS records no rate |
 
@@ -264,8 +264,8 @@ Use the first level that's enough.
 
 | Level | You do | Example |
 |---|---|---|
-| 1. Tokens | Override `--rlds-*` variables | Brand colour, fonts, chart palette |
-| 2. CSS | Target `rlds-*` classes and `data-*` state | Hide the fps picker, restyle the transport |
+| 1. Tokens | Override `--rp-*` variables | Brand colour, fonts, chart palette |
+| 2. CSS | Target `rp-*` classes and `data-*` state | Hide the fps picker, restyle the transport |
 | 3. Unstyled | Import only `structure.css` (or nothing); style the markup yourself (`className` on every part) | Full visual control, same behaviour |
 | 4. Recompose | `Player.*` parts and sub-parts + `usePlayer()`; `renderItem` with `fallback` | Custom layout, metadata card, one custom chart |
 | 5. Part hooks | Keep a part's logic via its hook, render your own element | Your design-system button driving our playback |
@@ -279,57 +279,57 @@ Markup (class names, `data-*` attributes, part structure) is public API, version
 |---|---|---|
 | `styles.css` | `structure.css` + `theme.css`, concatenated | Default |
 | `structure.css` | Layout only: grids, sizing, spacing | Your own look on our layout (level 3) |
-| `theme.css` | Colours, borders, radii, type, all via `--rlds-*` | Paired with structure |
+| `theme.css` | Colours, borders, radii, type, all via `--rp-*` | Paired with structure |
 
-All sit in `@layer rlds`. Token defaults are on `:root` (inside the layer), never on component classes, so a host value on `:root` or any ancestor reaches every part.
+All sit in `@layer robopeek`. Token defaults are on `:root` (inside the layer), never on component classes, so a host value on `:root` or any ancestor reaches every part.
 
 ### CSS layer order (Tailwind and other layered CSS)
 
-Unlayered host CSS always beats `@layer rlds`. Layered CSS doesn't: the layer declared last wins. Tailwind v4 puts utilities in `@layer utilities`, so if our CSS loads after Tailwind, `rlds` overrides your utility classes. In layered setups, import our CSS from CSS and declare the order first:
+Unlayered host CSS always beats `@layer robopeek`. Layered CSS doesn't: the layer declared last wins. Tailwind v4 puts utilities in `@layer utilities`, so if our CSS loads after Tailwind, `robopeek` overrides your utility classes. In layered setups, import our CSS from CSS and declare the order first:
 
 ```css
 /* app.css */
-@layer theme, base, rlds, components, utilities;
+@layer theme, base, robopeek, components, utilities;
 @import 'tailwindcss';
-@import '@rlds-viewer/react/styles.css' layer(rlds);
+@import '@robopeek/react/styles.css' layer(robopeek);
 ```
 
-Verified with Tailwind v4.3 in dev and production builds: `className="bg-blue-900"` on `Player.Stage` overrides the stage background. Without layered CSS of your own, `import '@rlds-viewer/react/styles.css'` from JS is fine.
+Verified with Tailwind v4.3 in dev and production builds: `className="bg-blue-900"` on `Player.Stage` overrides the stage background. Without layered CSS of your own, `import '@robopeek/react/styles.css'` from JS is fine.
 
 ### Theming
 
 ```css
 :root {
-  --rlds-accent: #4f46e5;
-  --rlds-stage: #000;
-  --rlds-font-sans: 'Geist', system-ui, sans-serif;
-  --rlds-series-0: #e11d48; /* …--rlds-series-7 for chart lines */
+  --rp-accent: #4f46e5;
+  --rp-stage: #000;
+  --rp-font-sans: 'Geist', system-ui, sans-serif;
+  --rp-series-0: #e11d48; /* …--rp-series-7 for chart lines */
 }
-.rlds-player[data-playing] .rlds-options { opacity: 0.6; }
+.rp-player[data-playing] .rp-options { opacity: 0.6; }
 ```
 
 Defaults follow the **VideoDB Design System v2**: each token maps to a DS usage token, named in a comment in `theme.css`.
 
 | Token | DS usage token | Value |
 |---|---|---|
-| `--rlds-panel` | Background/Neutral/Primary (cards, inputs, secondary buttons) | `#FFFFFF` |
-| `--rlds-sidebar` | Background/Neutral/Secondary (episodes drawer) | `#EFEFEF` |
-| `--rlds-sunken` | Greyscale/50 (chart wells, status strip) | `#F7F7F7` |
-| `--rlds-ink` / `-ink-secondary` / `-muted` / `-disabled` | Text/Neutral/Primary · Secondary · Tertiary · Disabled | `#1D1A22` `#404040` `#525252` `#A3A3A3` |
-| `--rlds-icon` | Icon/Neutral/Primary | `#262626` |
-| `--rlds-line` / `-line-hover` | Border/Neutral/Primary · Greyscale/300 | `#EFEFEF` `#D4D4D4` |
-| `--rlds-accent` / `-accent-hover` / `-accent-ink` | Background/Brand/Primary · Orange/700 · Text/Brand/Inverse | `#EC5B16` `#C14103` `#FFF5EC` |
-| `--rlds-accent-soft` / `-progress` | Background/Brand/Tertiary (selected row) · Orange/100 | `#FFF5EC` `#FFE9D3` |
-| `--rlds-danger` | Text/Semantic/Error/Primary | `#B31D1D` |
-| `--rlds-series-0…7` | Blue, Orange, Green, Red, Yellow 500/600; Blue 300, Green 300, Greyscale 500 | |
-| `--rlds-stage*` | "Dark video overlay" recipe: Neutral Inverse surfaces/text/border; Play and scrubber use Brand | `#262626` … |
-| `--rlds-frame-bg` | Background/Neutral Inverse/Primary | `#000000` |
-| `--rlds-radius` / `-radius-card` | Chip/label/control · card | `8px` `16px` |
-| `--rlds-font-sans` / `-font-mono` | Inter for all product UI (mono = sans; numbers use tabular figures) | |
+| `--rp-panel` | Background/Neutral/Primary (cards, inputs, secondary buttons) | `#FFFFFF` |
+| `--rp-sidebar` | Background/Neutral/Secondary (episodes drawer) | `#EFEFEF` |
+| `--rp-sunken` | Greyscale/50 (chart wells, status strip) | `#F7F7F7` |
+| `--rp-ink` / `-ink-secondary` / `-muted` / `-disabled` | Text/Neutral/Primary · Secondary · Tertiary · Disabled | `#1D1A22` `#404040` `#525252` `#A3A3A3` |
+| `--rp-icon` | Icon/Neutral/Primary | `#262626` |
+| `--rp-line` / `-line-hover` | Border/Neutral/Primary · Greyscale/300 | `#EFEFEF` `#D4D4D4` |
+| `--rp-accent` / `-accent-hover` / `-accent-ink` | Background/Brand/Primary · Orange/700 · Text/Brand/Inverse | `#EC5B16` `#C14103` `#FFF5EC` |
+| `--rp-accent-soft` / `-progress` | Background/Brand/Tertiary (selected row) · Orange/100 | `#FFF5EC` `#FFE9D3` |
+| `--rp-danger` | Text/Semantic/Error/Primary | `#B31D1D` |
+| `--rp-series-0…7` | Blue, Orange, Green, Red, Yellow 500/600; Blue 300, Green 300, Greyscale 500 | |
+| `--rp-stage*` | "Dark video overlay" recipe: Neutral Inverse surfaces/text/border; Play and scrubber use Brand | `#262626` … |
+| `--rp-frame-bg` | Background/Neutral Inverse/Primary | `#000000` |
+| `--rp-radius` / `-radius-card` | Chip/label/control · card | `8px` `16px` |
+| `--rp-font-sans` / `-font-mono` | Inter for all product UI (mono = sans; numbers use tabular figures) | |
 
 Recipes applied: Primary CTA (Stream / Show / Play), Secondary button, Selected row (drawer), Disabled (empty-source submit), Dark video overlay (stage), card border `1px #EFEFEF`.
 
-Light is the default, as the DS defines. `colorScheme="dark"` on `Player.Root` or a viewer opts into a dark variant built from the Neutral Inverse tokens (sets `data-rlds-scheme`; `"light"` pins light inside a dark ancestor). Pinned schemes redefine tokens on that element, so theme a pinned subtree via `[data-rlds-scheme='dark'] { --rlds-… }`. Tokens are plain values, not `light-dark()`: Tailwind v4's Lightning CSS polyfills `light-dark()` into values that are invalid on `:root` (verified: transparent backgrounds).
+Light is the default, as the DS defines. `colorScheme="dark"` on `Player.Root` or a viewer opts into a dark variant built from the Neutral Inverse tokens (sets `data-rp-scheme`; `"light"` pins light inside a dark ancestor). Pinned schemes redefine tokens on that element, so theme a pinned subtree via `[data-rp-scheme='dark'] { --rp-… }`. Tokens are plain values, not `light-dark()`: Tailwind v4's Lightning CSS polyfills `light-dark()` into values that are invalid on `:root` (verified: transparent backgrounds).
 
 The library ships no fonts; load Inter yourself (the demo uses Google Fonts).
 
@@ -370,12 +370,12 @@ Other known limits: GZIP-compressed TFRecords aren't decompressed; record CRCs a
 
 ## Package config
 
-Generated by tsdown (`exports` option): the repo-only `rlds-source` condition points at `src/`, and `publishConfig.exports` drops it on publish.
+Generated by tsdown (`exports` option): the repo-only `robopeek-source` condition points at `src/`, and `publishConfig.exports` drops it on publish.
 
 ```jsonc
 // packages/react/package.json (as packed)
 {
-  "name": "@rlds-viewer/react",
+  "name": "@robopeek/react",
   "type": "module",
   "sideEffects": ["*.css"],
   "exports": {
@@ -387,13 +387,13 @@ Generated by tsdown (`exports` option): the repo-only `rlds-source` condition po
   },
   "files": ["dist"],
   "peerDependencies": { "react": "^19", "react-dom": "^19" },
-  "dependencies": { "@rlds-viewer/core": "^0.1.0" }
+  "dependencies": { "@robopeek/core": "^0.1.0" }
 }
 ```
 
 - ESM only, built with `tsdown`; `'use client'` banner on the react build; core stays external.
 - Not `development` as the source condition: consumers' dev servers resolve that too and would look for unpublished `src/`.
-- Vite's CSS `@import` ignores `resolve.conditions`, so `apps/web` aliases `@rlds-viewer/react/styles.css` to source in `vite.config.ts`.
+- Vite's CSS `@import` ignores `resolve.conditions`, so `apps/web` aliases `@robopeek/react/styles.css` to source in `vite.config.ts`.
 - Both packages are `"private": true` until the publish decisions are made.
 
 ## Repo layout
@@ -417,7 +417,7 @@ pnpm test         # node --test in core; vitest browser mode (Playwright Chromiu
 pnpm check:pkg    # publint + attw on built packages
 ```
 
-Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=https://… pnpm --filter @rlds-viewer/core test`. React tests need `npx playwright install chromium` once.
+Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=https://… pnpm --filter @robopeek/core test`. React tests need `npx playwright install chromium` once.
 
 ## Build plan
 
@@ -429,7 +429,7 @@ Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=htt
 | 3 | `core`: `Episode` type (shape, `ImageTrack` union, lossless int64, raw metadata, `features`), `features.json` specs, title fix; builds to `dist/` | ✓ 8 tests |
 | 4 | `packages/react`: hooks + components moved, `useEpisode` extracted | ✓ |
 | 5 | Player store + selectors, parts + sub-parts + per-part hooks, nav props, slots, scoped hotkeys, viewers with children; browser tests | ✓ 9 tests |
-| 6 | `structure.css` + `theme.css` in `@layer rlds` | ✓ |
+| 6 | `structure.css` + `theme.css` in `@layer robopeek` | ✓ |
 | 7 | `apps/web` on the packages only | ✓ computed-style diff vs baseline (light + dark, both pages, after hotkeys) |
 | 8 | changesets + `LICENSE` | **Open:** run `pnpm exec changeset init` (interactive); pick a license |
 | 9 | Packed tarballs installed in a scratch Vite + Tailwind app | ✓ dev + build; first real publish waits on scope / visibility / license |
@@ -445,6 +445,6 @@ Behaviour differences from the baseline app, all intentional:
 - Restyled to the VideoDB Design System v2 (orange brand, Inter, 8/16px radii, light only); the earlier green theme and automatic OS dark mode are gone.
 - Depth tensors render as images when `features.json` is available.
 
-**Open:** npm scope (`@rlds-viewer` org vs an existing one); public repo or not; license (MIT suggested).
+**Open:** npm scope (`@robopeek` org vs an existing one); public repo or not; license (MIT suggested).
 
 **Deferred:** `asChild` / `render` prop (per-part hooks cover "your element, our behaviour"), Vue/Web Component wrappers, Web Worker decoding, Storybook, i18n labels, fps from per-step timestamps, GZIP shards, decoding text stored as int32 code arrays (language_table).
