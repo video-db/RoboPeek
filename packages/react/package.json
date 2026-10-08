@@ -55,6 +55,6 @@
     }
   },
   "dependencies": {
-    "@robopeek/core": "workspace:^"
+    "@robopeek/rlds": "workspace:^"
   }
 }

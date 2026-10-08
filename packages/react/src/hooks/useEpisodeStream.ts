@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { streamEpisodes, type Episode, type Progress, type Source } from '@robopeek/core'
+import { streamEpisodes, type Episode, type Progress, type Source } from '@robopeek/rlds'
 import { errorMessage, resolveSpecs, sourceName, type SpecsOption } from './specs.ts'
 
 export type StreamStatus = {

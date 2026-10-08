@@ -6,7 +6,7 @@
     "build": "pnpm -r --filter './packages/*' build && pnpm --filter @robopeek/web build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @robopeek/core exec attw --pack . --profile esm-only && pnpm --filter @robopeek/react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
+    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @robopeek/rlds exec attw --pack . --profile esm-only && pnpm --filter @robopeek/react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
     "changeset": "changeset"
   },
   "packageManager": "pnpm@10.33.0",

@@ -8,20 +8,22 @@ Preview robot-learning episodes in the browser, straight from their source. No P
 
 | Package | What it is | Published |
 |---|---|---|
-| `@robopeek/core` | TFRecord → `tf.train.Example` → `Episode` decoder; streaming, single-episode random access, `features.json` specs | yes (pending) |
-| `@robopeek/react` | Hooks, components and drop-in viewers built on `core`; re-exports all of `core` | yes (pending) |
+| `@robopeek/rlds` | TFRecord → `tf.train.Example` → `Episode` decoder; streaming, single-episode random access, `features.json` specs | yes (pending) |
+| `@robopeek/react` | Hooks, components and drop-in viewers built on `rlds`; re-exports all of `rlds` | yes (pending) |
 | `apps/web` | Demo site: full shard viewer (`index.html`) + single-episode page (`episode.html`) | no |
+
+The reader is named after its format, not `core`, because everything in it is RLDS-specific. MCAP will be added later as its own package (`@robopeek/mcap`), so apps that only read RLDS never install MCAP's decoders. See [THESIS_REVIEW.md](THESIS_REVIEW.md).
 
 ## Quickstart
 
-### Core only (any framework, or none)
+### Reader only (any framework, or none)
 
 ```sh
-pnpm add @robopeek/core
+pnpm add @robopeek/rlds
 ```
 
 ```ts
-import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@robopeek/core'
+import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@robopeek/rlds'
 
 const url = 'https://huggingface.co/datasets/…/train.tfrecord-00005-of-00128'
 const specs = await loadFeatureSpecs(url) // sibling features.json, or undefined
@@ -72,7 +74,7 @@ type Feature =
 Reading metadata:
 
 ```ts
-import { readText, readNumbers, formatFeature } from '@robopeek/core'
+import { readText, readNumbers, formatFeature } from '@robopeek/rlds'
 
 readText(ep.metadata['episode_metadata/file_path'])     // string[] | undefined (undefined if not UTF-8)
 readNumbers(ep.metadata['episode_metadata/episode_id']) // Float32Array | Float64Array | undefined (exact int64: feature.values)
@@ -82,7 +84,7 @@ formatFeature(ep.metadata['episode_metadata/file_path']) // display string, what
 ### React: drop-in viewers
 
 ```sh
-pnpm add @robopeek/react   # brings core with it; core's API is re-exported
+pnpm add @robopeek/react   # brings rlds with it; rlds's API is re-exported
 ```
 
 ```tsx
@@ -239,19 +241,19 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 | Viewers | `ShardViewer` | Source bar + status + drawer + player |
 | | `EpisodeViewer` | Source bar with episode field + status + player |
 | Types | `PlayerRootProps`, `FramesProps`, `EpisodeListProps`, `ShardViewerProps`, … | Props type exported for every component |
-| Core | everything from `@robopeek/core` | Re-exported |
+| Core | everything from `@robopeek/rlds` | Re-exported |
 
 ## Design rules
 
 | Rule | Applied as |
 |---|---|
-| Layered, each layer usable alone | core → hooks → primitives → `Player` parts → viewers |
+| Layered, each layer usable alone | rlds → hooks → primitives → `Player` parts → viewers |
 | Composition over configuration | Compound `Player.*` parts over a growing prop list |
 | Splittable, not just swappable | Composite parts take children; every built-in part = hook + thin markup |
 | Controlled or uncontrolled | `value` + `onChange` or `defaultValue` for source, episode, selected, step, playing, fps, autoNext |
 | No global side effects | No `window` listeners, no `history` writes; deep links belong to the app |
 | Cheap re-renders | Player state in a store read through selectors; only frame/step-bound parts re-render per frame |
-| One install | `react` depends on `core` and re-exports its whole public API |
+| One install | `react` depends on `rlds` and re-exports its whole public API |
 | Wrappable | Every part: `className`, `ref`, rest props; exported props types |
 | Slots where content varies | `renderTitle`, `renderEmpty`, `renderHeader`, `include`; `renderItem` receives the default as `fallback` |
 | Overridable styling | CSS in `@layer robopeek`; `rp-*` classes; `data-*` state; `--rp-*` tokens on `:root`; no `!important` |
@@ -335,7 +337,7 @@ The library ships no fonts; load Inter yourself (the demo uses Google Fonts).
 
 ## Dataset compatibility
 
-RLDS fixes the episode structure; each dataset picks its own keys. TFDS writes each episode as one `tf.train.Example` with flattened keys (`steps/observation/<cam>`, `steps/action`, `episode_metadata/<field>`). `core` walks whatever keys exist; nothing is keyed to one dataset.
+RLDS fixes the episode structure; each dataset picks its own keys. TFDS writes each episode as one `tf.train.Example` with flattened keys (`steps/observation/<cam>`, `steps/action`, `episode_metadata/<field>`). `rlds` walks whatever keys exist; nothing is keyed to one dataset.
 
 | Assumption | Where | Generic? |
 |---|---|---|
@@ -347,7 +349,7 @@ RLDS fixes the episode structure; each dataset picks its own keys. TFDS writes e
 
 ### Tested datasets
 
-Episode 0 of one shard each, via `node packages/core/scripts/inspect.ts <url>` (uses the sibling `features.json`):
+Episode 0 of one shard each, via `node packages/rlds/scripts/inspect.ts <url>` (uses the sibling `features.json`):
 
 | Dataset | Loads | Notes |
 |---|---|---|
@@ -387,11 +389,11 @@ Generated by tsdown (`exports` option): the repo-only `robopeek-source` conditio
   },
   "files": ["dist"],
   "peerDependencies": { "react": "^19", "react-dom": "^19" },
-  "dependencies": { "@robopeek/core": "^0.1.0" }
+  "dependencies": { "@robopeek/rlds": "^0.1.0" }
 }
 ```
 
-- ESM only, built with `tsdown`; `'use client'` banner on the react build; core stays external.
+- ESM only, built with `tsdown`; `'use client'` banner on the react build; rlds stays external.
 - Not `development` as the source condition: consumers' dev servers resolve that too and would look for unpublished `src/`.
 - Vite's CSS `@import` ignores `resolve.conditions`, so `apps/web` aliases `@robopeek/react/styles.css` to source in `vite.config.ts`.
 - Both packages are `"private": true` until the publish decisions are made.
@@ -400,7 +402,7 @@ Generated by tsdown (`exports` option): the repo-only `robopeek-source` conditio
 
 ```
 packages/
-  core/      src/{tfrecord,example,episode,spec,random,index}.ts, test/, scripts/inspect.ts
+  rlds/      src/{tfrecord,example,episode,spec,random,index}.ts, test/, scripts/inspect.ts
   react/     src/hooks/, src/components/, src/player/, src/viewers/, src/styles/, test/
 apps/
   web/       index.html → <ShardViewer>, episode.html → <EpisodeViewer>; branding, welcome, URL sync; src/examples/
@@ -413,11 +415,11 @@ pnpm i
 pnpm dev          # apps/web on source, HMR (no package build needed)
 pnpm build        # tsdown for packages, vite for web
 pnpm typecheck
-pnpm test         # node --test in core; vitest browser mode (Playwright Chromium) in react
+pnpm test         # node --test in rlds; vitest browser mode (Playwright Chromium) in react
 pnpm check:pkg    # publint + attw on built packages
 ```
 
-Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=https://… pnpm --filter @robopeek/core test`. React tests need `npx playwright install chromium` once.
+Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=https://… pnpm --filter @robopeek/rlds test`. React tests need `npx playwright install chromium` once.
 
 ## Build plan
 
@@ -426,7 +428,7 @@ Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=htt
 | 0 | Baseline commit | ✓ |
 | 1 | Root tooling: one TypeScript (6.0), tsdown, publint, attw, vitest browser mode | ✓ |
 | 2 | Compatibility pass (10 datasets above) | ✓ |
-| 3 | `core`: `Episode` type (shape, `ImageTrack` union, lossless int64, raw metadata, `features`), `features.json` specs, title fix; builds to `dist/` | ✓ 8 tests |
+| 3 | `rlds` (then `core`): `Episode` type (shape, `ImageTrack` union, lossless int64, raw metadata, `features`), `features.json` specs, title fix; builds to `dist/` | ✓ 8 tests |
 | 4 | `packages/react`: hooks + components moved, `useEpisode` extracted | ✓ |
 | 5 | Player store + selectors, parts + sub-parts + per-part hooks, nav props, slots, scoped hotkeys, viewers with children; browser tests | ✓ 9 tests |
 | 6 | `structure.css` + `theme.css` in `@layer robopeek` | ✓ |

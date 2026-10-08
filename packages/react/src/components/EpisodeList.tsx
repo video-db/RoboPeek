@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ComponentPropsWithRef, type ReactNode } from 'react'
-import { episodeTitle, type Episode } from '@robopeek/core'
+import { episodeTitle, type Episode } from '@robopeek/rlds'
 import { cx } from './cx.ts'
 
 export type EpisodeListProps = Omit<ComponentPropsWithRef<'aside'>, 'onSelect' | 'children'> & {

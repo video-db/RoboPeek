@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, type ComponentPropsWithRef } from 'react'
-import { vectorAt, type VectorTrack } from '@robopeek/core'
+import { vectorAt, type VectorTrack } from '@robopeek/rlds'
 import { cx } from './cx.ts'
 
 const W = 600

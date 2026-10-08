@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ComponentPropsWithRef } from 'react'
-import type { ImageTrack } from '@robopeek/core'
+import type { ImageTrack } from '@robopeek/rlds'
 import { cx } from './cx.ts'
 
 const PREFETCH = 8

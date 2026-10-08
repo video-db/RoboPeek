@@ -1,4 +1,4 @@
-import { loadFeatureSpecs, type FeatureSpecs, type Source } from '@robopeek/core'
+import { loadFeatureSpecs, type FeatureSpecs, type Source } from '@robopeek/rlds'
 
 /** 'auto' fetches the features.json next to a URL source; files get none unless passed in. */
 export type SpecsOption = FeatureSpecs | 'auto' | false

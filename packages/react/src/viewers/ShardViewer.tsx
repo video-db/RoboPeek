@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ComponentPropsWithRef, type ReactNode } from 'react'
-import type { Episode, Source } from '@robopeek/core'
+import type { Episode, Source } from '@robopeek/rlds'
 import { useEpisodeStream } from '../hooks/useEpisodeStream.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import type { SpecsOption } from '../hooks/specs.ts'

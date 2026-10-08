@@ -1,5 +1,5 @@
 import { createContext, useContext, useSyncExternalStore } from 'react'
-import type { Episode } from '@robopeek/core'
+import type { Episode } from '@robopeek/rlds'
 
 export type PlayerState = {
   episode: Episode
