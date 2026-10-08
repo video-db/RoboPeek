@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
@@ -153,5 +153,33 @@ describe('selectors', () => {
     await expect.element(screen.getByText('step 3')).toBeInTheDocument()
     expect(renders.episode).toBe(before.episode)
     expect(renders.step).toBeGreaterThanOrEqual(before.step + 3)
+  })
+})
+
+describe('auto-next', () => {
+  function Shard({ lengths }: { lengths: number[] }) {
+    const [n, setN] = useState(0)
+    return (
+      <Player.Root
+        episode={useMemo(() => makeEpisode(n, lengths[n]), [n, lengths])}
+        defaultAutoNext
+        defaultFps={60}
+        onNextEpisode={n < lengths.length - 1 ? () => setN(n + 1) : undefined}
+      >
+        <Player.Play />
+        <span>ep {n}</span>
+        <StepText />
+      </Player.Root>
+    )
+  }
+
+  test.each([
+    ['same length', [10, 10]],
+    ['different length', [10, 12]],
+  ])('keeps playing into the next episode (%s)', async (_, lengths) => {
+    const screen = await render(<Shard lengths={lengths} />)
+    await screen.getByRole('button', { name: 'Play' }).click()
+    await expect.element(screen.getByText('ep 1')).toBeInTheDocument()
+    await expect.element(screen.getByText(`step ${lengths[1] - 1}`)).toBeInTheDocument()
   })
 })

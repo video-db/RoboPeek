@@ -45,6 +45,8 @@ export function usePlayback(o: PlaybackOptions) {
 
   const setStep = useCallback((s: number) => setStepValue(Math.min(last, Math.max(0, Math.round(s)))), [last, setStepValue])
 
+  // `key` restarts the clock on a new episode: auto-next stops the old loop and sets playing back to true in
+  // one render, so `playing` alone never changes and an equal-length episode would sit still.
   useEffect(() => {
     if (!playing) return
     let id = 0
@@ -69,7 +71,7 @@ export function usePlayback(o: PlaybackOptions) {
     }
     id = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(id)
-  }, [playing, fps, last, setStepValue, setPlaying])
+  }, [playing, fps, last, key, setStepValue, setPlaying])
 
   const toggle = useCallback(() => {
     if (!playing && step >= last) setStepValue(0)
