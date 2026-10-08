@@ -1,5 +1,5 @@
 {
-  "name": "@robopeek/react",
+  "name": "@videodb/robopeek-react",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -54,9 +54,6 @@
     },
     "access": "public"
   },
-  "dependencies": {
-    "@robopeek/rlds": "workspace:^"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/video-db/RoboPeek.git",
@@ -73,5 +70,8 @@
     "robotics",
     "episode-viewer",
     "dataset"
-  ]
+  ],
+  "dependencies": {
+    "@videodb/robopeek-rlds": "workspace:^"
+  }
 }

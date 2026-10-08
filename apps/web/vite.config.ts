@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     conditions: ['robopeek-source', ...defaultClientConditions],
-    alias: { '@robopeek/react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css') },
+    alias: { '@videodb/robopeek-react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css') },
   },
   build: {
     rollupOptions: {

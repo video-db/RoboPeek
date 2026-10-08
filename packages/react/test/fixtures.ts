@@ -1,4 +1,4 @@
-import { toEpisode, type Feature } from '@robopeek/rlds'
+import { toEpisode, type Feature } from '@videodb/robopeek-rlds'
 
 const floats = (...v: number[]): Feature => ({ kind: 'float', values: Float32Array.from(v) })
 const enc = new TextEncoder()

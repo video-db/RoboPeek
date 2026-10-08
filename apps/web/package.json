@@ -1,5 +1,5 @@
 {
-  "name": "@robopeek/web",
+  "name": "robopeek-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@robopeek/react": "workspace:^",
+    "@videodb/robopeek-react": "workspace:^",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

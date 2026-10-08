@@ -1,4 +1,4 @@
-import { Player, useEpisode } from '@robopeek/react'
+import { Player, useEpisode } from '@videodb/robopeek-react'
 
 export function MineInsideYours({ url, n }: { url: string; n: number }) {
   const { episode } = useEpisode(url, n)

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ShardViewer, type Source } from '@robopeek/react'
+import { ShardViewer, type Source } from '@videodb/robopeek-react'
 import { Brand, SAMPLE_URL } from './shared.tsx'
 import { SourceBar } from './SourceBar.tsx'
 import { DropTarget } from './DropTarget.tsx'

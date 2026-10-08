@@ -1,4 +1,4 @@
-export * from '@robopeek/rlds'
+export * from '@videodb/robopeek-rlds'
 
 export { useEpisodeStream, type StreamStatus } from './hooks/useEpisodeStream.ts'
 export { useEpisode, type EpisodeStatus } from './hooks/useEpisode.ts'

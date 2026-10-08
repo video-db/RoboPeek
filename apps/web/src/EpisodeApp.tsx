@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { EpisodeViewer, type Source } from '@robopeek/react'
+import { EpisodeViewer, type Source } from '@videodb/robopeek-react'
 import { Brand, SAMPLE_URL } from './shared.tsx'
 import { SourceBar } from './SourceBar.tsx'
 

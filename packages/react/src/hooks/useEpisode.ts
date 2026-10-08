@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ShardIndex, type Episode, type Progress, type Source } from '@robopeek/rlds'
+import { ShardIndex, type Episode, type Progress, type Source } from '@videodb/robopeek-rlds'
 import { errorMessage, resolveSpecs, type SpecsOption } from './specs.ts'
 
 export type EpisodeStatus =

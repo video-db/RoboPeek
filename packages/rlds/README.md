@@ -1,13 +1,13 @@
-# @robopeek/rlds
+# @videodb/robopeek-rlds
 
 Read RLDS / TFDS robot-learning episodes from TFRecord shards in the browser or Node, without Python or TensorFlow. Part of [RoboPeek](https://github.com/video-db/RoboPeek).
 
 ```sh
-npm install @robopeek/rlds
+npm install @videodb/robopeek-rlds
 ```
 
 ```ts
-import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle } from '@robopeek/rlds'
+import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle } from '@videodb/robopeek-rlds'
 
 const specs = await loadFeatureSpecs(url) // the features.json next to the shard, if there is one
 
@@ -23,4 +23,4 @@ const ep40 = await index.episode(40)
 
 Each `Episode` has `images` (camera frames), `vectors` (actions, states, rewards), `text` (instructions), `metadata` (`episode_metadata/*`) and `features` (every decoded key, raw).
 
-For a viewer, use [`@robopeek/react`](https://www.npmjs.com/package/@robopeek/react). Full docs: [guide](https://github.com/video-db/RoboPeek/blob/main/docs/guide.md).
+For a viewer, use [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react). Full docs: [guide](https://github.com/video-db/RoboPeek/blob/main/docs/guide.md).

@@ -5,11 +5,11 @@ Everything beyond the [README](../README.md) quickstart: every way to use the pa
 ## Reader only (any framework, or none)
 
 ```sh
-pnpm add @robopeek/rlds
+pnpm add @videodb/robopeek-rlds
 ```
 
 ```ts
-import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@robopeek/rlds'
+import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@videodb/robopeek-rlds'
 
 const url = 'https://huggingface.co/datasets/…/train.tfrecord-00005-of-00128'
 const specs = await loadFeatureSpecs(url) // sibling features.json, or undefined
@@ -60,7 +60,7 @@ type Feature =
 Reading metadata:
 
 ```ts
-import { readText, readNumbers, formatFeature } from '@robopeek/rlds'
+import { readText, readNumbers, formatFeature } from '@videodb/robopeek-rlds'
 
 readText(ep.metadata['episode_metadata/file_path'])     // string[] | undefined (undefined if not UTF-8)
 readNumbers(ep.metadata['episode_metadata/episode_id']) // Float32Array | Float64Array | undefined (exact int64: feature.values)
@@ -70,12 +70,12 @@ formatFeature(ep.metadata['episode_metadata/file_path']) // display string, what
 ## React: drop-in viewers
 
 ```sh
-pnpm add @robopeek/react   # brings rlds with it; rlds's API is re-exported
+pnpm add @videodb/robopeek-react   # brings rlds with it; rlds's API is re-exported
 ```
 
 ```tsx
-import { ShardViewer, EpisodeViewer } from '@robopeek/react'
-import '@robopeek/react/styles.css' // or from CSS, see "CSS layer order"
+import { ShardViewer, EpisodeViewer } from '@videodb/robopeek-react'
+import '@videodb/robopeek-react/styles.css' // or from CSS, see "CSS layer order"
 
 // Episode drawer + player, streams the whole shard
 <ShardViewer source={url} defaultFps={10} autoFocus />
@@ -91,7 +91,7 @@ Both viewers: `source` (required; `null` shows `empty`), `specs` (`'auto'` defau
 ## React: compose your own player
 
 ```tsx
-import { Player, useEpisode } from '@robopeek/react'
+import { Player, useEpisode } from '@videodb/robopeek-react'
 
 function MyPlayer({ url, n, go }: { url: string; n: number; go: (n: number) => void }) {
   const { episode, status } = useEpisode(url, n)
@@ -130,7 +130,7 @@ Every composite part (`Stage`, `Transport`, `Options`) renders its defaults with
 Any component inside `Player.Root` reads live state with `usePlayer(selector)`. It re-renders only when the selected value changes, so a component that doesn't read `step` stays still during playback:
 
 ```tsx
-import { Player, usePlayer, readText, vectorAt } from '@robopeek/react'
+import { Player, usePlayer, readText, vectorAt } from '@videodb/robopeek-react'
 
 function EpisodeCard() {
   const episode = usePlayer((s) => s.episode) // no re-render per frame
@@ -167,7 +167,7 @@ Every `renderItem` gets the built-in element as its last argument, so overriding
 ## React: swap one sub-part
 
 ```tsx
-import { Player, usePlayButton } from '@robopeek/react'
+import { Player, usePlayButton } from '@videodb/robopeek-react'
 
 function MyPlay() {
   const { playing, buttonProps } = usePlayButton() // type, onClick, aria-label ("Play" / "Pause"), title
@@ -197,7 +197,7 @@ Children go inside the viewer's `Player.Root`. Viewer source (`packages/react/sr
 ## React: hooks only (bring your own UI)
 
 ```tsx
-import { useEpisodeStream, usePlayback, usePlayerHotkeys } from '@robopeek/react'
+import { useEpisodeStream, usePlayback, usePlayerHotkeys } from '@videodb/robopeek-react'
 
 const { episodes, status, load, cancel, reset } = useEpisodeStream({ specs: 'auto' })
 const { step, setStep, playing, toggle, fps, setFps } = usePlayback({ length: ep.length, defaultFps: 10, resetKey: ep })
@@ -205,7 +205,7 @@ const ref = useRef<HTMLDivElement>(null)
 usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active only while focus is inside ref
 ```
 
-## API surface (`@robopeek/react`)
+## API surface (`@videodb/robopeek-react`)
 
 | Layer | Export | Notes |
 |---|---|---|
@@ -227,7 +227,7 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 | Viewers | `ShardViewer` | Status + drawer + player; takes `source` |
 | | `EpisodeViewer` | Status + player for one episode; takes `source` + `episode` |
 | Types | `PlayerRootProps`, `FramesProps`, `EpisodeListProps`, `ShardViewerProps`, … | Props type exported for every component |
-| Core | everything from `@robopeek/rlds` | Re-exported |
+| Core | everything from `@videodb/robopeek-rlds` | Re-exported |
 
 ## Customising the design
 
@@ -262,10 +262,10 @@ Unlayered host CSS always beats `@layer robopeek`. Layered CSS doesn't: the laye
 /* app.css */
 @layer theme, base, robopeek, components, utilities;
 @import 'tailwindcss';
-@import '@robopeek/react/styles.css' layer(robopeek);
+@import '@videodb/robopeek-react/styles.css' layer(robopeek);
 ```
 
-Verified with Tailwind v4.3 in dev and production builds: `className="bg-blue-900"` on `Player.Stage` overrides the stage background. Without layered CSS of your own, `import '@robopeek/react/styles.css'` from JS is fine.
+Verified with Tailwind v4.3 in dev and production builds: `className="bg-blue-900"` on `Player.Stage` overrides the stage background. Without layered CSS of your own, `import '@videodb/robopeek-react/styles.css'` from JS is fine.
 
 ### Theming
 

@@ -1,6 +1,6 @@
 /* Layer order: page base < library < app. Library CSS is imported from CSS so bundler order can't move it. */
 @layer base, robopeek, app;
-@import '@robopeek/react/styles.css' layer(robopeek);
+@import '@videodb/robopeek-react/styles.css' layer(robopeek);
 
 @layer base {
   /* VideoDB Design System v2: page canvas recipe. Light only, as the DS defines. */

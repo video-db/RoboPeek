@@ -34,14 +34,14 @@ Robot-learning datasets ship as large files that hold many episodes. To look at 
 
 | Package | What it is |
 |---|---|
-| [`@robopeek/rlds`](packages/rlds) | Reads RLDS episodes from TFRecord shards. Works in any framework, or none. |
-| [`@robopeek/react`](packages/react) | Ready-made viewers, a player you can rearrange, and hooks. Includes `@robopeek/rlds`. |
+| [`@videodb/robopeek-rlds`](packages/rlds) | Reads RLDS episodes from TFRecord shards. Works in any framework, or none. |
+| [`@videodb/robopeek-react`](packages/react) | Ready-made viewers, a player you can rearrange, and hooks. Includes `@videodb/robopeek-rlds`. |
 
 ## Installation
 
 ```sh
-npm install @robopeek/react   # viewer + reader
-npm install @robopeek/rlds    # reader only
+npm install @videodb/robopeek-react   # viewer + reader
+npm install @videodb/robopeek-rlds    # reader only
 ```
 
 ## Quick start
@@ -49,8 +49,8 @@ npm install @robopeek/rlds    # reader only
 ### Drop a viewer into a React app
 
 ```tsx
-import { ShardViewer } from '@robopeek/react'
-import '@robopeek/react/styles.css'
+import { ShardViewer } from '@videodb/robopeek-react'
+import '@videodb/robopeek-react/styles.css'
 
 export default function App() {
   return <ShardViewer source="https://huggingface.co/datasets/…/train.tfrecord-00000-of-00128" />
@@ -62,7 +62,7 @@ export default function App() {
 ### Read episodes without React
 
 ```ts
-import { streamEpisodes, ShardIndex, episodeTitle } from '@robopeek/rlds'
+import { streamEpisodes, ShardIndex, episodeTitle } from '@videodb/robopeek-rlds'
 
 // Every episode, as the shard downloads
 for await (const ep of streamEpisodes(url)) {
@@ -77,7 +77,7 @@ const ep40 = await index.episode(40)
 ### Build your own player
 
 ```tsx
-import { Player, usePlayer, useEpisode, vectorAt } from '@robopeek/react'
+import { Player, usePlayer, useEpisode, vectorAt } from '@videodb/robopeek-react'
 
 // Any component inside Player.Root can read the episode and the current step
 function Reward() {
@@ -107,7 +107,7 @@ Tested on episodes from CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berke
 
 ## Roadmap
 
-- MCAP support (`@robopeek/mcap`)
+- MCAP support (`@videodb/robopeek-mcap`)
 - Decoding in Web Workers
 - Caching and a saved episode index for faster re-opens
 - GZIP-compressed shards
@@ -119,7 +119,7 @@ See the [open issues](https://github.com/video-db/RoboPeek/issues) for more.
 - [Guide](docs/guide.md): usage, API, styling, dataset compatibility
 - [Architecture](docs/architecture.md): how the packages are built
 - [THESIS.md](THESIS.md) and [THESIS_REVIEW.md](THESIS_REVIEW.md): why the project exists and how it is shaped
-- Changelogs: [`@robopeek/rlds`](packages/rlds/CHANGELOG.md), [`@robopeek/react`](packages/react/CHANGELOG.md) (created on first release)
+- Changelogs: [`@videodb/robopeek-rlds`](packages/rlds/CHANGELOG.md), [`@videodb/robopeek-react`](packages/react/CHANGELOG.md) (created on first release)
 
 ## Contributing
 
@@ -127,10 +127,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, how to record a change for the
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[rlds-shield]: https://img.shields.io/npm/v/@robopeek/rlds?style=for-the-badge&label=%40robopeek%2Frlds
-[rlds-url]: https://www.npmjs.com/package/@robopeek/rlds
-[react-shield]: https://img.shields.io/npm/v/@robopeek/react?style=for-the-badge&label=%40robopeek%2Freact
-[react-url]: https://www.npmjs.com/package/@robopeek/react
+[rlds-shield]: https://img.shields.io/npm/v/@videodb/robopeek-rlds?style=for-the-badge
+[rlds-url]: https://www.npmjs.com/package/@videodb/robopeek-rlds
+[react-shield]: https://img.shields.io/npm/v/@videodb/robopeek-react?style=for-the-badge
+[react-url]: https://www.npmjs.com/package/@videodb/robopeek-react
 [ci-shield]: https://img.shields.io/github/actions/workflow/status/video-db/RoboPeek/ci.yml?branch=main&style=for-the-badge&label=CI
 [ci-url]: https://github.com/video-db/RoboPeek/actions/workflows/ci.yml
 [issues-shield]: https://img.shields.io/github/issues/video-db/RoboPeek.svg?style=for-the-badge

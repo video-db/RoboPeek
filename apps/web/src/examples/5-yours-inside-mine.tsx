@@ -1,4 +1,4 @@
-import { Player, ShardViewer, readText, usePlayer } from '@robopeek/react'
+import { Player, ShardViewer, readText, usePlayer } from '@videodb/robopeek-react'
 
 function MyMetadataCard() {
   const episode = usePlayer((s) => s.episode)

@@ -10,7 +10,7 @@ import {
   type Ref,
   type RefObject,
 } from 'react'
-import { formatFeature, vectorAt, type Episode, type Feature, type ImageTrack, type VectorTrack } from '@robopeek/rlds'
+import { formatFeature, vectorAt, type Episode, type Feature, type ImageTrack, type VectorTrack } from '@videodb/robopeek-rlds'
 import { usePlayback, type PlaybackOptions } from '../hooks/usePlayback.ts'
 import { useControllable } from '../hooks/useControllable.ts'
 import { usePlayerHotkeys } from '../hooks/usePlayerHotkeys.ts'

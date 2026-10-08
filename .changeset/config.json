@@ -13,8 +13,8 @@
   "ignore": [],
   "fixed": [
     [
-      "@robopeek/rlds",
-      "@robopeek/react"
+      "@videodb/robopeek-rlds",
+      "@videodb/robopeek-react"
     ]
   ],
   "linked": [],

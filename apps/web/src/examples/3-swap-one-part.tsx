@@ -1,4 +1,4 @@
-import { Player, usePlayButton, type Episode } from '@robopeek/react'
+import { Player, usePlayButton, type Episode } from '@videodb/robopeek-react'
 
 function MyPlay() {
   const { playing, buttonProps } = usePlayButton()

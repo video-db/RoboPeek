@@ -1,6 +1,6 @@
 /* Tweak mine: layer order for Tailwind, tokens, one CSS override. */
 @layer theme, base, robopeek, components, utilities;
-@import '@robopeek/react/styles.css' layer(robopeek);
+@import '@videodb/robopeek-react/styles.css' layer(robopeek);
 
 :root { --rp-accent: #4f46e5; --rp-stage: #000; --rp-series-0: #e11d48; }
 .rp-player[data-playing] .rp-options { opacity: 0.5; }

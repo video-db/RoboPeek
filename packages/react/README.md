@@ -1,14 +1,14 @@
-# @robopeek/react
+# @videodb/robopeek-react
 
-React viewers, a composable player and hooks for RLDS robot-learning episodes. Part of [RoboPeek](https://github.com/video-db/RoboPeek). Includes and re-exports [`@robopeek/rlds`](https://www.npmjs.com/package/@robopeek/rlds).
+React viewers, a composable player and hooks for RLDS robot-learning episodes. Part of [RoboPeek](https://github.com/video-db/RoboPeek). Includes and re-exports [`@videodb/robopeek-rlds`](https://www.npmjs.com/package/@videodb/robopeek-rlds).
 
 ```sh
-npm install @robopeek/react
+npm install @videodb/robopeek-react
 ```
 
 ```tsx
-import { ShardViewer } from '@robopeek/react'
-import '@robopeek/react/styles.css'
+import { ShardViewer } from '@videodb/robopeek-react'
+import '@videodb/robopeek-react/styles.css'
 
 <ShardViewer source="https://…/train.tfrecord-00000-of-00128" />
 ```
@@ -16,7 +16,7 @@ import '@robopeek/react/styles.css'
 Or arrange the player yourself:
 
 ```tsx
-import { Player, useEpisode } from '@robopeek/react'
+import { Player, useEpisode } from '@videodb/robopeek-react'
 
 const { episode } = useEpisode(url, 40)
 
