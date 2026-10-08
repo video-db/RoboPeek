@@ -1,51 +1,80 @@
 /* Look: colour, borders, radii, type. Every value comes from a --rlds-* token. */
 @layer rlds {
+  /* VideoDB Design System v2 usage tokens (DS name in comments). The DS is light-only; dark is opt-in below. */
   :root,
   [data-rlds-scheme='light'] {
-    --rlds-panel: #ffffff;
-    --rlds-sunken: #e9ede9;
-    --rlds-ink: #17211d;
-    --rlds-muted: #5f6d67;
-    --rlds-line: #d9dfdb;
-    --rlds-accent: #0e6b57;
-    --rlds-accent-ink: #ffffff;
-    --rlds-accent-soft: #d5ebe4;
-    --rlds-danger: #b4321f;
-    --rlds-series-0: #2563c9; --rlds-series-1: #d9480f; --rlds-series-2: #0e8a5f; --rlds-series-3: #b02a8c;
-    --rlds-series-4: #a67c00; --rlds-series-5: #1597a8; --rlds-series-6: #6b4fd1; --rlds-series-7: #5c6b63;
-    color-scheme: light;
+    --rlds-panel: #ffffff;  /* Background/Neutral/Primary */
+    --rlds-sidebar: #efefef;  /* Background/Neutral/Secondary */
+    --rlds-sunken: #f7f7f7;  /* Greyscale/50 (light fills) */
+    --rlds-ink: #1d1a22;  /* Text/Neutral/Primary */
+    --rlds-ink-secondary: #404040;  /* Text/Neutral/Secondary */
+    --rlds-muted: #525252;  /* Text/Neutral/Tertiary */
+    --rlds-disabled: #a3a3a3;  /* Text/Neutral/Disabled */
+    --rlds-icon: #262626;  /* Icon/Neutral/Primary */
+    --rlds-line: #efefef;  /* Border/Neutral/Primary */
+    --rlds-line-hover: #d4d4d4;  /* Greyscale/300 */
+    --rlds-accent: #ec5b16;  /* Background/Brand/Primary */
+    --rlds-accent-hover: #c14103;  /* Orange/700 */
+    --rlds-accent-ink: #fff5ec;  /* Text/Brand/Inverse */
+    --rlds-accent-soft: #fff5ec;  /* Background/Brand/Tertiary */
+    --rlds-progress: #ffe9d3;  /* Orange/100 */
+    --rlds-danger: #b31d1d;  /* Text/Semantic/Error/Primary */
+    --rlds-series-0: #0075ff;  /* Blue */
+    --rlds-series-1: #ec5b16;  /* Orange */
+    --rlds-series-2: #057a55;  /* Green */
+    --rlds-series-3: #e02424;  /* Red */
+    --rlds-series-4: #ca8a04;  /* Yellow */
+    --rlds-series-5: #66acff;  /* Blue light */
+    --rlds-series-6: #69af99;  /* Green light */
+    --rlds-series-7: #737373;  /* Greyscale */
+
+    /* Stage: the DS "Dark video overlay" recipe, in both schemes. */
+    --rlds-stage: #262626;  /* Background/Neutral Inverse/Secondary */
+    --rlds-stage-ink: #f7f7f7;  /* Text/Neutral Inverse/Primary */
+    --rlds-stage-soft: #efefef;  /* Text/Neutral Inverse/Secondary */
+    --rlds-stage-muted: #d4d4d4;  /* Text/Neutral Inverse/Tertiary */
+    --rlds-stage-off: #a3a3a3;  /* Text/Neutral/Disabled */
+    --rlds-stage-line: #525252;  /* Border/Neutral Inverse/Primary */
+    --rlds-stage-line-hover: #a3a3a3;  /* Greyscale/400 */
+    --rlds-stage-accent: #ec5b16;  /* Background/Brand/Primary */
+    --rlds-stage-accent-ink: #fff5ec;  /* Text/Brand/Inverse */
+    --rlds-frame-bg: #000000;  /* Background/Neutral Inverse/Primary */
+
+    --rlds-radius: 8px;  /* chip / label / control */
+    --rlds-radius-card: 16px;  /* card */
+    --rlds-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --rlds-font-mono: var(--rlds-font-sans);  /* DS: Inter for all product UI; numbers stay tabular */
   }
-  :root {
-    /* The stage is dark in both schemes. */
-    --rlds-stage: #1a201d;
-    --rlds-stage-ink: #e6ece9;
-    --rlds-stage-muted: #93a39c;
-    --rlds-stage-soft: #b8c5bf;
-    --rlds-stage-off: #6f7f78;
-    --rlds-stage-line: #36403b;
-    --rlds-stage-line-hover: #7e8f87;
-    --rlds-stage-accent: #3dbd98;
-    --rlds-stage-accent-ink: #06231b;
-    --rlds-frame-bg: #000;
-    --rlds-radius: 6px;
-    --rlds-font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --rlds-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --rlds-panel: #161c19; --rlds-sunken: #1d2521; --rlds-ink: #e2eae6; --rlds-muted: #8c9c95; --rlds-line: #28322d;
-      --rlds-accent: #3dbd98; --rlds-accent-ink: #06231b; --rlds-accent-soft: #173a30; --rlds-danger: #f07560; --rlds-stage: #090c0b;
-      --rlds-series-0: #6c9ef8; --rlds-series-1: #ff8a4c; --rlds-series-2: #45c98f; --rlds-series-3: #e66bc2;
-      --rlds-series-4: #e0b43a; --rlds-series-5: #4fc8d8; --rlds-series-6: #a18cff; --rlds-series-7: #9aaba3;
-      color-scheme: dark;
-    }
-  }
+
+  /*
+   * Opt-in schemes (colorScheme prop). Plain redefinitions, not light-dark(): Lightning CSS (Tailwind v4)
+   * polyfills light-dark() into values that are invalid on :root. Theme a pinned subtree under these selectors.
+   */
+  [data-rlds-scheme='light'] { color-scheme: light; }
+  /* Neutral Inverse tokens, or a lighter primitive where the DS has none. */
   [data-rlds-scheme='dark'] {
-    --rlds-panel: #161c19; --rlds-sunken: #1d2521; --rlds-ink: #e2eae6; --rlds-muted: #8c9c95; --rlds-line: #28322d;
-    --rlds-accent: #3dbd98; --rlds-accent-ink: #06231b; --rlds-accent-soft: #173a30; --rlds-danger: #f07560; --rlds-stage: #090c0b;
-    --rlds-series-0: #6c9ef8; --rlds-series-1: #ff8a4c; --rlds-series-2: #45c98f; --rlds-series-3: #e66bc2;
-    --rlds-series-4: #e0b43a; --rlds-series-5: #4fc8d8; --rlds-series-6: #a18cff; --rlds-series-7: #9aaba3;
     color-scheme: dark;
+    --rlds-panel: #262626;
+    --rlds-sidebar: #000000;
+    --rlds-sunken: #171717;
+    --rlds-ink: #f7f7f7;
+    --rlds-ink-secondary: #efefef;
+    --rlds-muted: #d4d4d4;
+    --rlds-icon: #f7f7f7;
+    --rlds-line: #404040;
+    --rlds-line-hover: #525252;
+    --rlds-accent-soft: rgb(236 91 22 / 0.2);
+    --rlds-progress: rgb(236 91 22 / 0.25);
+    --rlds-danger: #ec7c7c;
+    --rlds-series-0: #3391ff;
+    --rlds-series-1: #ff7e32;
+    --rlds-series-2: #379577;
+    --rlds-series-3: #e65050;
+    --rlds-series-4: #facc15;
+    --rlds-series-5: #99c8ff;
+    --rlds-series-6: #9bcabb;
+    --rlds-series-7: #a3a3a3;
+    --rlds-stage: #000000;
   }
 
   .rlds-viewer, .rlds-player { font-family: var(--rlds-font-sans); color: var(--rlds-ink); }
@@ -60,10 +89,11 @@
     border: 1px solid var(--rlds-line); background: var(--rlds-panel); border-radius: var(--rlds-radius);
     padding: 6px 12px; cursor: pointer; white-space: nowrap;
   }
-  .rlds-btn:hover:not(:disabled) { border-color: var(--rlds-muted); }
+  .rlds-btn:hover:not(:disabled) { border-color: var(--rlds-line-hover); }
   .rlds-btn:disabled, .rlds-transport-button:disabled { opacity: 0.4; cursor: default; }
+  .rlds-btn-primary:disabled { background: var(--rlds-line-hover); border-color: var(--rlds-line-hover); color: var(--rlds-disabled); opacity: 1; }
   .rlds-btn-primary { background: var(--rlds-accent); border-color: var(--rlds-accent); color: var(--rlds-accent-ink); font-weight: 500; }
-  .rlds-btn-primary:hover:not(:disabled) { filter: brightness(1.08); border-color: var(--rlds-accent); }
+  .rlds-btn-primary:hover:not(:disabled) { background: var(--rlds-accent-hover); border-color: var(--rlds-accent-hover); }
   .rlds-input { border: 1px solid var(--rlds-line); background: var(--rlds-panel); border-radius: var(--rlds-radius); padding: 6px 10px; min-width: 0; }
   .rlds-source-url { font-family: var(--rlds-font-mono); font-size: 12.5px; }
   .rlds-source-episode { font-size: 12.5px; }
@@ -71,7 +101,7 @@
 
   /* Load status */
   .rlds-status { background: var(--rlds-sunken); border-bottom: 1px solid var(--rlds-line); }
-  .rlds-status-bar { background: var(--rlds-accent-soft); transition: width 0.2s linear; }
+  .rlds-status-bar { background: var(--rlds-progress); transition: width 0.2s linear; }
   .rlds-status[data-phase='done'] .rlds-status-bar { background: transparent; }
   .rlds-status-text { font-size: 12px; }
   .rlds-status-name { font-weight: 500; }
@@ -81,10 +111,11 @@
   .rlds-waiting[data-tone='error'] { color: var(--rlds-danger); }
 
   /* Episodes drawer */
-  .rlds-episodes { border-right: 1px solid var(--rlds-line); background: var(--rlds-panel); }
-  .rlds-episodes li button { border: 0; border-radius: var(--rlds-radius); background: transparent; cursor: pointer; }
-  .rlds-episodes li button:hover { background: var(--rlds-sunken); }
-  .rlds-episodes li button[aria-current='true'] { background: var(--rlds-accent-soft); }
+  .rlds-episodes { border-right: 1px solid var(--rlds-line); background: var(--rlds-sidebar); color: var(--rlds-ink-secondary); }
+  .rlds-episodes li button { border: 1px solid transparent; border-radius: var(--rlds-radius); background: transparent; cursor: pointer; }
+  .rlds-episodes li button:hover { background: var(--rlds-panel); }
+  /* DS "Selected row": Brand/Tertiary fill, Brand/Primary border, Neutral/Primary text. */
+  .rlds-episodes li button[aria-current='true'] { background: var(--rlds-accent-soft); border-color: var(--rlds-accent); color: var(--rlds-ink); }
   .rlds-episodes-head { font-size: 11.5px; }
   .rlds-episodes-title { font-size: 13px; line-height: 1.35; }
   .rlds-episodes-pending { color: var(--rlds-muted); font-size: 12.5px; }
@@ -92,7 +123,7 @@
   /* Stage */
   .rlds-stage { background: var(--rlds-stage); color: var(--rlds-stage-ink); }
   .rlds-instruction { font-size: 17px; font-weight: 500; }
-  .rlds-frame canvas { background: var(--rlds-frame-bg); border-radius: 4px; }
+  .rlds-frame canvas { background: var(--rlds-frame-bg); border-radius: var(--rlds-radius); }
   .rlds-frame figcaption { font-size: 11.5px; color: var(--rlds-stage-muted); }
   .rlds-frames-empty { color: var(--rlds-stage-muted); }
 
@@ -101,7 +132,9 @@
     color: var(--rlds-stage-ink); cursor: pointer;
   }
   .rlds-transport-button:hover:not(:disabled) { border-color: var(--rlds-stage-line-hover); }
-  .rlds-transport-button.rlds-play { background: var(--rlds-stage-ink); color: var(--rlds-stage); border-color: var(--rlds-stage-ink); border-radius: 50%; }
+  /* Play is the primary action: DS "Primary CTA" recipe. */
+  .rlds-transport-button.rlds-play { background: var(--rlds-stage-accent); color: var(--rlds-stage-accent-ink); border-color: var(--rlds-stage-accent); border-radius: 50%; }
+  .rlds-transport-button.rlds-play:hover:not(:disabled) { background: var(--rlds-accent-hover); border-color: var(--rlds-accent-hover); }
   .rlds-transport-button svg { fill: currentColor; }
   .rlds-scrubber { accent-color: var(--rlds-stage-accent); }
   .rlds-counter { font-size: 13px; }
@@ -114,20 +147,20 @@
   .rlds-autonext input { accent-color: var(--rlds-stage-accent); }
   .rlds-flag {
     font: 500 11px var(--rlds-font-mono); text-transform: uppercase; letter-spacing: 0.06em;
-    border-radius: 99px; border: 1px solid var(--rlds-stage-line); color: var(--rlds-stage-off);
+    border-radius: var(--rlds-radius); border: 1px solid var(--rlds-stage-line); color: var(--rlds-stage-off);
   }
   .rlds-flag[data-on] { background: var(--rlds-stage-accent); border-color: var(--rlds-stage-accent); color: var(--rlds-stage-accent-ink); }
 
   /* Tracks */
-  .rlds-chart, .rlds-metadata { background: var(--rlds-panel); border: 1px solid var(--rlds-line); border-radius: 8px; }
-  .rlds-chart h3, .rlds-metadata h3 { font: 500 12.5px var(--rlds-font-mono); }
+  .rlds-chart, .rlds-metadata { background: var(--rlds-panel); border: 1px solid var(--rlds-line); border-radius: var(--rlds-radius-card); }
+  .rlds-chart h3, .rlds-metadata h3 { font: 600 12.5px var(--rlds-font-mono); color: var(--rlds-ink); }
   .rlds-chart header .rlds-mono { font-size: 11px; }
-  .rlds-chart svg { background: var(--rlds-sunken); border-radius: 4px; cursor: crosshair; }
+  .rlds-chart svg { background: var(--rlds-sunken); border-radius: var(--rlds-radius); cursor: crosshair; }
   .rlds-chart path { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
   .rlds-chart-zero { stroke: var(--rlds-line); stroke-width: 1; vector-effect: non-scaling-stroke; }
   .rlds-chart-cursor { stroke: var(--rlds-ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
   .rlds-chart-collapsed { font-size: 12px; }
-  .rlds-chart-legend button { font-size: 11.5px; border-radius: 4px; }
+  .rlds-chart-legend button { font-size: 11.5px; border-radius: var(--rlds-radius); }
   .rlds-chart-legend button[data-off] { opacity: 0.4; }
   .rlds-chart-legend i { border-radius: 2px; }
   .rlds-metadata dt { font-size: 11.5px; color: var(--rlds-muted); }

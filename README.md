@@ -302,15 +302,36 @@ Verified with Tailwind v4.3 in dev and production builds: `className="bg-blue-90
 :root {
   --rlds-accent: #4f46e5;
   --rlds-stage: #000;
-  --rlds-font-sans: 'Inter', system-ui, sans-serif;
+  --rlds-font-sans: 'Geist', system-ui, sans-serif;
   --rlds-series-0: #e11d48; /* …--rlds-series-7 for chart lines */
 }
 .rlds-player[data-playing] .rlds-options { opacity: 0.6; }
 ```
 
-Tokens: `--rlds-panel`, `-sunken`, `-ink`, `-muted`, `-line`, `-accent`, `-accent-ink`, `-accent-soft`, `-danger`, `-series-0…7`, `-stage`, `-stage-ink`, `-stage-muted`, `-stage-soft`, `-stage-off`, `-stage-line`, `-stage-line-hover`, `-stage-accent`, `-stage-accent-ink`, `-frame-bg`, `-radius`, `-font-sans`, `-font-mono`.
+Defaults follow the **VideoDB Design System v2**: each token maps to a DS usage token, named in a comment in `theme.css`.
 
-Light/dark follows `prefers-color-scheme`. Pin it with `colorScheme="light" | "dark"` on `Player.Root` and the viewers (sets `data-rlds-scheme`). A pinned scheme redefines tokens on that element, so theme a pinned subtree via `[data-rlds-scheme='dark'] { --rlds-… }`. The library ships no fonts.
+| Token | DS usage token | Value |
+|---|---|---|
+| `--rlds-panel` | Background/Neutral/Primary (cards, inputs, secondary buttons) | `#FFFFFF` |
+| `--rlds-sidebar` | Background/Neutral/Secondary (episodes drawer) | `#EFEFEF` |
+| `--rlds-sunken` | Greyscale/50 (chart wells, status strip) | `#F7F7F7` |
+| `--rlds-ink` / `-ink-secondary` / `-muted` / `-disabled` | Text/Neutral/Primary · Secondary · Tertiary · Disabled | `#1D1A22` `#404040` `#525252` `#A3A3A3` |
+| `--rlds-icon` | Icon/Neutral/Primary | `#262626` |
+| `--rlds-line` / `-line-hover` | Border/Neutral/Primary · Greyscale/300 | `#EFEFEF` `#D4D4D4` |
+| `--rlds-accent` / `-accent-hover` / `-accent-ink` | Background/Brand/Primary · Orange/700 · Text/Brand/Inverse | `#EC5B16` `#C14103` `#FFF5EC` |
+| `--rlds-accent-soft` / `-progress` | Background/Brand/Tertiary (selected row) · Orange/100 | `#FFF5EC` `#FFE9D3` |
+| `--rlds-danger` | Text/Semantic/Error/Primary | `#B31D1D` |
+| `--rlds-series-0…7` | Blue, Orange, Green, Red, Yellow 500/600; Blue 300, Green 300, Greyscale 500 | |
+| `--rlds-stage*` | "Dark video overlay" recipe: Neutral Inverse surfaces/text/border; Play and scrubber use Brand | `#262626` … |
+| `--rlds-frame-bg` | Background/Neutral Inverse/Primary | `#000000` |
+| `--rlds-radius` / `-radius-card` | Chip/label/control · card | `8px` `16px` |
+| `--rlds-font-sans` / `-font-mono` | Inter for all product UI (mono = sans; numbers use tabular figures) | |
+
+Recipes applied: Primary CTA (Stream / Show / Play), Secondary button, Selected row (drawer), Disabled (empty-source submit), Dark video overlay (stage), card border `1px #EFEFEF`.
+
+Light is the default, as the DS defines. `colorScheme="dark"` on `Player.Root` or a viewer opts into a dark variant built from the Neutral Inverse tokens (sets `data-rlds-scheme`; `"light"` pins light inside a dark ancestor). Pinned schemes redefine tokens on that element, so theme a pinned subtree via `[data-rlds-scheme='dark'] { --rlds-… }`. Tokens are plain values, not `light-dark()`: Tailwind v4's Lightning CSS polyfills `light-dark()` into values that are invalid on `:root` (verified: transparent backgrounds).
+
+The library ships no fonts; load Inter yourself (the demo uses Google Fonts).
 
 ## Dataset compatibility
 
@@ -421,6 +442,7 @@ Behaviour differences from the baseline app, all intentional:
 - The fps select is labelled by `aria-label` instead of a wrapping `<label>`.
 - Empty instruction strings aren't rendered.
 - Wide tracks (> 32 dims) start collapsed.
+- Restyled to the VideoDB Design System v2 (orange brand, Inter, 8/16px radii, light only); the earlier green theme and automatic OS dark mode are gone.
 - Depth tensors render as images when `features.json` is available.
 
 **Open:** npm scope (`@rlds-viewer` org vs an existing one); public repo or not; license (MIT suggested).

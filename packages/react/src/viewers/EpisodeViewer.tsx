@@ -39,7 +39,7 @@ export function EpisodeViewer({
   onEpisodeChange,
   specs,
   defaultFps,
-  colorScheme = 'system',
+  colorScheme,
   autoFocus,
   renderHeader,
   empty,
@@ -75,7 +75,7 @@ export function EpisodeViewer({
     <div
       ref={mergeRefs(own, ref)}
       className={cx('rlds-viewer', 'rlds-episode-viewer', className)}
-      data-rlds-scheme={colorScheme === 'system' ? undefined : colorScheme}
+      data-rlds-scheme={colorScheme}
       tabIndex={-1}
       {...rest}
     >

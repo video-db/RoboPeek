@@ -3,24 +3,19 @@
 @import '@rlds-viewer/react/styles.css' layer(rlds);
 
 @layer base {
+  /* VideoDB Design System v2: page canvas recipe. Light only, as the DS defines. */
   :root {
-    --bg: #f3f5f3;
-    --panel: #ffffff;
-    --ink: #17211d;
-    --muted: #5f6d67;
-    --line: #d9dfdb;
-    --accent: #0e6b57;
-    --accent-ink: #ffffff;
-    --sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --bg: #ffffff;          /* Background/Neutral/Primary */
+    --panel: #ffffff;       /* Background/Neutral/Primary */
+    --ink: #1d1a22;         /* Text/Neutral/Primary */
+    --muted: #525252;       /* Text/Neutral/Tertiary */
+    --line: #efefef;        /* Border/Neutral/Primary */
+    --line-hover: #d4d4d4;  /* Greyscale/300 */
+    --accent: #ec5b16;      /* Background/Brand/Primary, Text/Brand/Primary */
+    --accent-hover: #c14103; /* Orange/700 */
+    --accent-ink: #fff5ec;  /* Text/Brand/Inverse */
+    --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #0f1412; --panel: #161c19; --ink: #e2eae6; --muted: #8c9c95;
-      --line: #28322d; --accent: #3dbd98; --accent-ink: #06231b;
-      color-scheme: dark;
-    }
   }
 
   * { box-sizing: border-box; }
@@ -31,21 +26,21 @@
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   button {
-    border: 1px solid var(--line); background: var(--panel); border-radius: 6px;
+    border: 1px solid var(--line); background: var(--panel); border-radius: 8px;
     padding: 6px 12px; cursor: pointer; white-space: nowrap;
   }
-  button:hover:not(:disabled) { border-color: var(--muted); }
+  button:hover:not(:disabled) { border-color: var(--line-hover); }
   button:disabled { opacity: 0.4; cursor: default; }
   button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
-  button.primary:hover:not(:disabled) { filter: brightness(1.08); border-color: var(--accent); }
+  button.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
 }
 
 @layer app {
-  :root { --rlds-font-sans: var(--sans); --rlds-font-mono: var(--mono); }
+  :root { --rlds-font-sans: var(--sans); }
 
   .top {
     display: flex; align-items: center; gap: 24px; padding: 10px 16px;
-    background: var(--panel); border-bottom: 1px solid var(--line); flex-wrap: wrap;
+    background: var(--panel); color: var(--ink); border-bottom: 1px solid var(--line); flex-wrap: wrap;
   }
   .brand { display: flex; align-items: baseline; gap: 10px; }
   .brand strong { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
@@ -58,6 +53,6 @@
   .welcome p { margin: 0; color: var(--muted); max-width: 62ch; }
   .keys { display: grid; gap: 6px; margin: 16px 0 0; font-size: 13px; }
   .keys div { display: flex; gap: 12px; }
-  .keys dt { font-family: var(--mono); min-width: 6ch; }
+  .keys dt { font-weight: 500; min-width: 6ch; }
   .keys dd { margin: 0; color: var(--muted); }
 }

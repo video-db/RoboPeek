@@ -48,7 +48,7 @@ export function ShardViewer({
   onSelectedChange,
   specs,
   defaultFps,
-  colorScheme = 'system',
+  colorScheme,
   autoFocus,
   renderHeader,
   renderTitle,
@@ -88,7 +88,7 @@ export function ShardViewer({
     <DropZone
       ref={mergeRefs(own, ref)}
       className={cx('rlds-viewer', 'rlds-shard-viewer', className)}
-      data-rlds-scheme={colorScheme === 'system' ? undefined : colorScheme}
+      data-rlds-scheme={colorScheme}
       tabIndex={-1}
       onFile={open}
       {...rest}

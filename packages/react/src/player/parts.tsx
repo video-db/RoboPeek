@@ -20,7 +20,7 @@ import { cx } from '../components/cx.ts'
 import { createPlayerStore, PlayerContext, usePlayer, type PlayerState } from './store.ts'
 import { FLAG_KEYS, useAutoNext, useEpisodeButton, useFpsSelect, usePlayButton, useScrubber, useStepButton } from './hooks.ts'
 
-export type ColorScheme = 'light' | 'dark' | 'system'
+export type ColorScheme = 'light' | 'dark'
 export type Include = string[] | ((key: string) => boolean)
 
 const included = (key: string, include?: Include) => !include || (Array.isArray(include) ? include.includes(key) : include(key))
@@ -48,6 +48,7 @@ export type PlayerRootProps = Omit<ComponentPropsWithRef<'div'>, 'children'> &
     onNextEpisode?: () => void
     /** true: keys work while focus is inside the player. A ref: bind them to that element instead. */
     hotkeys?: boolean | RefObject<HTMLElement | null>
+    /** Unset: light (the DS default), or whatever an ancestor pinned. */
     colorScheme?: ColorScheme
     /** Your layout of parts. Omitted → the default `<Player>` arrangement. */
     children?: ReactNode
@@ -70,7 +71,7 @@ export function Root({
   onPrevEpisode,
   onNextEpisode,
   hotkeys = true,
-  colorScheme = 'system',
+  colorScheme,
   className,
   children,
   ref,
@@ -141,7 +142,7 @@ export function Root({
       ref={mergeRefs(own, ref)}
       className={cx('rlds-player', className)}
       data-playing={pb.playing || undefined}
-      data-rlds-scheme={colorScheme === 'system' ? undefined : colorScheme}
+      data-rlds-scheme={colorScheme}
       tabIndex={hotkeys === true ? -1 : undefined}
       {...rest}
     >
