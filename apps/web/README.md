@@ -1,4 +1,10 @@
-# React + TypeScript + Vite
+# RoboPeek website
+
+The homepage playground has a custom RLDS preview form at `/#custom-rlds`. Use this link for campaigns or researcher onboarding. Researchers can paste a direct URL to an uncompressed TFRecord shard or choose a local file, then inspect it in the embedded viewer. Remote hosts must allow CORS; URLs (including query parameters) are passed through unchanged after trimming surrounding whitespace.
+
+After loading a URL, **Open full viewer** opens `/viewer.html?url=<encoded-url>`, which can also be bookmarked. Submitting the same source again retries loading it. Sample cards and file drag-and-drop remain available.
+
+## Development
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 

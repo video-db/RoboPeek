@@ -24,24 +24,34 @@ function HomePage() {
   const [source, setSource] = useState<Source>(SAMPLES[0].url)
   const [selected, setSelected] = useState<Sample | undefined>(SAMPLES[0])
   const [episode, setEpisode] = useState(0)
+  const [previewVersion, setPreviewVersion] = useState(0)
   const fileRef = useRef<HTMLInputElement>(null)
   const playgroundRef = useRef<HTMLElement>(null)
+  const customSourceRef = useRef<HTMLDivElement>(null)
   const previewRef = useRef<HTMLDivElement>(null)
   useLayoutEffect(() => {
     // On a fresh navigation, the browser checks the fragment before React mounts.
     const scrollToPlayground = () => {
-      if (location.hash === '#playground') {
-        playgroundRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' })
-      }
+      const target = location.hash === '#custom-rlds' ? customSourceRef.current
+        : location.hash === '#playground' ? playgroundRef.current : null
+      target?.scrollIntoView({ block: 'start', behavior: 'instant' })
     }
     scrollToPlayground()
     window.addEventListener('hashchange', scrollToPlayground)
     return () => window.removeEventListener('hashchange', scrollToPlayground)
   }, [])
-  const open = (next: Source) => { setSource(next); setEpisode(0); setSelected(SAMPLES.find(s => s.url === next)) }
+  const open = (next: Source) => {
+    setSource(next)
+    setEpisode(0)
+    setSelected(SAMPLES.find(s => s.url === next))
+    // Allow retrying the same URL after a network error, or reopening an updated file.
+    setPreviewVersion(version => version + 1)
+  }
+  const scrollToPreview = () => previewRef.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+  const preview = (next: Source) => { open(next); scrollToPreview() }
   const choose = (sample: Sample, scroll = false) => {
     open(sample.url)
-    if (scroll) previewRef.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+    if (scroll) scrollToPreview()
   }
   const url = typeof source === 'string' ? source : undefined
   return <div className="site-page">
@@ -70,16 +80,21 @@ function HomePage() {
         <div><Icon name="code" /><div><h2>Make it part of your app</h2><p>Use a viewer, its parts, or just the reader.</p></div></div>
       </div></div>
       <section id="playground" ref={playgroundRef} className="playground site-container">
-        <div className="section-heading"><div><p className="eyebrow">The playground</p><h2>Less setup. More understanding.</h2><p>Start with a sample, or open your own dataset. Take a look around.</p></div><a className="text-link" href="/RLDS/">Explore the RLDS toolkit<Icon name="arrow" /></a></div>
+        <div className="section-heading"><div><p className="eyebrow">The playground</p><h2>Less setup. More understanding.</h2><p>Paste an RLDS link, open a local file, or explore a sample. No setup needed.</p></div><a className="text-link" href="/RLDS/">Explore the RLDS toolkit<Icon name="arrow" /></a></div>
         <div className="format-tabs" role="tablist" aria-label="Dataset format"><button type="button" id="rlds-tab" role="tab" aria-selected="true" aria-controls="rlds-playground"><Icon name="layers" />RLDS<span className="format-status">Available</span></button><button type="button" role="tab" aria-selected="false" disabled><Icon name="file" />MCAP<span className="ui-badge">Coming soon</span></button></div>
         <div id="rlds-playground" role="tabpanel" aria-labelledby="rlds-tab">
           <div className="format-intro"><div><h3>Explore RLDS datasets</h3><p>Browse TFRecord episodes with camera views, instructions, actions, and state.</p></div><span className="format-note">RLDS / TFDS · Uncompressed TFRecord</span></div>
+          <div id="custom-rlds" ref={customSourceRef} className="custom-source" role="region" aria-labelledby="custom-rlds-title">
+            <div className="custom-source-heading"><Icon name="link" /><div><h3 id="custom-rlds-title">Your RLDS link. Ready to preview.</h3><p>Take a quick look at your dataset before your next experiment.</p></div></div>
+            <SourceBar key={source instanceof File ? source.name : url} defaultUrl={selected ? undefined : url} currentFile={source instanceof File ? source : undefined} fileRef={fileRef} onOpen={preview} submitLabel="Preview dataset" descriptionId="custom-rlds-help" />
+            <p id="custom-rlds-help">Use a direct link to an uncompressed TFRecord shard, not a dataset page. The host must allow browser access (CORS). Local files stay on your device.</p>
+          </div>
+          <h4 className="sample-heading">Or explore a sample</h4>
           <div className="dataset-gallery">{SAMPLES.slice(0, 3).map(s => <button type="button" key={s.id} className="dataset-card" aria-pressed={selected?.id === s.id} onClick={() => choose(s)}><div className="dataset-image"><img src={s.image} alt={`${s.dataset} camera observation`} loading="lazy" /><span className="dataset-category">{s.category}</span><span className="dataset-selected"><Icon name={selected?.id === s.id ? 'check' : 'play'} /></span></div><div className="dataset-card-info"><div><strong>{s.dataset}</strong><span>{s.size}</span></div><p>{s.notes}</p></div></button>)}</div>
           <p className="sample-note">These are small excerpts of real datasets. Choose a card to load its preview.</p>
           <DropTarget className="playground-viewer" onFile={open}>
             <div className="preview-bar" ref={previewRef}><div><span className="status-dot" /><strong>{selected?.dataset ?? (source instanceof File ? source.name : 'Your dataset')}</strong><span className="preview-label">Live viewer</span></div>{url && <a className="text-link" href={`/viewer.html?url=${encodeURIComponent(url)}`}>Open full viewer<Icon name="external" /></a>}</div>
-            <div className="home-viewer-frame"><ShardViewer key={source instanceof File ? `${source.name}:${source.lastModified}` : String(source)} source={source} selected={episode} onSelectedChange={setEpisode} specs={selected?.where === 'local' ? false : undefined} /></div>
-            <details className="custom-source"><summary><Icon name="link" /><strong>Open your own dataset</strong><span>Paste a URL or choose a local file</span><Icon name="chevron" /></summary><SourceBar key={source instanceof File ? source.name : url} defaultUrl={selected ? undefined : url} currentFile={source instanceof File ? source : undefined} fileRef={fileRef} onOpen={open} /><p>Remote files need CORS access. URLs are used exactly as supplied.</p></details>
+            <div className="home-viewer-frame"><ShardViewer key={previewVersion} source={source} selected={episode} onSelectedChange={setEpisode} specs={selected?.where === 'local' ? false : undefined} /></div>
           </DropTarget>
         </div>
       </section>

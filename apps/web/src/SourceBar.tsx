@@ -6,11 +6,13 @@ type Props = {
   defaultUrl?: string
   episode?: number
   currentFile?: File
+  submitLabel?: string
+  descriptionId?: string
   fileRef: RefObject<HTMLInputElement | null>
 }
 
 /** URL field + file picker (+ optional episode number). */
-export function SourceBar({ onOpen, defaultUrl = '', episode, currentFile, fileRef }: Props) {
+export function SourceBar({ onOpen, defaultUrl = '', episode, currentFile, fileRef, submitLabel, descriptionId }: Props) {
   const [url, setUrl] = useState(defaultUrl)
   const [num, setNum] = useState(String(episode ?? 0))
   const [seen, setSeen] = useState(episode)
@@ -32,12 +34,12 @@ export function SourceBar({ onOpen, defaultUrl = '', episode, currentFile, fileR
       <div className="source-controls">
         <div className="source-url-wrap">
           <Icon name={currentFile ? 'file' : 'link'} />
-          <Input id={urlId} className="source-url" type="url" aria-label="TFRecord URL"
+          <Input id={urlId} className="source-url" type="url" aria-label="TFRecord URL" aria-describedby={descriptionId}
             placeholder={currentFile ? currentFile.name : 'Paste a TFRecord URL, e.g. https://huggingface.co/datasets/…'}
             title={currentFile?.name} spellCheck={false} autoComplete="off" value={url} onChange={(e) => setUrl(e.target.value)} />
         </div>
         {withEpisode && <label className="source-episode"><span>Episode</span><Input aria-label="Episode number" type="number" min={0} step={1} value={num} onChange={(e) => setNum(e.target.value)} /></label>}
-        <Button type="submit" variant="primary" disabled={!target}>{withEpisode ? 'Open episode' : 'Load dataset'}<Icon name="arrow" /></Button>
+        <Button type="submit" variant="primary" disabled={!target}>{submitLabel ?? (withEpisode ? 'Open episode' : 'Load dataset')}<Icon name="arrow" /></Button>
         <span className="source-separator" />
         <Button onClick={() => fileRef.current?.click()}><Icon name="upload" />Open file</Button>
       </div>

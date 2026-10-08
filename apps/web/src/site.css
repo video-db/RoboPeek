@@ -98,15 +98,14 @@
   .home-viewer-frame .rp-shard-viewer-body { grid-template-columns: 220px minmax(0, 1fr); }
   .home-viewer-frame .rp-stage { padding: 18px; gap: 15px; }
   .home-viewer-frame .rp-instruction { font-size: 13px; }
-  .custom-source { border-top: 1px solid var(--line); }
-  .custom-source > summary { list-style: none; display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 16px 18px; font-size: 12px; }
-  .custom-source > summary::-webkit-details-marker { display: none; }
-  .custom-source summary > strong { font-weight: 500; }
-  .custom-source summary > span { color: #858d87; font-size: 11px; }
-  .custom-source summary > .icon:last-child { margin-left: auto; width: 12px; }
-  .custom-source[open] summary > .icon:last-child { transform: rotate(90deg); }
-  .custom-source .source { border-block: 1px solid var(--line); background: #fbfcfa; }
-  .custom-source > p { padding: 10px 20px; font-size: 11px; color: var(--muted); }
+  .custom-source { margin-bottom: 26px; border: 1px solid #dce5dc; border-radius: 9px; background: #f7faf6; scroll-margin-top: 95px; }
+  .custom-source-heading { display: flex; align-items: flex-start; gap: 12px; padding: 20px 22px 0; }
+  .custom-source-heading > .icon { width: 19px; height: 19px; color: #427153; margin-top: 2px; }
+  .custom-source-heading h3 { font-size: 15px; font-weight: 500; color: #2c4935; }
+  .custom-source-heading p { margin-top: 4px; font-size: 12px; color: #778078; }
+  .custom-source .source { border: 0; padding-bottom: 10px; }
+  .custom-source > p { padding: 0 22px 18px; font-size: 11px; color: var(--muted); }
+  .sample-heading { margin: 0 0 12px; font-size: 12px; font-weight: 500; color: #778078; }
   .build-section { padding-block: 70px; background: #f7f9f6; border-block: 1px solid #e8ece7; }
   .build-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 75px; align-items: center; }
   .build-section h2 { font-size: 34px; line-height: 1.25; margin-top: 13px; }
@@ -192,7 +191,7 @@
     .home-viewer-frame .rp-frame canvas { max-height: 250px; height: auto; width: auto; max-width: 100%; }
     .home-viewer-frame .rp-frames { justify-content: stretch; }
     .preview-label { display: none; }
-    .custom-source > summary > span { display: none; }
+    .custom-source { scroll-margin-top: 85px; }
     .build-section { padding-block: 45px; }
     .build-grid { grid-template-columns: 1fr; gap: 30px; }
     .build-grid > div > p:not(.eyebrow) { max-width: 500px; }
