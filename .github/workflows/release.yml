@@ -1,7 +1,9 @@
 name: Release
 
-# Pushes to main never publish directly. changesets/action keeps one "Version Packages" PR open with
-# every pending changeset; merging that PR is what publishes to npm.
+# Pushes to main never publish directly.
+# - Pending changesets: version them onto the changeset-release/main branch. A person opens and merges the PR
+#   (the org doesn't let Actions open PRs); the run summary links to it.
+# - No pending changesets (i.e. that PR was just merged): publish versions not yet on npm, tag, create releases.
 on:
   push:
     branches: [main]
@@ -10,26 +12,53 @@ concurrency: release-${{ github.ref }}
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: changesets/action@v1
-        with:
-          version: pnpm version-packages
-          publish: pnpm release
-          title: 'Release: version packages'
-          commit: 'Release: version packages'
-          createGithubReleases: true
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - id: pending
+        run: echo "count=$(find .changeset -name '*.md' ! -name README.md | wc -l)" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare release branch
+        if: steps.pending.outputs.count != '0'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # changelog-github reads PR links and authors
+        run: |
+          pnpm version-packages
+          git checkout -B changeset-release/main
+          git add -A
+          git commit -m 'Release: version packages'
+          git push --force origin changeset-release/main
+          url="https://github.com/${{ github.repository }}/compare/main...changeset-release/main?expand=1"
+          echo "### Release ready: [open or update the release PR]($url)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Merging that PR publishes to npm." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish
+        if: steps.pending.outputs.count == '0'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          pnpm release
+          git push origin --tags
+          # changeset publish tags HEAD for each package it published; one GitHub release each, notes from the changelog.
+          for tag in $(git tag --points-at HEAD); do
+            name=${tag%@*}; version=${tag##*@}; dir=packages/${name#@videodb/robopeek-}
+            awk -v v="## $version" '$0==v{f=1;next} /^## /{f=0} f' "$dir/CHANGELOG.md" > notes.md
+            gh release create "$tag" --title "$tag" --notes-file notes.md
+          done

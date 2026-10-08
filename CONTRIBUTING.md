@@ -42,9 +42,12 @@ The reader's shard tests need a real file or URL: `RLDS_SHARD=/path/x.tfrecord R
 
 We release when we choose to, not on every merge. Merging to `main` never publishes anything.
 
-1. Every merge to `main` that brings changelog notes updates one open PR titled **"Release: version packages"**. It collects every note since the last release, bumps the version numbers, and shows the changelog that will ship.
-2. Merges keep piling into that same PR, so a week of changes becomes one release.
-3. When you want to release (for example, every Friday), review that PR and merge it. CI then publishes both packages to npm, tags the release, and creates a GitHub Release with the same notes.
+1. Every merge to `main` that brings changelog notes updates the `changeset-release/main` branch. It collects every note since the last release, bumps the version numbers, and writes the changelogs.
+2. Merges keep piling onto that branch, so a week of changes becomes one release.
+3. When you want to release (for example, every Friday): open the latest **Release** run in the Actions tab and click the PR link in its summary, or open https://github.com/video-db/RoboPeek/compare/main...changeset-release/main. Create the PR if there isn't one, review it, and merge it.
+4. That merge publishes both packages to npm, tags them, and creates a GitHub Release for each with its changelog notes.
+
+Our GitHub organization doesn't let Actions open pull requests, which is why step 3 is done by hand.
 
 Both packages always share one version number: `@videodb/robopeek-react@0.3.0` goes with `@videodb/robopeek-rlds@0.3.0`.
 
@@ -52,6 +55,4 @@ Until 1.0, a minor release (0.2 → 0.3) may include breaking changes, including
 
 ### One-time setup (maintainers)
 
-- An `NODE_AUTH_TOKEN` secret (npm automation token) available to this repo under Settings → Secrets and variables → Actions.
-- Settings → Actions → General → "Allow GitHub Actions to create and approve pull requests" turned on, so CI can open the release PR.
-- Publish access to the `@videodb` scope on npm for the account behind the token.
+- A `NODE_AUTH_TOKEN` secret (npm token with publish access to `@videodb`) in Settings → Secrets and variables → Actions.
