@@ -1,11 +1,24 @@
 {
   "name": "rlds-viewer",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "scripts": {
     "dev": "pnpm --filter @rlds-viewer/web dev",
-    "build": "pnpm --filter @rlds-viewer/web build",
-    "typecheck": "pnpm -r typecheck"
+    "build": "pnpm -r --filter './packages/*' build && pnpm --filter @rlds-viewer/web build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @rlds-viewer/core exec attw --pack . --profile esm-only && pnpm --filter @rlds-viewer/react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
+    "changeset": "changeset"
   },
   "packageManager": "pnpm@10.33.0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/cli": "^3.0.3",
+    "@vitest/browser-playwright": "^5.0.3",
+    "playwright": "^1.64.0",
+    "publint": "^0.3.25",
+    "tsdown": "^0.23.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3"
+  }
 }

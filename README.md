@@ -1,16 +1,16 @@
 # rlds-viewer
 
-> **[TODO: THIS IS A PLAN]** Everything below describes the target state. Today the repo is `packages/core` (unbuilt, unpublished) plus `apps/web` holding all UI. Nothing here is published to npm yet.
-
-> **Stability:** 0.x until the dataset compatibility pass and `features.json` support (build steps 2 and 10) are done. Until 1.0, minor versions may break the API, including markup.
+> **Status:** built and verified locally, **not published**. Open before the first publish: npm scope, repo visibility, license, `changeset init` (see [Build plan](#build-plan)).
+>
+> **Stability:** 0.x. Until 1.0, minor versions may break the API, including markup.
 
 Read and play RLDS episodes (TFRecord shards) in the browser. No Python, no TensorFlow, no backend.
 
 | Package | What it is | Published |
 |---|---|---|
-| `@rlds-viewer/core` | TFRecord → `tf.train.Example` → `Episode` decoder; streaming + single-episode random access | yes |
-| `@rlds-viewer/react` | Hooks, components and drop-in viewers built on `core` | yes |
-| `apps/web` | The demo site: full shard viewer + single-episode page | no |
+| `@rlds-viewer/core` | TFRecord → `tf.train.Example` → `Episode` decoder; streaming, single-episode random access, `features.json` specs | yes (pending) |
+| `@rlds-viewer/react` | Hooks, components and drop-in viewers built on `core`; re-exports all of `core` | yes (pending) |
+| `apps/web` | Demo site: full shard viewer (`index.html`) + single-episode page (`episode.html`) | no |
 
 ## Quickstart
 
@@ -21,22 +21,23 @@ pnpm add @rlds-viewer/core
 ```
 
 ```ts
-import { streamEpisodes, ShardIndex, episodeTitle, vectorAt } from '@rlds-viewer/core'
+import { streamEpisodes, ShardIndex, loadFeatureSpecs, episodeTitle, vectorAt } from '@rlds-viewer/core'
 
 const url = 'https://huggingface.co/datasets/…/train.tfrecord-00005-of-00128'
+const specs = await loadFeatureSpecs(url) // sibling features.json, or undefined
 
 // Every episode, yielded while the shard downloads
-for await (const ep of streamEpisodes(url, { onProgress: (p) => console.log(p.loaded, p.total) })) {
+for await (const ep of streamEpisodes(url, { specs, onProgress: (p) => console.log(p.loaded, p.total) })) {
   console.log(ep.index, ep.length, episodeTitle(ep), Object.keys(ep.images))
 }
 
 // One episode, without downloading the rest (needs HTTP Range support)
-const index = await ShardIndex.open(url)
+const index = await ShardIndex.open(url, { specs })
 const ep40 = await index.episode(40) // undefined if out of range
 const action = vectorAt(ep40!.vectors['action'], 0) // Float32Array | Float64Array of length dim
 ```
 
-`Episode` shape. Fixed before the React work starts, with slots for what `features.json` will add later, so that support doesn't break it:
+`Episode` shape:
 
 ```ts
 type Episode = {
@@ -52,10 +53,10 @@ type Episode = {
 
 type ImageTrack =
   | { kind: 'encoded'; mime: 'image/png' | 'image/jpeg' | 'image/webp'; frames: Uint8Array[] }
-  | { kind: 'raw'; shape: [h: number, w: number, c: number]; dtype: 'uint8' | 'uint16'; frames: Uint8Array[] } // needs features.json
+  | { kind: 'raw'; shape: [h: number, w: number, c: number]; data: Float32Array | Float64Array } // numeric tensors, e.g. float depth; needs specs
 
 type VectorTrack = {
-  shape: number[]                                 // per-step shape; [dim] until features.json says otherwise
+  shape: number[]                                 // per-step shape; [dim] without specs, [] for scalars with
   dim: number                                     // product of shape
   data: Float32Array | Float64Array               // row-major [length × dim]; int64 converted (exact to 2^53)
 }
@@ -66,7 +67,7 @@ type Feature =
   | { kind: 'int64'; values: BigInt64Array }      // lossless
 ```
 
-`images` / `text` / `metadata` share arrays with `features` (no copies); int64 `vectors` are a float64 copy. If the classification gets a key wrong for your dataset, read it from `features` yourself.
+`images` / `text` / `metadata` share arrays with `features` (no copies); int64 `vectors` are a float64 copy. If the classification gets a key wrong for your dataset, read it from `features`.
 
 Reading metadata:
 
@@ -86,21 +87,23 @@ pnpm add @rlds-viewer/react   # brings core with it; core's API is re-exported
 
 ```tsx
 import { ShardViewer, EpisodeViewer } from '@rlds-viewer/react'
-import '@rlds-viewer/react/styles.css'
+import '@rlds-viewer/react/styles.css' // or from CSS, see "CSS layer order"
 
 // Episode drawer + player, streams the whole shard
-<ShardViewer source={url} defaultFps={10} />
+<ShardViewer defaultSource={url} defaultFps={10} autoFocus />
 
-// Single episode by number
-<EpisodeViewer source={url} episode={40} onEpisodeChange={(n) => setParams({ episode: n })} />
+// Single episode by number, controlled
+<EpisodeViewer source={url} onSourceChange={setUrl} episode={n} onEpisodeChange={setN} />
 ```
+
+Both viewers: `source` / `defaultSource` / `onSourceChange`, `specs` (`'auto'` default: reads the `features.json` next to a URL shard), `defaultFps`, `colorScheme`, `autoFocus`, `empty` (shown before a source is opened), `renderHeader(bar, state)` (wrap or replace the source bar), `playerProps` (passed to `Player.Root`), `children` (your player layout). `ShardViewer` adds `selected` / `defaultSelected` / `onSelectedChange` and `renderTitle`; `EpisodeViewer` adds `episode` / `defaultEpisode` / `onEpisodeChange`.
 
 ### React: compose your own player
 
 ```tsx
 import { Player, useEpisode } from '@rlds-viewer/react'
 
-function MyPlayer({ url, n }: { url: string; n: number }) {
+function MyPlayer({ url, n, go }: { url: string; n: number; go: (n: number) => void }) {
   const { episode, status } = useEpisode(url, n)
   if (!episode) return <p>{status.phase}</p>
 
@@ -114,18 +117,27 @@ function MyPlayer({ url, n }: { url: string; n: number }) {
     >
       <Player.Frames renderEmpty={() => <p>No cameras</p>} />
       <Player.Transport />
-      <Player.Scrubber />
       <Player.Tracks include={['action', 'observation/state']} />
     </Player.Root>
   )
 }
 ```
 
-`<Player episode={…} />` is just the default arrangement: `Instruction`, `Frames`, `Transport`, `Scrubber`, `Options`, `Flags`, `Tracks`, `Metadata`. The viewers wire the episode-navigation props for you.
+`<Player episode={…} />` (or `Player.Root` with no children) renders the default arrangement:
+
+```
+Root
+├─ Stage ─ Instruction, Frames, Transport, Options
+└─ Tracks ─ (charts), Metadata
+Transport ─ PrevEpisode, StepBack, Play, StepForward, NextEpisode, Scrubber, Counter
+Options   ─ FpsSelect, AutoNext, Flags
+```
+
+Every composite part (`Stage`, `Transport`, `Options`) renders its defaults with no children and only your children otherwise. `Tracks` renders its charts, then its children in the same grid.
 
 ### React: your own parts inside the player (e.g. metadata)
 
-Any component inside `Player.Root` can read the live player state with `usePlayer(selector)`. It re-renders only when the selected value changes, so a component that doesn't read `step` stays still during playback:
+Any component inside `Player.Root` reads live state with `usePlayer(selector)`. It re-renders only when the selected value changes, so a component that doesn't read `step` stays still during playback:
 
 ```tsx
 import { Player, usePlayer, readText, vectorAt } from '@rlds-viewer/react'
@@ -145,6 +157,8 @@ function EpisodeCard() {
 </Player.Root>
 ```
 
+Select primitives or stable references (`episode`, actions), not freshly built objects.
+
 Or keep the built-in metadata panel and change how entries render:
 
 ```tsx
@@ -162,13 +176,11 @@ Every `renderItem` gets the built-in element as its last argument, so overriding
 
 ### React: swap one sub-part
 
-`Player.Transport` with no children renders the default buttons. With children, it renders only what you pass:
-
 ```tsx
 import { Player, usePlayButton } from '@rlds-viewer/react'
 
 function MyPlay() {
-  const { playing, buttonProps } = usePlayButton() // onClick, aria-label ("Play" / "Pause"), title
+  const { playing, buttonProps } = usePlayButton() // type, onClick, aria-label ("Play" / "Pause"), title
   return <MyFancyButton {...buttonProps}>{playing ? 'Pause' : 'Play'}</MyFancyButton>
 }
 
@@ -179,56 +191,55 @@ function MyPlay() {
 </Player.Transport>
 ```
 
-Each built-in part is its hook plus thin markup (`useScrubber`, `usePlayButton`, `useStepButton`, `useFpsSelect`, …). Keep the logic and render any element you like.
+Each built-in part is its hook plus thin markup (`usePlayButton`, `useStepButton`, `useEpisodeButton`, `useScrubber`, `useFpsSelect`, `useAutoNext`). Keep the logic and render any element you like.
 
 ### React: drop-in viewer, your player layout
 
-Viewers render the default `<Player>` unless you pass children. Children go inside the viewer's `Player.Root`:
-
 ```tsx
-<ShardViewer source={url}>
-  <Player.Frames />
-  <Player.Transport />
+<ShardViewer defaultSource={url}>
+  <Player.Stage />
   <MyMetadataCard /> {/* uses usePlayer() */}
 </ShardViewer>
 ```
 
-Viewer source stays short enough to copy as a recipe; `apps/web/src/examples/` holds it.
+Children go inside the viewer's `Player.Root`. Viewer source (`packages/react/src/viewers/`) is short enough to copy as a recipe.
 
 ### React: hooks only (bring your own UI)
 
 ```tsx
 import { useEpisodeStream, usePlayback, usePlayerHotkeys } from '@rlds-viewer/react'
 
-const { episodes, status, load, cancel } = useEpisodeStream()
-const { step, setStep, playing, toggle } = usePlayback({ length: ep.length, defaultFps: 10 })
+const { episodes, status, load, cancel, reset } = useEpisodeStream({ specs: 'auto' })
+const { step, setStep, playing, toggle, fps, setFps } = usePlayback({ length: ep.length, defaultFps: 10, resetKey: ep })
 const ref = useRef<HTMLDivElement>(null)
-usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active only while ref has focus
+usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active only while focus is inside ref
 ```
 
 ## API surface (`@rlds-viewer/react`)
 
 | Layer | Export | Notes |
 |---|---|---|
-| Hooks | `useEpisodeStream()` | `{ episodes, status, load(src), cancel() }`; batches updates to one render per frame |
-| | `useEpisode(src, n)` | `{ episode, status, known }`; wraps `ShardIndex`, caches the index per source |
-| | `usePlayback(opts)` | Frame clock; `step` / `playing` / `fps` each controlled or uncontrolled |
-| | `usePlayerHotkeys(ref, ctl)` | Space, ←/→ (Shift = 10), Home/End; scoped to `ref`, never `window` |
-| Primitives | `EpisodeList` | Episode drawer with filter; `renderTitle`, `selected`, `onSelect` |
-| | `SourceBar` | URL + file input; optional `episode` number field |
-| | `LoadStatus` | Progress bar + counts + error |
-| | `DropZone` | Drag-and-drop file target with overlay |
-| | `FrameCanvas` | One image track; on-demand `ImageBitmap` decode + 8-frame lookahead |
-| | `VectorChart` | One vector track; click/drag to seek, legend toggles dims |
-| Player | `Player.Root` | Owns a small store (`useSyncExternalStore`, no dependency): episode, step, playing, fps, plus `onPrevEpisode` / `onNextEpisode` for the navigation parts |
-| | `usePlayer(selector)` | Subscribe to one slice of `{ episode, step, setStep, playing, toggle, fps, setFps, hasPrev, hasNext, prevEpisode, nextEpisode }`; re-renders only when that slice changes |
-| | `Player.Instruction` `.Frames` `.Transport` `.Scrubber` `.Options` `.Flags` `.Tracks` `.Metadata` | Each reads `Player.Root` context; place, omit or reorder freely. List-shaped parts take `include` + `renderItem(…, fallback)` |
-| | `Player.PrevEpisode` `.StepBack` `.Play` `.StepForward` `.NextEpisode` | Sub-parts of `Transport`; `Player.FpsSelect` `.AutoNext` are sub-parts of `Options` |
-| | `usePlayButton` `useStepButton` `useEpisodeButton` `useScrubber` `useFpsSelect` | Per-part hooks: state + spreadable props (handlers, aria) for your own element; built on `usePlayer(selector)` |
+| Hooks | `useEpisodeStream(opts?)` | `{ episodes, status, load(src), cancel(), reset() }`; batches updates to one render per frame |
+| | `useEpisode(src, n, opts?)` | `{ episode, status, known }`; wraps `ShardIndex`, keeps the index per source |
+| | `usePlayback(opts)` | Frame clock; `step` / `playing` / `fps` each controlled or uncontrolled; `resetKey` resets on episode change |
+| | `usePlayerHotkeys(ref, ctl, enabled?)` | Space, ←/→ (Shift = 10), Home/End, ↑/↓ episodes; scoped to `ref`, never `window` |
+| Primitives | `EpisodeList` | Episode drawer with filter; `selected`, `onSelect`, `renderTitle`, `renderItem(ep, fallback)` |
+| | `SourceBar` | URL + file input; `episode` shows a number field |
+| | `LoadStatus` | Progress strip; children add counts |
+| | `DropZone` | Drop target with overlay; `onFile` |
+| | `FrameCanvas` | One image track (encoded or raw); on-demand `ImageBitmap` decode + 8-frame lookahead |
+| | `VectorChart` | One vector track; click/drag to seek, legend toggles dims; `maxSeries` (32) collapses wider tracks |
+| Player | `Player.Root` | Owns a small store (`useSyncExternalStore`, no dependency): episode, step, playing, fps, autoNext, plus `onPrevEpisode` / `onNextEpisode`; `hotkeys` (true / false / a ref), `colorScheme` |
+| | `usePlayer(selector?)` | Subscribe to a slice of `{ episode, length, step, setStep, playing, toggle, setPlaying, fps, setFps, autoNext, setAutoNext, hasPrev, hasNext, prevEpisode, nextEpisode }` |
+| | `Player.Stage` `.Instruction` `.Frames` `.Transport` `.Options` `.Flags` `.Tracks` `.Metadata` | Each reads `Player.Root` context; place, omit or reorder freely. `Frames` / `Tracks` / `Metadata` take `include` + `renderItem(…, fallback)` |
+| | `Player.PrevEpisode` `.StepBack` `.Play` `.StepForward` `.NextEpisode` `.Scrubber` `.Counter` | Sub-parts of `Transport` |
+| | `Player.FpsSelect` `.AutoNext` `.Flags` | Sub-parts of `Options` |
+| | `usePlayButton` `useStepButton(delta)` `useEpisodeButton(dir)` `useScrubber` `useFpsSelect(options?)` `useAutoNext` | Per-part hooks: state + spreadable props (handlers, aria) |
 | | `Player` | Default composition of the parts |
-| Viewers | `ShardViewer` | Source bar + status + drawer + player; children replace the default player layout |
-| | `EpisodeViewer` | Source bar w/ episode field + status + player; same children rule |
-| Types | `PlayerFramesProps`, `EpisodeListProps`, … | Props type exported for every component |
+| Viewers | `ShardViewer` | Source bar + status + drawer + player |
+| | `EpisodeViewer` | Source bar with episode field + status + player |
+| Types | `PlayerRootProps`, `FramesProps`, `EpisodeListProps`, `ShardViewerProps`, … | Props type exported for every component |
+| Core | everything from `@rlds-viewer/core` | Re-exported |
 
 ## Design rules
 
@@ -236,45 +247,45 @@ usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active on
 |---|---|
 | Layered, each layer usable alone | core → hooks → primitives → `Player` parts → viewers |
 | Composition over configuration | Compound `Player.*` parts over a growing prop list |
-| Controlled or uncontrolled | `value` + `onChange` or `defaultValue` for step, playing, fps, selected episode |
-| No global side effects | No `window` listeners, no `history` writes; deep links belong to the app |
-| Overridable styling | Optional CSS in `@layer rlds`; `rlds-*` classes; `data-*` state attributes; `--rlds-*` tokens; no `!important` anywhere |
-| Cheap re-renders | Player state in a store read through selectors; only frame/step-bound parts re-render per frame |
-| Accessible controls | Play is one button whose label switches Play ↔ Pause (no `aria-pressed`); scrubber is a native range input; every control keyboard-reachable |
-| One install | `react` depends on `core` and re-exports its whole public API (`export * from '@rlds-viewer/core'`); one import source, one version |
-| Wrappable | Every part, not just roots: `className`, `ref`, rest props; exported props types |
 | Splittable, not just swappable | Composite parts take children; every built-in part = hook + thin markup |
-| Slots where content varies | `renderTitle`, `renderEmpty`, `include` filters; `renderItem` receives the default as `fallback` |
-| No guessed data | fps is a prop (`defaultFps`, default 10); RLDS has no standard rate field |
+| Controlled or uncontrolled | `value` + `onChange` or `defaultValue` for source, episode, selected, step, playing, fps, autoNext |
+| No global side effects | No `window` listeners, no `history` writes; deep links belong to the app |
+| Cheap re-renders | Player state in a store read through selectors; only frame/step-bound parts re-render per frame |
+| One install | `react` depends on `core` and re-exports its whole public API |
+| Wrappable | Every part: `className`, `ref`, rest props; exported props types |
+| Slots where content varies | `renderTitle`, `renderEmpty`, `renderHeader`, `include`; `renderItem` receives the default as `fallback` |
+| Overridable styling | CSS in `@layer rlds`; `rlds-*` classes; `data-*` state; `--rlds-*` tokens on `:root`; no `!important` |
+| Accessible controls | Play is one button whose label switches Play ↔ Pause (no `aria-pressed`); scrubber is a native range input |
+| No guessed data | fps is a display choice (`defaultFps`, 10); RLDS records no rate |
 
 ## Customising the design
 
-Six levels, each going further than the last. Use the first one that's enough.
+Use the first level that's enough.
 
 | Level | You do | Example |
 |---|---|---|
 | 1. Tokens | Override `--rlds-*` variables | Brand colour, fonts, chart palette |
 | 2. CSS | Target `rlds-*` classes and `data-*` state | Hide the fps picker, restyle the transport |
-| 3. Unstyled | Import only `structure.css` (or nothing); style the stable markup with your own CSS or Tailwind (`className` on every part) | Full visual control, same behaviour |
-| 4. Recompose | Build from `Player.*` parts and sub-parts + `usePlayer()`; drop, reorder, add your own; `renderItem` with `fallback` | Custom layout, metadata card, one custom chart |
-| 5. Part hooks | Keep a part's logic via its hook (`useScrubber`, `usePlayButton`, …), render your own element | Your design-system button driving our playback |
-| 6. Headless | Hooks only (`useEpisodeStream`, `useEpisode`, `usePlayback`) + `FrameCanvas` / `VectorChart` if wanted | Your own design system end to end |
+| 3. Unstyled | Import only `structure.css` (or nothing); style the markup yourself (`className` on every part) | Full visual control, same behaviour |
+| 4. Recompose | `Player.*` parts and sub-parts + `usePlayer()`; `renderItem` with `fallback` | Custom layout, metadata card, one custom chart |
+| 5. Part hooks | Keep a part's logic via its hook, render your own element | Your design-system button driving our playback |
+| 6. Headless | Hooks only + `FrameCanvas` / `VectorChart` if wanted | Your own design system end to end |
 
-Levels 1–3 never require forking a component. Markup (class names, `data-*` attributes, part structure) is treated as public API and versioned with changesets.
+Markup (class names, `data-*` attributes, part structure) is public API, versioned with changesets. Working examples of each scenario: `apps/web/src/examples/`.
 
 ### Stylesheets
 
 | File | Contains | Use when |
 |---|---|---|
-| `styles.css` | `structure.css` + `theme.css` | Default |
-| `structure.css` | Layout only: grids, sizing, canvas aspect, scrubber track | Your own look on our layout (level 3) |
-| `theme.css` | Colours, borders, radii, type, all via `--rlds-*` | Rarely alone; paired with structure |
+| `styles.css` | `structure.css` + `theme.css`, concatenated | Default |
+| `structure.css` | Layout only: grids, sizing, spacing | Your own look on our layout (level 3) |
+| `theme.css` | Colours, borders, radii, type, all via `--rlds-*` | Paired with structure |
 
-All three sit in `@layer rlds`. Token defaults are declared on `:root` (inside the layer), never on component classes, so a host value on `:root` or any ancestor reaches every part.
+All sit in `@layer rlds`. Token defaults are on `:root` (inside the layer), never on component classes, so a host value on `:root` or any ancestor reaches every part.
 
 ### CSS layer order (Tailwind and other layered CSS)
 
-Unlayered host CSS always beats `@layer rlds`. Layered CSS doesn't: the layer declared last wins. Tailwind v4 puts utilities in `@layer utilities`, so if our CSS loads after Tailwind, `rlds` overrides your utility classes. In layered setups, import our CSS from CSS, not JS, so bundler order can't move it, and declare the order first:
+Unlayered host CSS always beats `@layer rlds`. Layered CSS doesn't: the layer declared last wins. Tailwind v4 puts utilities in `@layer utilities`, so if our CSS loads after Tailwind, `rlds` overrides your utility classes. In layered setups, import our CSS from CSS and declare the order first:
 
 ```css
 /* app.css */
@@ -283,124 +294,135 @@ Unlayered host CSS always beats `@layer rlds`. Layered CSS doesn't: the layer de
 @import '@rlds-viewer/react/styles.css' layer(rlds);
 ```
 
-Without layered CSS of your own, `import '@rlds-viewer/react/styles.css'` from JS is fine.
+Verified with Tailwind v4.3 in dev and production builds: `className="bg-blue-900"` on `Player.Stage` overrides the stage background. Without layered CSS of your own, `import '@rlds-viewer/react/styles.css'` from JS is fine.
 
 ### Theming
 
 ```css
-/* Unlayered host CSS; see layer order above if yours is layered */
 :root {
   --rlds-accent: #4f46e5;
   --rlds-stage: #000;
   --rlds-font-sans: 'Inter', system-ui, sans-serif;
   --rlds-series-0: #e11d48; /* …--rlds-series-7 for chart lines */
 }
-.rlds-player[data-playing] .rlds-transport { opacity: 0.6; }
+.rlds-player[data-playing] .rlds-options { opacity: 0.6; }
 ```
 
-Light/dark: follows `prefers-color-scheme` by default. Pin it with `colorScheme="light" | "dark" | "system"` on `Player.Root` and the viewers (sets `data-rlds-scheme`), or override the tokens under your own dark selector. A pinned scheme redefines tokens on that element, so theme a pinned subtree via `[data-rlds-scheme='dark'] { --rlds-… }`.
+Tokens: `--rlds-panel`, `-sunken`, `-ink`, `-muted`, `-line`, `-accent`, `-accent-ink`, `-accent-soft`, `-danger`, `-series-0…7`, `-stage`, `-stage-ink`, `-stage-muted`, `-stage-soft`, `-stage-off`, `-stage-line`, `-stage-line-hover`, `-stage-accent`, `-stage-accent-ink`, `-frame-bg`, `-radius`, `-font-sans`, `-font-mono`.
 
-The library ships no fonts. Set `--rlds-font-sans` / `--rlds-font-mono` to fonts your app already loads.
+Light/dark follows `prefers-color-scheme`. Pin it with `colorScheme="light" | "dark"` on `Player.Root` and the viewers (sets `data-rlds-scheme`). A pinned scheme redefines tokens on that element, so theme a pinned subtree via `[data-rlds-scheme='dark'] { --rlds-… }`. The library ships no fonts.
 
 ## Dataset compatibility
 
-RLDS fixes the episode structure; each dataset picks its own keys. TFDS writes each episode as one `tf.train.Example` with flattened keys (`steps/observation/<cam>`, `steps/action`, `episode_metadata/<field>`). `core` reads that structure generically and walks whatever keys exist. Nothing is keyed to one dataset.
+RLDS fixes the episode structure; each dataset picks its own keys. TFDS writes each episode as one `tf.train.Example` with flattened keys (`steps/observation/<cam>`, `steps/action`, `episode_metadata/<field>`). `core` walks whatever keys exist; nothing is keyed to one dataset.
 
 | Assumption | Where | Generic? |
 |---|---|---|
 | Per-step keys start with `steps/` | `toEpisode` | RLDS/TFDS standard |
 | Step count from `is_first`/`is_last`/`is_terminal`/`reward`/`discount` | `stepCount` | RLDS standard fields; falls back to any per-step bytes key |
 | Images = PNG/JPEG/WebP by magic bytes | `sniffImage` | Any key name |
-| Title = first text key containing `instruction` | `episodeTitle` | Heuristic only; override with `EpisodeList renderTitle` |
+| Numeric images = spec'd rank-2/3 tensors ≥ 32×32 | `toEpisode` | Needs `features.json`; smaller matrices stay vectors |
+| Title = first non-empty `natural_language_instruction`, then `language_instruction`, then any `*instruction*`, then any text | `episodeTitle` | Heuristic; override with `renderTitle` |
 
-What a TFRecord does not carry. It lives in TFDS's `features.json` / `dataset_info.json` next to the shards:
+### Tested datasets
 
-| Missing in the shard | Effect today | Plan |
+Episode 0 of one shard each, via `node packages/core/scripts/inspect.ts <url>` (uses the sibling `features.json`):
+
+| Dataset | Loads | Notes |
 |---|---|---|
-| Tensor shapes | Multi-dim per-step tensors flatten to `dim = total / length` | Optional `features.json` input restores shapes |
-| Exact dtypes | Only float / int64 / bytes on the wire; bool → int64. `features` keeps int64 lossless; `vectors` convert to float64 (exact to 2^53) | Shapes + dtypes from `features.json` |
-| Raw (unencoded) image tensors | Bytes that aren't PNG/JPEG/WebP land in `metadata` as binary | `features.json` marks them; render from shape |
-| Control rate / fps | Not recorded; player uses `defaultFps` | Per-step timestamps if present, else caller sets it |
+| CognitiveDrone (HF) | ✓ | Reference dataset |
+| fractal20220817_data (RT-1) | ✓ | 2×3 / 3×3 pose matrices stay vectors with specs |
+| bridge | ✓ | |
+| taco_play | ✓ | Float depth `[150,200]` / `[84,84]` render as images with specs (flattened 30 000-d vectors without) |
+| berkeley_autolab_ur5 | ✓ | |
+| language_table | ✓ | Instruction is `int32[512]` character codes, not text; shows as a vector, no title |
+| austin_buds | ✓ | |
+| nyu_door_opening | ✓ | |
+| stanford_hydra | ✓ | |
+| droid | ✓ | Instruction strings are empty in this shard; title falls back to "Untitled" |
 
-Other known limits: GZIP-compressed TFRecords aren't decompressed; record CRCs aren't verified; 16-bit depth PNGs render at 8 bits in canvas.
+512-d language embeddings appear in most datasets; charts wider than 32 dims start collapsed.
 
-Verified so far: CognitiveDrone only. Build step 2 runs a compatibility pass across several public RLDS datasets, before the `Episode` type is fixed.
+Not carried by the shard (lives in TFDS `features.json` / `dataset_info.json`): tensor shapes and exact dtypes (restored when specs load), control rate / fps (never recorded; `defaultFps`).
+
+Other known limits: GZIP-compressed TFRecords aren't decompressed; record CRCs aren't verified; 16-bit depth PNGs render at 8 bits in canvas; raw *bytes* image tensors (uint8 serialized as bytes) aren't decoded (none seen in the tested set). The public OXE bucket (`storage.googleapis.com/gresearch`) sends no CORS headers, so browsers can't fetch it directly; Node can.
 
 ## Package config
 
+Generated by tsdown (`exports` option): the repo-only `rlds-source` condition points at `src/`, and `publishConfig.exports` drops it on publish.
+
 ```jsonc
-// packages/react/package.json (shape)
+// packages/react/package.json (as packed)
 {
   "name": "@rlds-viewer/react",
   "type": "module",
   "sideEffects": ["*.css"],
   "exports": {
-    ".": { "rlds-source": "./src/index.ts", "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    ".": "./dist/index.js",
+    "./package.json": "./package.json",
     "./styles.css": "./dist/styles.css",
     "./structure.css": "./dist/structure.css",
     "./theme.css": "./dist/theme.css"
   },
   "files": ["dist"],
-  "license": "TBD",
   "peerDependencies": { "react": "^19", "react-dom": "^19" },
-  "dependencies": { "@rlds-viewer/core": "workspace:^" }
+  "dependencies": { "@rlds-viewer/core": "^0.1.0" }
 }
 ```
 
-- ESM only, built with `tsdown`; `"use client"` banner on the react build.
-- Custom `rlds-source` condition lets `apps/web` run on source with no build step: set in its `vite.config.ts` (`resolve.conditions`) and `tsconfig` (`customConditions`). Not `development`: consumers' dev servers resolve that condition too and would look for unpublished `src/`.
-- `core` gets the same `exports` shape (no CSS).
+- ESM only, built with `tsdown`; `'use client'` banner on the react build; core stays external.
+- Not `development` as the source condition: consumers' dev servers resolve that too and would look for unpublished `src/`.
+- Vite's CSS `@import` ignores `resolve.conditions`, so `apps/web` aliases `@rlds-viewer/react/styles.css` to source in `vite.config.ts`.
+- Both packages are `"private": true` until the publish decisions are made.
 
 ## Repo layout
 
 ```
 packages/
-  core/      src/{tfrecord,example,episode,random,index}.ts, test/
-  react/     src/hooks/, src/components/, src/player/, src/viewers/, src/styles.css
+  core/      src/{tfrecord,example,episode,spec,random,index}.ts, test/, scripts/inspect.ts
+  react/     src/hooks/, src/components/, src/player/, src/viewers/, src/styles/, test/
 apps/
-  web/       index.html → <ShardViewer>, episode.html → <EpisodeViewer>; branding, welcome, URL sync
+  web/       index.html → <ShardViewer>, episode.html → <EpisodeViewer>; branding, welcome, URL sync; src/examples/
 ```
 
 ## Development
 
 ```sh
 pnpm i
-pnpm dev          # apps/web on source, HMR
+pnpm dev          # apps/web on source, HMR (no package build needed)
 pnpm build        # tsdown for packages, vite for web
 pnpm typecheck
-pnpm test         # node --test in core, vitest browser mode in react
+pnpm test         # node --test in core; vitest browser mode (Playwright Chromium) in react
 pnpm check:pkg    # publint + attw on built packages
-pnpm changeset    # record a version bump
 ```
+
+Core's shard tests need a file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=https://… pnpm --filter @rlds-viewer/core test`. React tests need `npx playwright install chromium` once.
 
 ## Build plan
 
-| # | Step | Done when |
+| # | Step | Status |
 |---|---|---|
-| 0 | Baseline commit of current state | Restructure reviewable as a diff |
-| 1 | Root tooling: one TypeScript, `tsdown`, `publint`, `@arethetypeswrong/cli`, `vitest` + `@vitest/browser` via `pnpm add` | `pnpm typecheck` green |
-| 2 | Compatibility pass on today's app: one shard each from several public RLDS datasets (different robots, cameras, metadata) | Each loads or its gap is listed in this README; findings fed into step 3 |
-| 3 | `core`: fix the `Episode` type above (`shape`, `ImageTrack` union, lossless int64 `features`, raw `metadata`, `readText` / `readNumbers` / `formatFeature`); emit `dist/` (`.ts` → `.js` imports, `rlds-source` condition) | `core` builds; tests pass; publint/attw clean |
-| 4 | Create `packages/react`; move hooks + components; extract `useEpisode` from `EpisodeApp` | Builds, no behaviour change |
-| 5 | Player store + `usePlayer(selector)`; parts + sub-parts, each = per-part hook + markup; nav props on `Player.Root`; `include` / `renderItem(…, fallback)`; `className` / `ref` / rest + exported props types on every part; controlled/uncontrolled props; scoped hotkeys; `ShardViewer` / `EpisodeViewer` with children. Vitest browser-mode tests: controlled vs uncontrolled, hotkey scoping, per-part hooks, `renderItem` fallback, selector re-render counts | Default `<Player>` matches today; acceptance examples compile and run; tests green |
-| 6 | Component CSS → `structure.css` + `theme.css` (`@layer rlds`, tokens on `:root`, `rlds-*`, `data-rlds-scheme`, no `!important`); app shell CSS stays in web | No visual diff |
-| 7 | `apps/web` consumes only the packages | Both pages look and behave as before in Chrome (side-by-side check, hotkeys included) |
-| 8 | `changesets` configured; `LICENSE` added | No publish until npm scope, visibility and license are decided |
-| 9 | First 0.x publish | Install in a scratch Vite app works in dev and build (catches export-condition mistakes) |
-| 10 | Optional `features.json` input in `core` (shapes, dtypes, raw image tensors) | Datasets from step 2 that flattened or hid tracks render correctly; then consider 1.0 |
+| 0 | Baseline commit | ✓ |
+| 1 | Root tooling: one TypeScript (6.0), tsdown, publint, attw, vitest browser mode | ✓ |
+| 2 | Compatibility pass (10 datasets above) | ✓ |
+| 3 | `core`: `Episode` type (shape, `ImageTrack` union, lossless int64, raw metadata, `features`), `features.json` specs, title fix; builds to `dist/` | ✓ 8 tests |
+| 4 | `packages/react`: hooks + components moved, `useEpisode` extracted | ✓ |
+| 5 | Player store + selectors, parts + sub-parts + per-part hooks, nav props, slots, scoped hotkeys, viewers with children; browser tests | ✓ 9 tests |
+| 6 | `structure.css` + `theme.css` in `@layer rlds` | ✓ |
+| 7 | `apps/web` on the packages only | ✓ computed-style diff vs baseline (light + dark, both pages, after hotkeys) |
+| 8 | changesets + `LICENSE` | **Open:** run `pnpm exec changeset init` (interactive); pick a license |
+| 9 | Packed tarballs installed in a scratch Vite + Tailwind app | ✓ dev + build; first real publish waits on scope / visibility / license |
+| 10 | `features.json` support | ✓ (pulled forward; done with step 3) |
 
-### Customisation acceptance examples
+Behaviour differences from the baseline app, all intentional:
 
-One file each in `apps/web/src/examples/`, typechecked in CI so they can't rot. Done when each is ≤ ~15 lines with no workaround.
+- The source bar keeps the opened URL instead of clearing.
+- Chart and metadata cards pin content to the top. Before, a short card in a row with a tall one spread its plot and legend apart.
+- The fps select is labelled by `aria-label` instead of a wrapping `<label>`.
+- Empty instruction strings aren't rendered.
+- Wide tracks (> 32 dims) start collapsed.
+- Depth tensors render as images when `features.json` is available.
 
-| Scenario | Example |
-|---|---|
-| Use mine | `<ShardViewer source={url} />` |
-| Tweak mine | Tokens + one CSS override, Tailwind layer order set |
-| Swap one part | Custom play button via `usePlayButton` inside `Player.Transport` |
-| Mine inside yours | `Player.Frames` + `Player.Scrubber` placed in the host's own layout |
-| Yours inside mine | `MyMetadataCard` via `usePlayer()` as `ShardViewer` children; one custom chart via `renderItem` fallback |
+**Open:** npm scope (`@rlds-viewer` org vs an existing one); public repo or not; license (MIT suggested).
 
-**Open:** npm scope (`@rlds-viewer` org vs an existing one); public repo or not; license (MIT suggested: permissive and matches the React ecosystem).
-
-**Deferred:** `asChild` / `render` prop (per-part hooks cover "your element, our behaviour"; add if users ask), Vue/Web Component wrappers, Web Worker decoding, Storybook, i18n labels, fps derived from per-step timestamps.
+**Deferred:** `asChild` / `render` prop (per-part hooks cover "your element, our behaviour"), Vue/Web Component wrappers, Web Worker decoding, Storybook, i18n labels, fps from per-step timestamps, GZIP shards, decoding text stored as int32 code arrays (language_table).

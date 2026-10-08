@@ -6,7 +6,8 @@
 import { readRecords } from './tfrecord.ts'
 import { decodeExample } from './example.ts'
 import { toEpisode, type Episode } from './episode.ts'
-import type { Progress, Source } from './index.ts'
+import type { ReadOptions, Source } from './index.ts'
+import type { FeatureSpecs } from './spec.ts'
 
 export type RangeReader = {
   size: number | undefined
@@ -15,7 +16,7 @@ export type RangeReader = {
 }
 
 export type RecordEntry = { offset: number; length: number }
-type Opts = { signal?: AbortSignal; onProgress?: (p: Progress) => void }
+type Opts = Omit<ReadOptions, 'specs'>
 
 export function blobReader(blob: Blob): RangeReader {
   return {
@@ -57,14 +58,16 @@ export class ShardIndex {
   entries: RecordEntry[] = []
   /** True once the end of file has been reached, so `entries.length` is the episode count. */
   complete = false
+  specs: FeatureSpecs | undefined
   private queue: Promise<unknown> = Promise.resolve()
 
-  constructor(reader: RangeReader) {
+  constructor(reader: RangeReader, specs?: FeatureSpecs) {
     this.reader = reader
+    this.specs = specs
   }
 
-  static async open(src: Source, signal?: AbortSignal) {
-    return new ShardIndex(src instanceof Blob ? blobReader(src) : await urlReader(src, signal))
+  static async open(src: Source, opts: { signal?: AbortSignal; specs?: FeatureSpecs } = {}) {
+    return new ShardIndex(src instanceof Blob ? blobReader(src) : await urlReader(src, opts.signal), opts.specs)
   }
 
   /** Resolves undefined when the shard has fewer than n + 1 episodes. Calls run one at a time. */
@@ -80,7 +83,7 @@ export class ShardIndex {
     if (!entry) return undefined
     body ??= await this.reader.read(entry.offset + 12, entry.length, opts.signal)
     if (body.length < entry.length) throw new Error('File ends mid-record: it is truncated or not a TFRecord file.')
-    return toEpisode(decodeExample(body), n, entry.length)
+    return toEpisode(decodeExample(body), n, entry.length, this.specs)
   }
 
   private async scanTo(n: number, { signal, onProgress }: Opts) {

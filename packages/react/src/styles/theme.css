@@ -1,0 +1,145 @@
+/* Look: colour, borders, radii, type. Every value comes from a --rlds-* token. */
+@layer rlds {
+  :root,
+  [data-rlds-scheme='light'] {
+    --rlds-panel: #ffffff;
+    --rlds-sunken: #e9ede9;
+    --rlds-ink: #17211d;
+    --rlds-muted: #5f6d67;
+    --rlds-line: #d9dfdb;
+    --rlds-accent: #0e6b57;
+    --rlds-accent-ink: #ffffff;
+    --rlds-accent-soft: #d5ebe4;
+    --rlds-danger: #b4321f;
+    --rlds-series-0: #2563c9; --rlds-series-1: #d9480f; --rlds-series-2: #0e8a5f; --rlds-series-3: #b02a8c;
+    --rlds-series-4: #a67c00; --rlds-series-5: #1597a8; --rlds-series-6: #6b4fd1; --rlds-series-7: #5c6b63;
+    color-scheme: light;
+  }
+  :root {
+    /* The stage is dark in both schemes. */
+    --rlds-stage: #1a201d;
+    --rlds-stage-ink: #e6ece9;
+    --rlds-stage-muted: #93a39c;
+    --rlds-stage-soft: #b8c5bf;
+    --rlds-stage-off: #6f7f78;
+    --rlds-stage-line: #36403b;
+    --rlds-stage-line-hover: #7e8f87;
+    --rlds-stage-accent: #3dbd98;
+    --rlds-stage-accent-ink: #06231b;
+    --rlds-frame-bg: #000;
+    --rlds-radius: 6px;
+    --rlds-font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --rlds-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --rlds-panel: #161c19; --rlds-sunken: #1d2521; --rlds-ink: #e2eae6; --rlds-muted: #8c9c95; --rlds-line: #28322d;
+      --rlds-accent: #3dbd98; --rlds-accent-ink: #06231b; --rlds-accent-soft: #173a30; --rlds-danger: #f07560; --rlds-stage: #090c0b;
+      --rlds-series-0: #6c9ef8; --rlds-series-1: #ff8a4c; --rlds-series-2: #45c98f; --rlds-series-3: #e66bc2;
+      --rlds-series-4: #e0b43a; --rlds-series-5: #4fc8d8; --rlds-series-6: #a18cff; --rlds-series-7: #9aaba3;
+      color-scheme: dark;
+    }
+  }
+  [data-rlds-scheme='dark'] {
+    --rlds-panel: #161c19; --rlds-sunken: #1d2521; --rlds-ink: #e2eae6; --rlds-muted: #8c9c95; --rlds-line: #28322d;
+    --rlds-accent: #3dbd98; --rlds-accent-ink: #06231b; --rlds-accent-soft: #173a30; --rlds-danger: #f07560; --rlds-stage: #090c0b;
+    --rlds-series-0: #6c9ef8; --rlds-series-1: #ff8a4c; --rlds-series-2: #45c98f; --rlds-series-3: #e66bc2;
+    --rlds-series-4: #e0b43a; --rlds-series-5: #4fc8d8; --rlds-series-6: #a18cff; --rlds-series-7: #9aaba3;
+    color-scheme: dark;
+  }
+
+  .rlds-viewer, .rlds-player { font-family: var(--rlds-font-sans); color: var(--rlds-ink); }
+  .rlds-viewer:focus, .rlds-player:focus { outline: none; }
+  :is(.rlds-viewer, .rlds-player) :focus-visible { outline: 2px solid var(--rlds-accent); outline-offset: 2px; }
+  .rlds-mono { font-family: var(--rlds-font-mono); font-variant-numeric: tabular-nums; }
+  .rlds-dim { color: var(--rlds-muted); }
+
+  /* Controls */
+  .rlds-btn, .rlds-input, .rlds-fps, .rlds-transport-button, .rlds-episodes li button { font: inherit; color: inherit; }
+  .rlds-btn {
+    border: 1px solid var(--rlds-line); background: var(--rlds-panel); border-radius: var(--rlds-radius);
+    padding: 6px 12px; cursor: pointer; white-space: nowrap;
+  }
+  .rlds-btn:hover:not(:disabled) { border-color: var(--rlds-muted); }
+  .rlds-btn:disabled, .rlds-transport-button:disabled { opacity: 0.4; cursor: default; }
+  .rlds-btn-primary { background: var(--rlds-accent); border-color: var(--rlds-accent); color: var(--rlds-accent-ink); font-weight: 500; }
+  .rlds-btn-primary:hover:not(:disabled) { filter: brightness(1.08); border-color: var(--rlds-accent); }
+  .rlds-input { border: 1px solid var(--rlds-line); background: var(--rlds-panel); border-radius: var(--rlds-radius); padding: 6px 10px; min-width: 0; }
+  .rlds-source-url { font-family: var(--rlds-font-mono); font-size: 12.5px; }
+  .rlds-source-episode { font-size: 12.5px; }
+  .rlds-source-episode input { padding: 6px 8px; font-family: var(--rlds-font-mono); font-variant-numeric: tabular-nums; }
+
+  /* Load status */
+  .rlds-status { background: var(--rlds-sunken); border-bottom: 1px solid var(--rlds-line); }
+  .rlds-status-bar { background: var(--rlds-accent-soft); transition: width 0.2s linear; }
+  .rlds-status[data-phase='done'] .rlds-status-bar { background: transparent; }
+  .rlds-status-text { font-size: 12px; }
+  .rlds-status-name { font-weight: 500; }
+  .rlds-status-note { color: var(--rlds-muted); }
+  .rlds-status-note[data-tone='error'] { color: var(--rlds-danger); }
+  .rlds-waiting { color: var(--rlds-muted); }
+  .rlds-waiting[data-tone='error'] { color: var(--rlds-danger); }
+
+  /* Episodes drawer */
+  .rlds-episodes { border-right: 1px solid var(--rlds-line); background: var(--rlds-panel); }
+  .rlds-episodes li button { border: 0; border-radius: var(--rlds-radius); background: transparent; cursor: pointer; }
+  .rlds-episodes li button:hover { background: var(--rlds-sunken); }
+  .rlds-episodes li button[aria-current='true'] { background: var(--rlds-accent-soft); }
+  .rlds-episodes-head { font-size: 11.5px; }
+  .rlds-episodes-title { font-size: 13px; line-height: 1.35; }
+  .rlds-episodes-pending { color: var(--rlds-muted); font-size: 12.5px; }
+
+  /* Stage */
+  .rlds-stage { background: var(--rlds-stage); color: var(--rlds-stage-ink); }
+  .rlds-instruction { font-size: 17px; font-weight: 500; }
+  .rlds-frame canvas { background: var(--rlds-frame-bg); border-radius: 4px; }
+  .rlds-frame figcaption { font-size: 11.5px; color: var(--rlds-stage-muted); }
+  .rlds-frames-empty { color: var(--rlds-stage-muted); }
+
+  .rlds-transport-button {
+    background: transparent; border: 1px solid var(--rlds-stage-line); border-radius: var(--rlds-radius);
+    color: var(--rlds-stage-ink); cursor: pointer;
+  }
+  .rlds-transport-button:hover:not(:disabled) { border-color: var(--rlds-stage-line-hover); }
+  .rlds-transport-button.rlds-play { background: var(--rlds-stage-ink); color: var(--rlds-stage); border-color: var(--rlds-stage-ink); border-radius: 50%; }
+  .rlds-transport-button svg { fill: currentColor; }
+  .rlds-scrubber { accent-color: var(--rlds-stage-accent); }
+  .rlds-counter { font-size: 13px; }
+  .rlds-counter .rlds-dim { color: var(--rlds-stage-muted); }
+
+  .rlds-options { font-size: 12.5px; }
+  .rlds-fps { background: transparent; border: 1px solid var(--rlds-stage-line); border-radius: var(--rlds-radius); color: var(--rlds-stage-ink); }
+  .rlds-fps option { color: initial; }
+  .rlds-autonext { cursor: pointer; color: var(--rlds-stage-soft); }
+  .rlds-autonext input { accent-color: var(--rlds-stage-accent); }
+  .rlds-flag {
+    font: 500 11px var(--rlds-font-mono); text-transform: uppercase; letter-spacing: 0.06em;
+    border-radius: 99px; border: 1px solid var(--rlds-stage-line); color: var(--rlds-stage-off);
+  }
+  .rlds-flag[data-on] { background: var(--rlds-stage-accent); border-color: var(--rlds-stage-accent); color: var(--rlds-stage-accent-ink); }
+
+  /* Tracks */
+  .rlds-chart, .rlds-metadata { background: var(--rlds-panel); border: 1px solid var(--rlds-line); border-radius: 8px; }
+  .rlds-chart h3, .rlds-metadata h3 { font: 500 12.5px var(--rlds-font-mono); }
+  .rlds-chart header .rlds-mono { font-size: 11px; }
+  .rlds-chart svg { background: var(--rlds-sunken); border-radius: 4px; cursor: crosshair; }
+  .rlds-chart path { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .rlds-chart-zero { stroke: var(--rlds-line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .rlds-chart-cursor { stroke: var(--rlds-ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .rlds-chart-collapsed { font-size: 12px; }
+  .rlds-chart-legend button { font-size: 11.5px; border-radius: 4px; }
+  .rlds-chart-legend button[data-off] { opacity: 0.4; }
+  .rlds-chart-legend i { border-radius: 2px; }
+  .rlds-metadata dt { font-size: 11.5px; color: var(--rlds-muted); }
+  .rlds-metadata dd { font-size: 12px; }
+
+  .rlds-dropzone-overlay {
+    background: color-mix(in srgb, var(--rlds-accent) 18%, transparent); border: 3px dashed var(--rlds-accent);
+    font-size: 18px; font-weight: 500; color: var(--rlds-ink);
+  }
+
+  @media (max-width: 760px) {
+    .rlds-episodes { border-right: 0; border-bottom: 1px solid var(--rlds-line); }
+  }
+  @media (prefers-reduced-motion: reduce) { .rlds-status-bar { transition: none; } }
+}

@@ -26,7 +26,7 @@ test('decodes every episode of a shard', { skip: !path }, async () => {
     for (const im of Object.values(ep.images)) assert.equal(im.frames.length, ep.length)
   }
   const e = eps[0]
-  console.log(eps.length, 'episodes;', e.length, 'steps;', Object.keys(e.images), Object.fromEntries(Object.entries(e.vectors).map(([k, v]) => [k, v.dim])), episodeTitle(e), e.metadata)
+  console.log(eps.length, 'episodes;', e.length, 'steps;', Object.keys(e.images), episodeTitle(e))
 })
 
 test('tiny chunks yield identical records', { skip: !path }, async () => {

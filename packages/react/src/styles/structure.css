@@ -1,0 +1,79 @@
+/* Layout only: display, grids, sizing, spacing. Pair with theme.css or your own look. */
+@layer rlds {
+  .rlds-viewer { height: 100%; display: grid; grid-template-rows: auto auto 1fr; position: relative; min-height: 0; }
+
+  /* Source bar */
+  .rlds-source { display: flex; gap: 8px; flex: 1; min-width: min(100%, 320px); }
+  .rlds-source-url { flex: 1; }
+  .rlds-source-episode { display: flex; align-items: center; gap: 6px; }
+  .rlds-source-episode input { width: 7ch; }
+
+  /* Load status */
+  .rlds-status { position: relative; }
+  .rlds-status-bar { position: absolute; inset: 0 auto 0 0; }
+  .rlds-status-text { position: relative; display: flex; gap: 16px; padding: 5px 16px; align-items: baseline; flex-wrap: wrap; }
+  .rlds-status-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 50ch; }
+
+  /* Shard viewer body: drawer | player */
+  .rlds-shard-viewer-body { display: grid; grid-template-columns: 290px minmax(0, 1fr); min-height: 0; }
+  .rlds-episode-viewer-body { min-height: 0; display: grid; }
+  .rlds-waiting { display: grid; place-items: center; }
+  .rlds-waiting[data-tone='error'] { padding: 16px; text-align: center; }
+
+  /* Episodes drawer */
+  .rlds-episodes { display: flex; flex-direction: column; min-height: 0; }
+  .rlds-episodes > input { margin: 10px; }
+  .rlds-episodes ol { list-style: none; margin: 0; padding: 0 6px 10px; overflow-y: auto; flex: 1; }
+  .rlds-episodes li button { width: 100%; text-align: left; padding: 7px 10px; display: grid; gap: 2px; white-space: normal; }
+  .rlds-episodes-head { display: flex; justify-content: space-between; }
+  .rlds-episodes-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rlds-episodes-pending { padding: 10px; }
+
+  /* Player */
+  .rlds-player { overflow-y: auto; min-height: 0; }
+  .rlds-stage { padding: 16px; display: grid; gap: 12px; }
+  .rlds-instructions { display: grid; gap: 12px; }
+  .rlds-instruction { margin: 0; text-align: center; text-wrap: balance; }
+  .rlds-frames { display: grid; gap: 12px; justify-content: center; }
+  .rlds-frames[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rlds-frames[data-count='3'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rlds-frame { margin: 0; display: grid; gap: 6px; justify-items: center; }
+  .rlds-frame canvas { height: min(52vh, 520px); max-width: 100%; object-fit: contain; }
+  .rlds-frame figcaption { display: flex; gap: 12px; }
+  .rlds-frames-empty { text-align: center; margin: 40px 0; }
+
+  .rlds-transport { display: flex; align-items: center; gap: 6px; }
+  .rlds-transport-button { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
+  .rlds-transport-button.rlds-play { width: 40px; height: 40px; }
+  .rlds-transport-button svg { width: 15px; height: 15px; }
+  .rlds-scrubber { flex: 1; min-width: 60px; }
+  .rlds-counter { min-width: 8ch; text-align: right; }
+
+  .rlds-options { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .rlds-fps { padding: 3px 8px; }
+  .rlds-autonext { display: flex; gap: 6px; align-items: center; }
+  .rlds-flags { display: flex; gap: 6px; margin-left: auto; }
+  .rlds-flag { padding: 2px 8px; }
+
+  .rlds-tracks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 12px; padding: 16px; }
+  .rlds-chart, .rlds-metadata { padding: 12px; display: grid; gap: 8px; min-width: 0; align-content: start; }
+  .rlds-chart header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .rlds-chart h3, .rlds-metadata h3 { margin: 0; }
+  .rlds-chart svg { width: 100%; height: 96px; display: block; touch-action: none; }
+  .rlds-chart-collapsed { margin: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .rlds-chart-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+  .rlds-chart-legend button { display: flex; align-items: center; gap: 6px; padding: 2px 8px; }
+  .rlds-chart-legend i { width: 8px; height: 8px; }
+  .rlds-chart-legend .rlds-mono { min-width: 7ch; text-align: right; }
+  .rlds-metadata dl { margin: 0; display: grid; gap: 6px; }
+  .rlds-metadata dd { margin: 0; overflow-wrap: anywhere; }
+
+  .rlds-dropzone { position: relative; }
+  .rlds-dropzone-overlay { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+
+  @media (max-width: 760px) {
+    .rlds-shard-viewer-body { grid-template-columns: 1fr; grid-template-rows: 180px 1fr; }
+    .rlds-frame canvas { height: auto; width: 100%; }
+    .rlds-frames[data-count='2'], .rlds-frames[data-count='3'] { grid-template-columns: 1fr; }
+  }
+}

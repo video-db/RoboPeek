@@ -11,7 +11,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@rlds-viewer/core": "workspace:*",
+    "@rlds-viewer/react": "workspace:^",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
@@ -21,7 +21,6 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
-    "typescript": "~6.0.2",
     "vite": "^8.3.0"
   }
 }

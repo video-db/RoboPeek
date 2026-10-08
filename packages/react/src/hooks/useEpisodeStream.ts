@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { streamEpisodes, type Episode, type Progress, type Source } from '@rlds-viewer/core'
+import { errorMessage, resolveSpecs, sourceName, type SpecsOption } from './specs.ts'
 
 export type StreamStatus = {
   phase: 'idle' | 'loading' | 'done' | 'cancelled' | 'error'
@@ -9,13 +10,13 @@ export type StreamStatus = {
   error?: string
 }
 
-const sourceName = (src: Source) => (src instanceof File ? src.name : String(src))
-
 /** Streams a shard into React state, batching episode/progress updates to one render per frame. */
-export function useEpisodeStream() {
+export function useEpisodeStream(opts: { specs?: SpecsOption } = {}) {
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [status, setStatus] = useState<StreamStatus>({ phase: 'idle', loaded: 0 })
   const active = useRef<AbortController | null>(null)
+  const specsOpt = useRef(opts.specs ?? 'auto')
+  specsOpt.current = opts.specs ?? 'auto'
 
   useEffect(() => () => active.current?.abort(), [])
 
@@ -38,7 +39,8 @@ export function useEpisodeStream() {
     const schedule = () => { raf ||= requestAnimationFrame(flush) }
 
     try {
-      for await (const ep of streamEpisodes(src, { signal: ac.signal, onProgress: (p) => { progress = p; schedule() } })) {
+      const specs = await resolveSpecs(src, specsOpt.current, ac.signal)
+      for await (const ep of streamEpisodes(src, { signal: ac.signal, specs, onProgress: (p) => { progress = p; schedule() } })) {
         buf.push(ep)
         schedule()
       }
@@ -49,8 +51,7 @@ export function useEpisodeStream() {
       if (ac.signal.aborted) return
       cancelAnimationFrame(raf)
       flush()
-      const msg = e instanceof TypeError ? 'Network error. Check the URL, and that the server allows cross-origin requests.' : (e as Error).message
-      setStatus((s) => ({ ...s, phase: 'error', error: msg }))
+      setStatus((s) => ({ ...s, phase: 'error', error: errorMessage(e) }))
     }
   }, [])
 
@@ -59,5 +60,11 @@ export function useEpisodeStream() {
     setStatus((s) => (s.phase === 'loading' ? { ...s, phase: 'cancelled' } : s))
   }, [])
 
-  return { episodes, status, load, cancel }
+  const reset = useCallback(() => {
+    active.current?.abort()
+    setEpisodes([])
+    setStatus({ phase: 'idle', loaded: 0 })
+  }, [])
+
+  return { episodes, status, load, cancel, reset }
 }

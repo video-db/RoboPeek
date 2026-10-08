@@ -3,7 +3,7 @@
 export type Feature =
   | { kind: 'bytes'; values: Uint8Array[] }
   | { kind: 'float'; values: Float32Array }
-  | { kind: 'int64'; values: Float64Array }
+  | { kind: 'int64'; values: BigInt64Array }
 
 class Reader {
   buf: Uint8Array
@@ -20,7 +20,7 @@ class Reader {
     return this.pos >= this.end
   }
 
-  // Doubles instead of bit ops: values above 2^53 lose precision, which is fine for RLDS fields.
+  // Doubles instead of bit ops: exact for lengths, tags and offsets (all far below 2^53).
   varint(): number {
     let r = 0
     let m = 1
@@ -31,6 +31,18 @@ class Reader {
       m *= 128
     } while (c & 0x80)
     return r
+  }
+
+  varint64(): bigint {
+    let r = 0n
+    let shift = 0n
+    let c: number
+    do {
+      c = this.buf[this.pos++]
+      r |= BigInt(c & 0x7f) << shift
+      shift += 7n
+    } while (c & 0x80)
+    return BigInt.asIntN(64, r)
   }
 
   bytes(): Uint8Array {
@@ -56,8 +68,6 @@ class Reader {
   }
 }
 
-const toInt64 = (u: number) => (u >= 2 ** 63 ? u - 2 ** 64 : u)
-
 function floatList(r: Reader): Float32Array {
   const out: number[] = []
   while (!r.done) {
@@ -75,17 +85,17 @@ function floatList(r: Reader): Float32Array {
   return Float32Array.from(out)
 }
 
-function int64List(r: Reader): Float64Array {
-  const out: number[] = []
+function int64List(r: Reader): BigInt64Array {
+  const out: bigint[] = []
   while (!r.done) {
     const tag = r.varint()
     if (tag >> 3 !== 1) { r.skip(tag & 7); continue }
     if ((tag & 7) === 2) {
       const p = r.sub()
-      while (!p.done) out.push(toInt64(p.varint()))
-    } else out.push(toInt64(r.varint()))
+      while (!p.done) out.push(p.varint64())
+    } else out.push(r.varint64())
   }
-  return Float64Array.from(out)
+  return BigInt64Array.from(out)
 }
 
 function bytesList(r: Reader): Uint8Array[] {

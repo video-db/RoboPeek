@@ -1,16 +1,28 @@
 {
   "name": "@rlds-viewer/core",
   "version": "0.1.0",
-  "main": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "node --test 'test/*.test.ts'"
+    "test": "node --test 'test/*.test.ts'",
+    "build": "tsdown"
   },
   "type": "module",
   "private": true,
-  "types": "./src/index.ts",
-  "exports": "./src/index.ts",
-  "devDependencies": {
-    "typescript": "^7.0.2"
+  "exports": {
+    ".": {
+      "rlds-source": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    }
   }
 }

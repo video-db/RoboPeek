@@ -10,6 +10,7 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "customConditions": ["rlds-source"],
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
