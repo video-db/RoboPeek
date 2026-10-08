@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
+  "baseBranch": "main",
+  "access": "public",
+  "format": "auto",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "video-db/RoboPeek"
+    }
+  ],
+  "commit": false,
+  "ignore": [],
+  "fixed": [
+    [
+      "@robopeek/rlds",
+      "@robopeek/react"
+    ]
+  ],
+  "linked": [],
+  "updateInternalDependencies": "patch",
+  "privatePackages": {
+    "version": false,
+    "tag": false
+  }
+}

@@ -7,12 +7,15 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @robopeek/rlds exec attw --pack . --profile esm-only && pnpm --filter @robopeek/react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release": "pnpm -r --filter './packages/*' build && pnpm check:pkg && changeset publish"
   },
   "packageManager": "pnpm@10.33.0",
   "private": true,
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
+    "@changesets/changelog-github": "^1.0.1",
     "@changesets/cli": "^3.0.3",
     "@vitest/browser-playwright": "^5.0.3",
     "playwright": "^1.64.0",

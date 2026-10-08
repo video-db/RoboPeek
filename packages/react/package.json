@@ -1,7 +1,6 @@
 {
   "name": "@robopeek/react",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "build": "tsdown",
@@ -52,9 +51,27 @@
       "./styles.css": "./dist/styles.css",
       "./structure.css": "./dist/structure.css",
       "./theme.css": "./dist/theme.css"
-    }
+    },
+    "access": "public"
   },
   "dependencies": {
     "@robopeek/rlds": "workspace:^"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/video-db/RoboPeek.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/video-db/RoboPeek#readme",
+  "bugs": {
+    "url": "https://github.com/video-db/RoboPeek/issues"
+  },
+  "description": "React viewer and player components for RLDS robot-learning episodes",
+  "keywords": [
+    "rlds",
+    "react",
+    "robotics",
+    "episode-viewer",
+    "dataset"
+  ]
 }

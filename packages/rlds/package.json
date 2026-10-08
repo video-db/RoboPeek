@@ -1,13 +1,12 @@
 {
   "name": "@robopeek/rlds",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "node --test 'test/*.test.ts'",
     "build": "tsdown"
   },
   "type": "module",
-  "private": true,
   "exports": {
     ".": {
       "robopeek-source": "./src/index.ts",
@@ -23,6 +22,24 @@
     "exports": {
       ".": "./dist/index.mjs",
       "./package.json": "./package.json"
-    }
-  }
+    },
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/video-db/RoboPeek.git",
+    "directory": "packages/rlds"
+  },
+  "homepage": "https://github.com/video-db/RoboPeek#readme",
+  "bugs": {
+    "url": "https://github.com/video-db/RoboPeek/issues"
+  },
+  "description": "Read RLDS / TFDS TFRecord episodes in the browser, without downloading whole shards",
+  "keywords": [
+    "rlds",
+    "tfrecord",
+    "robotics",
+    "open-x-embodiment",
+    "dataset"
+  ]
 }
