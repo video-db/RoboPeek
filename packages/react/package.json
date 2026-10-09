@@ -19,8 +19,8 @@
     "vitest-browser-react": "^2.3.0"
   },
   "peerDependencies": {
-    "@videodb/robopeek-mcap": "workspace:^",
-    "@videodb/robopeek-rlds": "workspace:^",
+    "@videodb/robopeek-mcap": ">=0.1.0 <1.0.0",
+    "@videodb/robopeek-rlds": ">=0.2.0 <1.0.0",
     "react": "^19",
     "react-dom": "^19"
   },

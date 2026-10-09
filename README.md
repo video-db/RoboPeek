@@ -110,7 +110,7 @@ The full table is in [the React docs](packages/react#when-a-boundary-is-crossed)
 - **Module format:** all packages are ESM only, with types included.
 - **Runtimes:** the readers run in modern browsers and Node 20+.
 - **React:** the React package needs React 19.
-- **Versions:** all three packages share one version number, so keep them in step.
+- **Versions:** each package is versioned on its own. `@videodb/robopeek-react` accepts any reader version in its peer range: `@videodb/robopeek-rlds >=0.2.0 <1.0.0` and `@videodb/robopeek-mcap >=0.1.0 <1.0.0`. A reader that's too old fails with a message naming the version it needs.
 
 ## Quick start
 

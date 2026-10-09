@@ -55,7 +55,7 @@ Install this package, plus the reader for each format you show. The readers are 
 - **Peers:** `react` and `react-dom` 19.
 - **Module format:** ESM only.
 - **Next.js:** files carry `'use client'`, so they work in the App Router.
-- **Versions:** all RoboPeek packages share one version number. Keep `@videodb/robopeek-react`, `-rlds` and `-mcap` on the same version, and npm/pnpm warn if they drift.
+- **Versions:** each package is versioned on its own. This package works with `@videodb/robopeek-rlds >=0.2.0 <1.0.0` and `@videodb/robopeek-mcap >=0.1.0 <1.0.0`: npm/pnpm warn when an installed reader is outside the range, and an RLDS reader older than 0.2.0 fails with `needs @videodb/robopeek-rlds 0.2.0 or newer`.
 
 What lands in `node_modules`:
 

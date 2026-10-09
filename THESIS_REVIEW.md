@@ -36,4 +36,4 @@ Decoding in Web Workers, a saved episode index, caching, and the thesis's measur
 
 Done: `core` renamed to `@videodb/robopeek-rlds`.
 
-MCAP: built as `@videodb/robopeek-mcap` + `@videodb/robopeek-react/mcap` (see above). The next release is 0.2.0 and breaking for RLDS imports (`/rlds`, reader as a peer).
+MCAP: built as `@videodb/robopeek-mcap` + `@videodb/robopeek-react/mcap` (see above). Packages version independently; React declares reader peer ranges by the APIs it uses. Next release: mcap 0.1.0 (first), rlds 0.2.0 (pixel helpers), react 0.2.0 (breaking for RLDS imports).

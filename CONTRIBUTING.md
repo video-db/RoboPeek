@@ -49,7 +49,11 @@ We release when we choose to, not on every merge. Merging to `main` never publis
 
 Our GitHub organization doesn't let Actions open pull requests, which is why step 3 is done by hand.
 
-All packages share one version number: `@videodb/robopeek-react@0.3.0` goes with `@videodb/robopeek-rlds@0.3.0` and `@videodb/robopeek-mcap@0.3.0`.
+Each package has its own version and is bumped only when it changes. `@videodb/robopeek-react` declares which reader versions it works with as peer ranges (for example `@videodb/robopeek-rlds >=0.2.0 <1.0.0`), based on the reader APIs it actually uses:
+
+- **Raise the floor** when `/rlds` or `/mcap` starts using a newer reader API. Bump the minimum-version check in `src/rlds/reader.ts` or `src/mcap/reader.ts` too, so an older reader fails with a message that says which version is needed.
+- **Tighten the range when a reader breaks an API React uses.** Until 1.0 a reader's minor release may be breaking, so the same pull request that ships it updates `/rlds` or `/mcap` and sets a new floor (or caps the range).
+- **No cascade.** A reader release doesn't force a React release: Changesets only bumps a package that depends on a bumped peer when the new version falls outside the peer range (`onlyUpdatePeerDependentsWhenOutOfRange`).
 
 Until 1.0, a minor release (0.2 → 0.3) may include breaking changes, including to the markup and CSS class names.
 
