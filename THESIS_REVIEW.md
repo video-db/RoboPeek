@@ -20,14 +20,13 @@ Both publish under VideoDB's existing npm org as `@videodb/robopeek-rlds` and `@
 
 MCAP is a timestamped message log, not a list of episodes, so it shares almost no reading code with RLDS.
 
-- One reading package per format. RLDS is `@videodb/robopeek-rlds`; MCAP will be added later as `@videodb/robopeek-mcap`. One shared package with tree-shaking would still make RLDS users install MCAP's decompressors, since tree-shaking trims bundles, not installs.
-- One React package. Only three small files (about 170 of 1,850 lines) touch RLDS directly. They move to `@videodb/robopeek-react/rlds` as `RldsShardViewer`, `RldsEpisodeViewer`, `useRldsStream` and `useRldsEpisode`. The player and everything else stay shared. MCAP gets `@videodb/robopeek-react/mcap`.
-- The player gets its own input type. Each format converts its own type into it. If MCAP doesn't fit, or a shape changes later, the change stays inside that format's packages.
-- No shared `@videodb/robopeek-core` yet. It would be empty today. We'll shape it around MCAP when that arrives.
+Decided when MCAP was built (2026-10-09):
 
-## Open question
-
-The player counts in steps. MCAP topics tick at different rates, so it may need to count in time instead. We'll decide after reading one real MCAP file. A time-based player would also replace the guessed 10 fps default.
+- Readers stay separate: `@videodb/robopeek-rlds` and `@videodb/robopeek-mcap`. No `@videodb/robopeek-core`.
+- One React package, `@videodb/robopeek-react`. Its root entry is format-free: the player reads a `Timeline` type defined there. `/rlds` and `/mcap` hold each format's adapter, hooks and viewers. The readers are optional peer dependencies, so an app installs only the format it uses.
+- The boundary is enforced, not just documented: CI checks the built entries' imports, and crossing it throws a message that says what to install or import instead.
+- The player counts in the timeline's unit: steps for RLDS (speed in fps), seconds for MCAP (real timestamps; speed as × real time).
+- One MCAP file is one episode. Splitting a file into episodes is deferred.
 
 ## Not built yet
 
@@ -37,6 +36,4 @@ Decoding in Web Workers, a saved episode index, caching, and the thesis's measur
 
 Done: `core` renamed to `@videodb/robopeek-rlds`.
 
-Now, before publishing: move the RLDS hooks and viewers to `@videodb/robopeek-react/rlds`, and update the docs and demo.
-
-When MCAP starts: read one MCAP file, settle steps vs. time, then add `@videodb/robopeek-core`, `@videodb/robopeek-mcap` and `@videodb/robopeek-react/mcap`.
+MCAP: built as `@videodb/robopeek-mcap` + `@videodb/robopeek-react/mcap` (see above). Packages version independently; React declares reader peer ranges by the APIs it uses. Next release: mcap 0.1.0 (first), rlds 0.2.0 (pixel helpers), react 0.2.0 (breaking for RLDS imports).

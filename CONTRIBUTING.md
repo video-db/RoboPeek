@@ -12,7 +12,7 @@ pnpm dev                                # demo app on the package sources, with 
 |---|---|
 | `pnpm typecheck` | TypeScript across the repo |
 | `pnpm test` | Reader tests (Node) and React tests (headless Chromium) |
-| `pnpm build` | Builds both packages and the demo app |
+| `pnpm build` | Builds the packages and the demo app |
 | `pnpm check:pkg` | Checks the built packages the way npm users will see them |
 
 The reader's shard tests need a real file or URL: `RLDS_SHARD=/path/x.tfrecord RLDS_URL=https://… pnpm --filter @videodb/robopeek-rlds test`.
@@ -45,11 +45,15 @@ We release when we choose to, not on every merge. Merging to `main` never publis
 1. Every merge to `main` that brings changelog notes updates the `changeset-release/main` branch. It collects every note since the last release, bumps the version numbers, and writes the changelogs.
 2. Merges keep piling onto that branch, so a week of changes becomes one release.
 3. When you want to release (for example, every Friday): open the latest **Release** run in the Actions tab and click the PR link in its summary, or open https://github.com/video-db/RoboPeek/compare/main...changeset-release/main. Create the PR if there isn't one, review it, and merge it.
-4. That merge publishes both packages to npm, tags them, and creates a GitHub Release for each with its changelog notes.
+4. That merge publishes the packages to npm, tags them, and creates a GitHub Release for each with its changelog notes.
 
 Our GitHub organization doesn't let Actions open pull requests, which is why step 3 is done by hand.
 
-Both packages always share one version number: `@videodb/robopeek-react@0.3.0` goes with `@videodb/robopeek-rlds@0.3.0`.
+Each package has its own version and is bumped only when it changes. `@videodb/robopeek-react` declares which reader versions it works with as peer ranges (for example `@videodb/robopeek-rlds >=0.2.0 <1.0.0`), based on the reader APIs it actually uses:
+
+- **Raise the floor** when `/rlds` or `/mcap` starts using a newer reader API. Bump the minimum-version check in `src/rlds/reader.ts` or `src/mcap/reader.ts` too, so an older reader fails with a message that says which version is needed.
+- **Tighten the range when a reader breaks an API React uses.** Until 1.0 a reader's minor release may be breaking, so the same pull request that ships it updates `/rlds` or `/mcap` and sets a new floor (or caps the range).
+- **No cascade.** A reader release doesn't force a React release: Changesets only bumps a package that depends on a bumped peer when the new version falls outside the peer range (`onlyUpdatePeerDependentsWhenOutOfRange`).
 
 Until 1.0, a minor release (0.2 → 0.3) may include breaking changes, including to the markup and CSS class names.
 

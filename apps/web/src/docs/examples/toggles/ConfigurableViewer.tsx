@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
-import { Player, ShardViewer, usePlayer, type Source } from '@videodb/robopeek-react'
+import type { Source } from '@videodb/robopeek-rlds'
+import { Player } from '@videodb/robopeek-react'
+import { Flags, ShardViewer, useCurrentEpisode } from '@videodb/robopeek-react/rlds'
 import './toggles.css'
 
 export type Show = {
@@ -64,9 +66,9 @@ export function ConfigurableViewer({ source, show, hidden, onKeys }: Props) {
         )}
         {options && (
           <Player.Options>
-            {show.fps && <Player.FpsSelect />}
+            {show.fps && <Player.RateSelect />}
             {show.autoNext && <Player.AutoNext />}
-            {show.flags && <Player.Flags />}
+            {show.flags && <Flags />}
           </Player.Options>
         )}
       </Player.Stage>}
@@ -81,7 +83,7 @@ export function ConfigurableViewer({ source, show, hidden, onKeys }: Props) {
 
 /** Tells the page which cameras / charts / metadata the current episode has, so it can list per-key toggles. */
 function ReportKeys({ onKeys }: { onKeys: (keys: Keys) => void }) {
-  const episode = usePlayer((s) => s.episode)
+  const episode = useCurrentEpisode()
   useEffect(() => {
     onKeys({
       cameras: Object.keys(episode.images),

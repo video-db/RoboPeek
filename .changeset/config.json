@@ -11,16 +11,14 @@
   ],
   "commit": false,
   "ignore": [],
-  "fixed": [
-    [
-      "@videodb/robopeek-rlds",
-      "@videodb/robopeek-react"
-    ]
-  ],
+  "fixed": [],
   "linked": [],
   "updateInternalDependencies": "patch",
   "privatePackages": {
     "version": false,
     "tag": false
+  },
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
   }
 }

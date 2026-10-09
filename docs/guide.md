@@ -70,11 +70,11 @@ formatFeature(ep.metadata['episode_metadata/file_path']) // display string, what
 ## React: drop-in viewers
 
 ```sh
-pnpm add @videodb/robopeek-react   # brings rlds with it; rlds's API is re-exported
+pnpm add @videodb/robopeek-react @videodb/robopeek-rlds   # the reader is a peer: install it next to the UI
 ```
 
 ```tsx
-import { ShardViewer, EpisodeViewer } from '@videodb/robopeek-react'
+import { ShardViewer, EpisodeViewer } from '@videodb/robopeek-react/rlds'
 import '@videodb/robopeek-react/styles.css' // or from CSS, see "CSS layer order"
 
 // Episode drawer + player, streams the whole shard
@@ -91,16 +91,17 @@ Both viewers: `source` (required; `null` shows `empty`), `specs` (`'auto'` defau
 ## React: compose your own player
 
 ```tsx
-import { Player, useEpisode } from '@videodb/robopeek-react'
+import { Player } from '@videodb/robopeek-react'
+import { EpisodePlayer, useEpisode } from '@videodb/robopeek-react/rlds'
 
 function MyPlayer({ url, n, go }: { url: string; n: number; go: (n: number) => void }) {
   const { episode, status } = useEpisode(url, n)
   if (!episode) return <p>{status.phase}</p>
 
   return (
-    <Player.Root
+    <EpisodePlayer
       episode={episode}
-      defaultFps={15}
+      defaultRate={15}
       className="my-player"
       onPrevEpisode={n > 0 ? () => go(n - 1) : undefined}  // omitted → PrevEpisode renders disabled
       onNextEpisode={() => go(n + 1)}                       // also drives AutoNext at episode end
@@ -108,19 +109,19 @@ function MyPlayer({ url, n, go }: { url: string; n: number; go: (n: number) => v
       <Player.Frames renderEmpty={() => <p>No cameras</p>} />
       <Player.Transport />
       <Player.Tracks include={['action', 'observation/state']} />
-    </Player.Root>
+    </EpisodePlayer>
   )
 }
 ```
 
-`<Player episode={…} />` (or `Player.Root` with no children) renders the default arrangement:
+`<EpisodePlayer episode={…} />` (or any `Player.Root` with no children) renders the default arrangement:
 
 ```
 Root
 ├─ Stage ─ Instruction, Frames, Transport, Options
 └─ Tracks ─ (charts), Metadata
 Transport ─ PrevEpisode, StepBack, Play, StepForward, NextEpisode, Scrubber, Counter
-Options   ─ FpsSelect, AutoNext, Flags
+Options   ─ RateSelect, AutoNext (+ Flags for RLDS, Topics panel for MCAP)
 ```
 
 Every composite part (`Stage`, `Transport`, `Options`) renders its defaults with no children and only your children otherwise. `Tracks` renders its charts, then its children in the same grid.
@@ -130,31 +131,33 @@ Every composite part (`Stage`, `Transport`, `Options`) renders its defaults with
 Any component inside `Player.Root` reads live state with `usePlayer(selector)`. It re-renders only when the selected value changes, so a component that doesn't read `step` stays still during playback:
 
 ```tsx
-import { Player, usePlayer, readText, vectorAt } from '@videodb/robopeek-react'
+import { readText, vectorAt } from '@videodb/robopeek-rlds'
+import { Player, usePlayer } from '@videodb/robopeek-react'
+import { EpisodePlayer, useCurrentEpisode } from '@videodb/robopeek-react/rlds'
 
 function EpisodeCard() {
-  const episode = usePlayer((s) => s.episode) // no re-render per frame
-  const step = usePlayer((s) => s.step)       // re-renders each step
+  const episode = useCurrentEpisode()              // no re-render per frame
+  const step = usePlayer((s) => s.position)       // re-renders each step
   const path = readText(episode.metadata['episode_metadata/file_path'])?.[0]
   const reward = vectorAt(episode.vectors['reward'], step)[0]
   return <aside className="card">{path} · reward {reward}</aside>
 }
 
-<Player.Root episode={episode}>
+<EpisodePlayer episode={episode}>
   <EpisodeCard />
   <Player.Frames />
   <Player.Transport />
-</Player.Root>
+</EpisodePlayer>
 ```
 
-Select primitives or stable references (`episode`, actions), not freshly built objects.
+Select primitives or stable references (`timeline`, actions), not freshly built objects.
 
 Or keep the built-in metadata panel and change how entries render:
 
 ```tsx
 <Player.Metadata
   include={(key) => key.startsWith('episode_metadata/')}
-  renderItem={(key, feature) => <MyRow label={key.split('/').pop()} value={formatFeature(feature)} />}
+  renderItem={(key, value) => <MyRow label={key.split('/').pop()} value={value} />}
 />
 ```
 
@@ -181,7 +184,7 @@ function MyPlay() {
 </Player.Transport>
 ```
 
-Each built-in part is its hook plus thin markup (`usePlayButton`, `useStepButton`, `useEpisodeButton`, `useScrubber`, `useFpsSelect`, `useAutoNext`). Keep the logic and render any element you like.
+Each built-in part is its hook plus thin markup (`usePlayButton`, `useStepButton`, `useEpisodeButton`, `useScrubber`, `useRateSelect`, `useAutoNext`). Keep the logic and render any element you like.
 
 ## React: drop-in viewer, your player layout
 
@@ -192,42 +195,36 @@ Each built-in part is its hook plus thin markup (`usePlayButton`, `useStepButton
 </ShardViewer>
 ```
 
-Children go inside the viewer's `Player.Root`. Viewer source (`packages/react/src/viewers/`) is short enough to copy as a recipe.
+Children go inside the viewer's `Player.Root`. Viewer source (`packages/react/src/rlds/`, `src/mcap/`) is short enough to copy as a recipe.
 
 ## React: hooks only (bring your own UI)
 
 ```tsx
-import { useEpisodeStream, usePlayback, usePlayerHotkeys } from '@videodb/robopeek-react'
+import { usePlayback, usePlayerHotkeys } from '@videodb/robopeek-react'
+import { useEpisodeStream } from '@videodb/robopeek-react/rlds'
 
 const { episodes, status, load, cancel, reset } = useEpisodeStream({ specs: 'auto' })
-const { step, setStep, playing, toggle, fps, setFps } = usePlayback({ length: ep.length, defaultFps: 10, resetKey: ep })
+const { position, setPosition, playing, toggle, rate, setRate } = usePlayback({ unit: 'step', end: ep.length - 1, defaultRate: 10, resetKey: ep })
 const ref = useRef<HTMLDivElement>(null)
-usePlayerHotkeys(ref, { toggle, setStep, step, length: ep.length }) // active only while focus is inside ref
+usePlayerHotkeys(ref, { toggle, setPosition, step: (d) => setPosition(position + d), end: ep.length - 1 }) // active only while focus is inside ref
 ```
 
 ## API surface (`@videodb/robopeek-react`)
 
-| Layer | Export | Notes |
+| Entry | Export | Notes |
 |---|---|---|
-| Hooks | `useEpisodeStream(opts?)` | `{ episodes, status, load(src), cancel(), reset() }`; batches updates to one render per frame |
-| | `useEpisode(src, n, opts?)` | `{ episode, status, known }`; wraps `ShardIndex`, keeps the index per source |
-| | `usePlayback(opts)` | Frame clock; `step` / `playing` / `fps` each controlled or uncontrolled; `resetKey` resets on episode change |
-| | `usePlayerHotkeys(ref, ctl, enabled?)` | Space, ←/→ (Shift = 10), Home/End, ↑/↓ episodes; scoped to `ref`, never `window` |
-| Primitives | `EpisodeList` | Episode drawer with filter; `selected`, `onSelect`, `renderTitle`, `renderItem(ep, fallback)` |
-| | `LoadStatus` | Progress strip; children add counts |
-| | `FrameCanvas` | One image track (encoded or raw); on-demand `ImageBitmap` decode + 8-frame lookahead |
-| | `VectorChart` | One vector track; click/drag to seek, legend toggles dims; `maxSeries` (32) collapses wider tracks |
-| Player | `Player.Root` | Owns a small store (`useSyncExternalStore`, no dependency): episode, step, playing, fps, autoNext, plus `onPrevEpisode` / `onNextEpisode`; `hotkeys` (true / false / a ref), `colorScheme` |
-| | `usePlayer(selector?)` | Subscribe to a slice of `{ episode, length, step, setStep, playing, toggle, setPlaying, fps, setFps, autoNext, setAutoNext, hasPrev, hasNext, prevEpisode, nextEpisode }` |
-| | `Player.Stage` `.Instruction` `.Frames` `.Transport` `.Options` `.Flags` `.Tracks` `.Metadata` | Each reads `Player.Root` context; place, omit or reorder freely. `Frames` / `Tracks` / `Metadata` take `include` + `renderItem(…, fallback)` |
-| | `Player.PrevEpisode` `.StepBack` `.Play` `.StepForward` `.NextEpisode` `.Scrubber` `.Counter` | Sub-parts of `Transport` |
-| | `Player.FpsSelect` `.AutoNext` `.Flags` | Sub-parts of `Options` |
-| | `usePlayButton` `useStepButton(delta)` `useEpisodeButton(dir)` `useScrubber` `useFpsSelect(options?)` `useAutoNext` | Per-part hooks: state + spreadable props (handlers, aria) |
-| | `Player` | Default composition of the parts |
-| Viewers | `ShardViewer` | Status + drawer + player; takes `source` |
-| | `EpisodeViewer` | Status + player for one episode; takes `source` + `episode` |
-| Types | `PlayerRootProps`, `FramesProps`, `EpisodeListProps`, `ShardViewerProps`, … | Props type exported for every component |
-| Core | everything from `@videodb/robopeek-rlds` | Re-exported |
+| root | `Timeline`, `ImageTrack`, `VectorTrack`, `TextTrack`, `indexAt`, `rowAt`, `steps`, `frameCache` | The format-free data model the player reads |
+| | `Player.Root` / `Player` / `Player.DefaultLayout` | Owns a small store (`useSyncExternalStore`): timeline, position, playing, rate, autoNext, `onPrevEpisode` / `onNextEpisode`; `hotkeys`, `colorScheme`, `loading` |
+| | `usePlayer(selector?)` | `{ timeline, version, unit, end, position, setPosition, step, playing, toggle, rate, setRate, autoNext, … }` |
+| | `Player.Stage` `.Instruction` `.Frames` `.Transport` `.Options` `.Tracks` `.Metadata` and transport/option sub-parts (`RateSelect`, `AutoNext`, …) | Place, omit or reorder freely; list parts take `include` + `renderItem(…, fallback)` |
+| | `usePlayButton` `useStepButton` `useEpisodeButton` `useScrubber` `useRateSelect` `useAutoNext` | Per-part hooks |
+| | `usePlayback`, `usePlayerHotkeys`, `useTimelineVersion` | Clock (steps or seconds), keys, change tracking |
+| | `FrameView`, `VectorChart`, `ItemList`, `LoadStatus` | Building blocks |
+| | `assertTimeline`, `useFormatSource` | Boundary checks with guiding errors, for your own adapters |
+| `/rlds` | `ShardViewer`, `EpisodeViewer`, `EpisodePlayer`, `EpisodeList`, `Flags` | Need `@videodb/robopeek-rlds` |
+| | `useEpisodeStream`, `useEpisode`, `fromEpisode`, `useEpisodeTimeline`, `useCurrentEpisode` | |
+| `/mcap` | `McapViewer`, `McapPlayer`, `Topics` | Need `@videodb/robopeek-mcap` |
+| | `useRecording`, `fromRecording`, `useMcapTimeline`, `useCurrentRecording` | |
 
 ## Customising the design
 

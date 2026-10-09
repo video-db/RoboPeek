@@ -1,5 +1,6 @@
 import { lazy, Suspense, useLayoutEffect, useRef, useState } from 'react'
-import { ShardViewer, type Source } from '@videodb/robopeek-react'
+import type { Source } from '@videodb/robopeek-rlds'
+import { ShardViewer } from '@videodb/robopeek-react/rlds'
 import { SiteHeader, SiteFooter } from './SiteChrome.tsx'
 import { InstallCommand, CodePanel } from './CodeBlock.tsx'
 import { SAMPLES, type Sample } from './samples.ts'
@@ -98,14 +99,14 @@ function HomePage() {
           </DropTarget>
         </div>
       </section>
-      <section className="build-section"><div className="site-container build-grid"><div><p className="eyebrow">Built to be embedded</p><h2>Your application.<br />Your way to peek.</h2><p>RoboPeek is an npm library, too. Drop in a ready-made React viewer, compose your own controls, or use the framework-independent reader.</p><a className="text-link" href="/RLDS/#ready-made">See live examples and source code<Icon name="arrow" /></a><div className="package-lines"><div><Icon name="layers" /><div><code>@videodb/robopeek-react</code><span>Viewers, composable parts, and React hooks</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-rlds</code><span>The reader, for any JavaScript application</span></div></div></div></div><CodePanel files={[{ name: 'DatasetPreview.tsx', code: QUICKSTART }]} /></div></section>
+      <section className="build-section"><div className="site-container build-grid"><div><p className="eyebrow">Built to be embedded</p><h2>Your application.<br />Your way to peek.</h2><p>RoboPeek is an npm library, too. Drop in a ready-made React viewer, compose your own controls, or use the framework-independent reader.</p><a className="text-link" href="/RLDS/#ready-made">See live examples and source code<Icon name="arrow" /></a><div className="package-lines"><div><Icon name="layers" /><div><code>@videodb/robopeek-react</code><span>Viewers, composable parts, and React hooks for every format</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-rlds</code> · <code>@videodb/robopeek-mcap</code><span>The readers, for any JavaScript application</span></div></div></div></div><CodePanel files={[{ name: 'DatasetPreview.tsx', code: QUICKSTART }]} /></div></section>
       <section className="roadmap site-container"><span className="roadmap-icon"><Icon name="layers" /></span><div><p className="eyebrow">On the roadmap</p><h2>Next up: MCAP.</h2><p>Explore RLDS episodes today. MCAP support will let you preview robot logs and sensor messages in the same place.</p></div><a className="ui-button" href="https://github.com/video-db/RoboPeek" target="_blank" rel="noreferrer">Follow development<Icon name="external" /></a></section>
     </main>
     <SiteFooter />
   </div>
 }
 
-const QUICKSTART = `import { ShardViewer } from '@videodb/robopeek-react'
+const QUICKSTART = `import { ShardViewer } from '@videodb/robopeek-react/rlds'
 import '@videodb/robopeek-react/styles.css'
 
 export function DatasetPreview({ url }: { url: string }) {

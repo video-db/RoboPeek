@@ -18,7 +18,7 @@ export function ReadyMadePage() {
     <ExamplePage
       step="1"
       title="Ready-made viewers"
-      pkg="@videodb/robopeek-react"
+      pkg="@videodb/robopeek-react @videodb/robopeek-rlds"
       intro={<p>Use the components as they are: one line of JSX and one stylesheet import. Choose an input file and the viewer below opens it. Space plays, ← → step, ↑ ↓ change episode.</p>}
       controls={
         <div className="segmented" role="group" aria-label="Viewer type">

@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
-import { episodeTitle, formatFeature, usePlayButton, usePlayer, vectorAt, type VectorTrack } from '@videodb/robopeek-react'
+import { episodeTitle, formatFeature, vectorAt } from '@videodb/robopeek-rlds'
+import { rowAt, usePlayButton, usePlayer, type VectorTrack } from '@videodb/robopeek-react'
+import { useCurrentEpisode } from '@videodb/robopeek-react/rlds'
 
 // Your own components. Each one reads live player state with usePlayer(selector)
 // and re-renders only when the slice it selects changes.
 
 export function EpisodeHeader() {
-  const episode = usePlayer((s) => s.episode)
-  const step = usePlayer((s) => s.step)
+  const episode = useCurrentEpisode()
+  const step = usePlayer((s) => s.position)
   const cameras = Object.keys(episode.images).length
   return (
     <header className="mm-header">
@@ -27,8 +29,8 @@ export function BigPlay() {
 }
 
 export function SpeedChips() {
-  const fps = usePlayer((s) => s.fps)
-  const setFps = usePlayer((s) => s.setFps)
+  const fps = usePlayer((s) => s.rate)
+  const setFps = usePlayer((s) => s.setRate)
   return (
     <div className="mm-chips" role="group" aria-label="Playback speed">
       {[5, 10, 30].map((f) => (
@@ -40,8 +42,8 @@ export function SpeedChips() {
 
 /** Live bars for the action vector at the current step, scaled to the episode's own range. */
 export function CurrentAction() {
-  const vectors = usePlayer((s) => s.episode.vectors)
-  const step = usePlayer((s) => s.step)
+  const vectors = useCurrentEpisode().vectors
+  const step = usePlayer((s) => s.position)
   const key = 'action' in vectors ? 'action' : Object.keys(vectors).find((k) => k.startsWith('action'))
   const track = key ? vectors[key] : undefined
   const scale = useMemo(() => {
@@ -71,7 +73,7 @@ export function CurrentAction() {
 }
 
 export function EpisodeCard() {
-  const metadata = usePlayer((s) => s.episode.metadata)
+  const metadata = useCurrentEpisode().metadata
   const entries = Object.entries(metadata)
   return (
     <section className="mm-card">
@@ -91,11 +93,11 @@ export function EpisodeCard() {
 
 /** Replaces the built-in chart for single-value tracks (reward, discount, …). */
 export function ScalarTile({ name, track }: { name: string; track: VectorTrack }) {
-  const step = usePlayer((s) => s.step)
+  const step = usePlayer((s) => s.position)
   return (
     <section className="mm-card mm-scalar">
       <h4>{name}</h4>
-      <strong>{vectorAt(track, step)[0].toFixed(3)}</strong>
+      <strong>{rowAt(track, step)[0].toFixed(3)}</strong>
     </section>
   )
 }

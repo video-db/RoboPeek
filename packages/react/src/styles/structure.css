@@ -12,18 +12,18 @@
 
   /* Shard viewer body: drawer | player */
   .rp-shard-viewer-body { display: grid; grid-template-columns: 290px minmax(0, 1fr); min-height: 0; }
-  .rp-episode-viewer-body { min-height: 0; display: grid; }
+  .rp-episode-viewer-body, .rp-mcap-viewer-body { min-height: 0; display: grid; }
   .rp-waiting { display: grid; place-items: center; }
   .rp-waiting[data-tone='error'] { padding: 16px; text-align: center; }
 
-  /* Episodes drawer */
-  .rp-episodes { display: flex; flex-direction: column; min-height: 0; }
-  .rp-episodes > input { margin: 10px; }
-  .rp-episodes ol { list-style: none; margin: 0; padding: 0 6px 10px; overflow-y: auto; flex: 1; }
-  .rp-episodes li button { width: 100%; text-align: left; padding: 7px 10px; display: grid; gap: 2px; white-space: normal; }
-  .rp-episodes-head { display: flex; justify-content: space-between; }
-  .rp-episodes-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .rp-episodes-pending { padding: 10px; }
+  /* Item list (episodes drawer) */
+  .rp-list { display: flex; flex-direction: column; min-height: 0; }
+  .rp-list > input { margin: 10px; }
+  .rp-list ol { list-style: none; margin: 0; padding: 0 6px 10px; overflow-y: auto; flex: 1; }
+  .rp-list li button { width: 100%; text-align: left; padding: 7px 10px; display: grid; gap: 2px; white-space: normal; }
+  .rp-list-head { display: flex; justify-content: space-between; }
+  .rp-list-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rp-list-pending { padding: 10px; }
 
   /* Player */
   .rp-player { overflow-y: auto; min-height: 0; }
@@ -33,6 +33,9 @@
   .rp-frames { display: grid; gap: 12px; justify-content: center; }
   .rp-frames[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rp-frames[data-count='3'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Four or more cameras: as many columns as fit. */
+  .rp-frames[data-count='4'] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .rp-frames[data-count='4'] .rp-frame canvas { height: auto; width: 100%; max-height: 32vh; }
   .rp-frame { margin: 0; display: grid; gap: 6px; justify-items: center; }
   .rp-frame canvas { height: min(52vh, 520px); max-width: 100%; object-fit: contain; }
   .rp-frame figcaption { display: flex; gap: 12px; }
@@ -46,7 +49,7 @@
   .rp-counter { min-width: 8ch; text-align: right; }
 
   .rp-options { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .rp-fps { padding: 3px 8px; }
+  .rp-rate { padding: 3px 8px; }
   .rp-autonext { display: flex; gap: 6px; align-items: center; }
   .rp-flags { display: flex; gap: 6px; margin-left: auto; }
   .rp-flag { padding: 2px 8px; }
@@ -54,6 +57,8 @@
   .rp-tracks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 12px; padding: 16px; }
   .rp-chart, .rp-metadata { padding: 12px; display: grid; gap: 8px; min-width: 0; align-content: start; }
   .rp-chart header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .rp-chart h3 { min-width: 0; overflow-wrap: anywhere; }
+  .rp-chart header .rp-mono { flex-shrink: 0; white-space: nowrap; }
   .rp-chart h3, .rp-metadata h3 { margin: 0; }
   .rp-chart svg { width: 100%; height: 96px; display: block; touch-action: none; }
   .rp-chart-collapsed { margin: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
@@ -67,6 +72,6 @@
   @media (max-width: 760px) {
     .rp-shard-viewer-body { grid-template-columns: 1fr; grid-template-rows: 180px 1fr; }
     .rp-frame canvas { height: auto; width: 100%; }
-    .rp-frames[data-count='2'], .rp-frames[data-count='3'] { grid-template-columns: 1fr; }
+    .rp-frames[data-count='2'], .rp-frames[data-count='3'], .rp-frames[data-count='4'] { grid-template-columns: 1fr; }
   }
 }

@@ -1,5 +1,5 @@
-export const SETUP = `// npm i @videodb/robopeek-react
-// or: pnpm add @videodb/robopeek-react
+export const SETUP = `// npm i @videodb/robopeek-react @videodb/robopeek-rlds
+// or: pnpm add @videodb/robopeek-react @videodb/robopeek-rlds
 import { createRoot } from 'react-dom/client'
 import '@videodb/robopeek-react/styles.css'
 import App from './App'

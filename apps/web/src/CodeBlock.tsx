@@ -37,7 +37,7 @@ export function CodePanel({ files }: { files: CodeFile[] }) {
   </section>
 }
 
-export function InstallCommand({ pkg = '@videodb/robopeek-react' }: { pkg?: string }) {
+export function InstallCommand({ pkg = '@videodb/robopeek-react @videodb/robopeek-rlds' }: { pkg?: string }) {
   const [manager, setManager] = useState<'npm' | 'pnpm'>('npm')
   const command = `${manager} ${manager === 'npm' ? 'i' : 'add'} ${pkg}`
   return <div className="install-command">
