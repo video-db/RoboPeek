@@ -50,30 +50,31 @@ It's built as open-source npm packages, so any app can embed it: dataset catalog
 | **RLDS / TFDS** (TFRecord shards) | Open X-Embodiment, DROID, Bridge, RT-1, and most TFDS robotics datasets | ✅ Available |
 | **MCAP** | ROS 1 / ROS 2 recordings, Foxglove, FiftyOne exports | ✅ Available |
 
-Each format has its own reader and its own React package, so an app that only needs RLDS never installs MCAP's decoders, and the reverse. The two React packages share class names and theme tokens, so one theme covers both.
+Each format has its own reader package, so an app that only needs RLDS never installs MCAP's decoders, and the reverse. One React package serves both: its `/rlds` and `/mcap` entry points hold each format's viewers, and the player, parts and theme are shared.
 
 ## Packages
 
 | Package | What it does | Docs |
 |---|---|---|
-| [`@videodb/robopeek-react`](packages/react) | Ready-made viewers, a player you can rearrange, hooks and themeable CSS. Installs and re-exports the reader. | [README](packages/react#readme) |
+| [`@videodb/robopeek-react`](packages/react) | Ready-made viewers, a player you can rearrange, hooks and themeable CSS, for every format. `/rlds` and `/mcap` hold each format's viewers; the root import works with any. | [README](packages/react#readme) |
 | [`@videodb/robopeek-rlds`](packages/rlds) | Reads RLDS episodes from TFRecord shards. No UI, no dependencies; works with any framework, or none, in the browser or Node. | [README](packages/rlds#readme) |
-| [`@videodb/robopeek-mcap-react`](packages/mcap-react) | MCAP viewer and a time-based player, hooks and the same themeable CSS. Installs and re-exports the MCAP reader. | [README](packages/mcap-react#readme) |
 | [`@videodb/robopeek-mcap`](packages/mcap) | Reads MCAP recordings (ROS 1, ROS 2, protobuf, JSON) into time-aligned camera, chart and text tracks. No UI; browser or Node. | [README](packages/mcap#readme) |
 
-**Which one do I install?** Pick the format, then React or not. Building with React: `@videodb/robopeek-react` (RLDS) or `@videodb/robopeek-mcap-react` (MCAP); each brings its reader. Anything else, such as Vue, Svelte, plain JS or a Node script: the reader alone.
+**Which one do I install?** The reader for your format, plus `@videodb/robopeek-react` if you use React. Nothing from the other format gets installed.
 
 ```sh
-npm install @videodb/robopeek-react        # RLDS viewers + reader
-npm install @videodb/robopeek-rlds         # RLDS reader only
-npm install @videodb/robopeek-mcap-react   # MCAP viewer + reader
-npm install @videodb/robopeek-mcap         # MCAP reader only
+npm install @videodb/robopeek-react @videodb/robopeek-rlds   # RLDS in React  → import from '@videodb/robopeek-react/rlds'
+npm install @videodb/robopeek-react @videodb/robopeek-mcap   # MCAP in React  → import from '@videodb/robopeek-react/mcap'
+npm install @videodb/robopeek-rlds                          # reader only (Vue, Svelte, plain JS, Node)
+npm install @videodb/robopeek-mcap                          # reader only
 ```
+
+Importing a format entry without its reader fails with a message that names the package to install; see [Entry points](packages/react#entry-points).
 
 ## Quick start
 
 ```tsx
-import { ShardViewer } from '@videodb/robopeek-react'
+import { ShardViewer } from '@videodb/robopeek-react/rlds'
 import '@videodb/robopeek-react/styles.css'
 
 export function App() {
@@ -126,9 +127,9 @@ Any component inside the player can read the current episode and step with `useP
 
 ```tsx
 function RewardBadge() {
-  const track = usePlayer((s) => s.episode.vectors.reward)
-  const step = usePlayer((s) => s.step)
-  return track ? <span>reward {vectorAt(track, step)[0].toFixed(2)}</span> : null
+  const track = usePlayer((s) => s.timeline.vectors.reward)
+  const step = usePlayer((s) => s.position)
+  return track ? <span>reward {rowAt(track, step)[0].toFixed(2)}</span> : null
 }
 
 <ShardViewer source={url}>
@@ -241,10 +242,9 @@ See the [open issues](https://github.com/video-db/RoboPeek/issues) for more.
 
 ```
 packages/
-  rlds/        @videodb/robopeek-rlds: the RLDS reader
-  react/       @videodb/robopeek-react: RLDS viewers, player, hooks, CSS
-  mcap/        @videodb/robopeek-mcap: the MCAP reader
-  mcap-react/  @videodb/robopeek-mcap-react: MCAP viewer, player, hooks, CSS
+  rlds/     @videodb/robopeek-rlds: the RLDS reader
+  mcap/     @videodb/robopeek-mcap: the MCAP reader
+  react/    @videodb/robopeek-react: player, viewers, hooks, CSS (src/core, src/rlds, src/mcap)
 apps/
   web/      the RoboPeek website and live demo (MCAP viewer at /mcap.html)
 docs/       architecture notes
@@ -252,7 +252,7 @@ docs/       architecture notes
 
 - [Architecture](docs/architecture.md): how the packages are built
 - [THESIS.md](THESIS.md) and [THESIS_REVIEW.md](THESIS_REVIEW.md): why RoboPeek exists and how it's shaped
-- Changelogs: [`@videodb/robopeek-rlds`](packages/rlds/CHANGELOG.md), [`@videodb/robopeek-react`](packages/react/CHANGELOG.md), `@videodb/robopeek-mcap` and `@videodb/robopeek-mcap-react` (created on their first release)
+- Changelogs: [`@videodb/robopeek-rlds`](packages/rlds/CHANGELOG.md), [`@videodb/robopeek-react`](packages/react/CHANGELOG.md), `@videodb/robopeek-mcap` (created on its first release)
 
 ## Contributing
 

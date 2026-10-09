@@ -5,17 +5,22 @@
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:boundaries": "node scripts/check-boundaries.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@videodb/robopeek-mcap": "workspace:^",
+    "@videodb/robopeek-rlds": "workspace:^",
     "@vitejs/plugin-react": "^6.1.2",
     "react": "^19",
     "react-dom": "^19",
     "vitest-browser-react": "^2.3.0"
   },
   "peerDependencies": {
+    "@videodb/robopeek-mcap": "workspace:^",
+    "@videodb/robopeek-rlds": "workspace:^",
     "react": "^19",
     "react-dom": "^19"
   },
@@ -27,8 +32,16 @@
   ],
   "exports": {
     ".": {
-      "robopeek-source": "./src/index.ts",
+      "robopeek-source": "./src/core/index.ts",
       "default": "./dist/index.js"
+    },
+    "./mcap": {
+      "robopeek-source": "./src/mcap/index.ts",
+      "default": "./dist/mcap.js"
+    },
+    "./rlds": {
+      "robopeek-source": "./src/rlds/index.ts",
+      "default": "./dist/rlds.js"
     },
     "./package.json": "./package.json",
     "./styles.css": {
@@ -47,6 +60,8 @@
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
+      "./mcap": "./dist/mcap.js",
+      "./rlds": "./dist/rlds.js",
       "./package.json": "./package.json",
       "./styles.css": "./dist/styles.css",
       "./structure.css": "./dist/structure.css",
@@ -63,15 +78,21 @@
   "bugs": {
     "url": "https://github.com/video-db/RoboPeek/issues"
   },
-  "description": "React viewer and player components for RLDS robot-learning episodes",
+  "description": "React viewers, a composable player and hooks for robot-learning data (RLDS, MCAP)",
   "keywords": [
     "rlds",
     "react",
     "robotics",
     "episode-viewer",
-    "dataset"
+    "dataset",
+    "mcap"
   ],
-  "dependencies": {
-    "@videodb/robopeek-rlds": "workspace:^"
+  "peerDependenciesMeta": {
+    "@videodb/robopeek-rlds": {
+      "optional": true
+    },
+    "@videodb/robopeek-mcap": {
+      "optional": true
+    }
   }
 }

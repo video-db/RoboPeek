@@ -1,4 +1,6 @@
-import { Player, usePlayButton, type Episode } from '@videodb/robopeek-react'
+import type { Episode } from '@videodb/robopeek-rlds'
+import { Player, usePlayButton } from '@videodb/robopeek-react'
+import { EpisodePlayer } from '@videodb/robopeek-react/rlds'
 
 function MyPlay() {
   const { playing, buttonProps } = usePlayButton()
@@ -6,7 +8,7 @@ function MyPlay() {
 }
 
 export const SwapOnePart = ({ episode }: { episode: Episode }) => (
-  <Player.Root episode={episode}>
+  <EpisodePlayer episode={episode}>
     <Player.Frames />
     <Player.Transport>
       <Player.StepBack />
@@ -14,5 +16,5 @@ export const SwapOnePart = ({ episode }: { episode: Episode }) => (
       <Player.StepForward />
       <Player.Scrubber />
     </Player.Transport>
-  </Player.Root>
+  </EpisodePlayer>
 )

@@ -9,7 +9,7 @@ export function MixAndMatchPage() {
     <ExamplePage
       step="2"
       title="Compose your player"
-      pkg="@videodb/robopeek-react"
+      pkg="@videodb/robopeek-react @videodb/robopeek-rlds"
       intro={
         <>
           <p>Build your own player from the library's parts and your own components. Inside one <code>Player.Root</code>:</p>

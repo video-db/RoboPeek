@@ -364,7 +364,7 @@ Tested on CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berkeley UR5, Langu
 
 ## Related
 
-- [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react): viewers, a player and hooks built on this package. It re-exports everything here, so React apps install only that one.
+- [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react): viewers, a player and hooks. Install it next to this package and import from `@videodb/robopeek-react/rlds`.
 - [RoboPeek on GitHub](https://github.com/video-db/RoboPeek): source, issues, and the roadmap (MCAP is next).
 - [Changelog](https://github.com/video-db/RoboPeek/blob/main/packages/rlds/CHANGELOG.md)
 

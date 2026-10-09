@@ -1,6 +1,6 @@
 # @videodb/robopeek-mcap
 
-Reads MCAP recordings in the browser (or Node) into time-aligned tracks: cameras, numeric signals and text. No UI and no framework. React components live in [`@videodb/robopeek-mcap-react`](../mcap-react#readme).
+Reads MCAP recordings in the browser (or Node) into time-aligned tracks: cameras, numeric signals and text. No UI and no framework. React components live in [`@videodb/robopeek-react/mcap`](../react#entry-points).
 
 ```sh
 npm install @videodb/robopeek-mcap

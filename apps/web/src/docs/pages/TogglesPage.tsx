@@ -13,7 +13,7 @@ const ALL_ON: Show = {
 }
 
 const TRANSPORT = [['prevEpisode', 'PrevEpisode'], ['stepBack', 'StepBack'], ['play', 'Play'], ['stepForward', 'StepForward'], ['nextEpisode', 'NextEpisode'], ['scrubber', 'Scrubber'], ['counter', 'Counter']] as const
-const OPTIONS = [['fps', 'FpsSelect'], ['autoNext', 'AutoNext'], ['flags', 'Flags']] as const
+const OPTIONS = [['fps', 'RateSelect'], ['autoNext', 'AutoNext'], ['flags', 'Flags']] as const
 
 export function TogglesPage() {
   const [show, setShow] = useState(ALL_ON)
@@ -33,7 +33,7 @@ export function TogglesPage() {
     <ExamplePage
       step="5"
       title="Show and hide parts"
-      pkg="@videodb/robopeek-react"
+      pkg="@videodb/robopeek-react @videodb/robopeek-rlds"
       intro={
         <p>
           The default <code>ShardViewer</code>, where every switch below takes one part out. The player parts are left out by not passing

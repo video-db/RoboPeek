@@ -84,7 +84,7 @@
   .rp-dim { color: var(--rp-muted); }
 
   /* Controls */
-  .rp-btn, .rp-input, .rp-fps, .rp-transport-button, .rp-episodes li button { font: inherit; color: inherit; }
+  .rp-btn, .rp-input, .rp-rate, .rp-transport-button, .rp-list li button { font: inherit; color: inherit; }
   .rp-btn {
     border: 1px solid var(--rp-line); background: var(--rp-panel); border-radius: var(--rp-radius);
     padding: 6px 12px; cursor: pointer; white-space: nowrap;
@@ -104,21 +104,24 @@
   .rp-waiting { color: var(--rp-muted); }
   .rp-waiting[data-tone='error'] { color: var(--rp-danger); }
 
-  /* Episodes drawer */
-  .rp-episodes { border-right: 1px solid var(--rp-line); background: var(--rp-sidebar); color: var(--rp-ink-secondary); }
-  .rp-episodes li button { border: 1px solid transparent; border-radius: var(--rp-radius); background: transparent; cursor: pointer; }
-  .rp-episodes li button:hover { background: var(--rp-panel); }
+  /* Item list (episodes drawer) */
+  .rp-list { border-right: 1px solid var(--rp-line); background: var(--rp-sidebar); color: var(--rp-ink-secondary); }
+  .rp-list li button { border: 1px solid transparent; border-radius: var(--rp-radius); background: transparent; cursor: pointer; }
+  .rp-list li button:hover { background: var(--rp-panel); }
   /* DS "Selected row": Brand/Tertiary fill, Brand/Primary border, Neutral/Primary text. */
-  .rp-episodes li button[aria-current='true'] { background: var(--rp-accent-soft); border-color: var(--rp-accent); color: var(--rp-ink); }
-  .rp-episodes-head { font-size: 11.5px; }
-  .rp-episodes-title { font-size: 13px; line-height: 1.35; }
-  .rp-episodes-pending { color: var(--rp-muted); font-size: 12.5px; }
+  .rp-list li button[aria-current='true'] { background: var(--rp-accent-soft); border-color: var(--rp-accent); color: var(--rp-ink); }
+  .rp-list-head { font-size: 11.5px; }
+  .rp-list-title { font-size: 13px; line-height: 1.35; }
+  .rp-list-pending { color: var(--rp-muted); font-size: 12.5px; }
 
   /* Stage */
   .rp-stage { background: var(--rp-stage); color: var(--rp-stage-ink); }
   .rp-instruction { font-size: 17px; font-weight: 500; }
   .rp-frame canvas { background: var(--rp-frame-bg); border-radius: var(--rp-radius); }
   .rp-frame figcaption { font-size: 11.5px; color: var(--rp-stage-muted); }
+  .rp-frame figcaption [data-tone='error'] { color: var(--rp-danger); }
+  /* Frame not available yet: the previous one stays up, dimmed. */
+  .rp-frame[data-pending] canvas { opacity: 0.55; }
   .rp-frames-empty { color: var(--rp-stage-muted); }
 
   .rp-transport-button {
@@ -135,8 +138,8 @@
   .rp-counter .rp-dim { color: var(--rp-stage-muted); }
 
   .rp-options { font-size: 12.5px; }
-  .rp-fps { background: transparent; border: 1px solid var(--rp-stage-line); border-radius: var(--rp-radius); color: var(--rp-stage-ink); }
-  .rp-fps option { color: initial; }
+  .rp-rate { background: transparent; border: 1px solid var(--rp-stage-line); border-radius: var(--rp-radius); color: var(--rp-stage-ink); }
+  .rp-rate option { color: initial; }
   .rp-autonext { cursor: pointer; color: var(--rp-stage-soft); }
   .rp-autonext input { accent-color: var(--rp-stage-accent); }
   .rp-flag {
@@ -159,9 +162,10 @@
   .rp-chart-legend i { border-radius: 2px; }
   .rp-metadata dt { font-size: 11.5px; color: var(--rp-muted); }
   .rp-metadata dd { font-size: 12px; }
+  .rp-topics [data-kind='other'] dt, .rp-topics [data-tone='error'] { color: var(--rp-muted); }
 
   @media (max-width: 760px) {
-    .rp-episodes { border-right: 0; border-bottom: 1px solid var(--rp-line); }
+    .rp-list { border-right: 0; border-bottom: 1px solid var(--rp-line); }
   }
   @media (prefers-reduced-motion: reduce) { .rp-status-bar { transition: none; } }
 }

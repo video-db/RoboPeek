@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { EpisodeViewer, type Source } from '@videodb/robopeek-react'
+import type { Source } from '@videodb/robopeek-rlds'
+import { EpisodeViewer } from '@videodb/robopeek-react/rlds'
 
 // Opens one episode by number without downloading the rest (local files, or URLs with HTTP Range support).
 export function EpisodeViewerExample({ source }: { source: Source }) {

@@ -1,5 +1,5 @@
 @layer base, robopeek, app;
-@import '@videodb/robopeek-mcap-react/styles.css' layer(robopeek);
+@import '@videodb/robopeek-react/styles.css' layer(robopeek);
 
 @layer base {
   * { box-sizing: border-box; }

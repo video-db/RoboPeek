@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
-import { McapViewer, type Source } from '@videodb/robopeek-mcap-react'
+import type { Source } from '@videodb/robopeek-mcap'
+import { McapViewer } from '@videodb/robopeek-react/mcap'
 import { DropTarget } from './DropTarget.tsx'
 
 const HF = 'https://huggingface.co/datasets'

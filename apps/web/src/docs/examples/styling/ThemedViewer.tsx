@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react'
-import { ShardViewer, type ColorScheme, type Source } from '@videodb/robopeek-react'
+import type { Source } from '@videodb/robopeek-rlds'
+import type { ColorScheme } from '@videodb/robopeek-react'
+import { ShardViewer } from '@videodb/robopeek-react/rlds'
 import './themes.css'
 
 export type Preset = { id: string; label: string; how: string; className?: string; colorScheme?: ColorScheme }

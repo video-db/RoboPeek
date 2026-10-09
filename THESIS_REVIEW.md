@@ -22,10 +22,11 @@ MCAP is a timestamped message log, not a list of episodes, so it shares almost n
 
 Decided when MCAP was built (2026-10-09):
 
-- Two packages per format, nothing shared. `@videodb/robopeek-mcap` (reader) and `@videodb/robopeek-mcap-react` (UI) sit beside the RLDS pair. No `@videodb/robopeek-core`, and no `robopeek-react/mcap` subpath: an MCAP user installs nothing of RLDS's, and the reverse. The cost is a second copy of the player shell (~600 lines), which is acceptable because the two players count differently.
-- The MCAP player counts in time. Topics tick at different rates (30 Hz cameras, 500 Hz joints), and every message has a real timestamp, so there is no fps setting. The RLDS player keeps counting in steps.
-- One file is one episode. Splitting a file into episodes is deferred.
-- The two React packages share the `rp-*` classes, `--rp-*` tokens and `@layer robopeek`, so one theme covers both.
+- Readers stay separate: `@videodb/robopeek-rlds` and `@videodb/robopeek-mcap`. No `@videodb/robopeek-core`.
+- One React package, `@videodb/robopeek-react`. Its root entry is format-free: the player reads a `Timeline` type defined there. `/rlds` and `/mcap` hold each format's adapter, hooks and viewers. The readers are optional peer dependencies, so an app installs only the format it uses.
+- The boundary is enforced, not just documented: CI checks the built entries' imports, and crossing it throws a message that says what to install or import instead.
+- The player counts in the timeline's unit: steps for RLDS (speed in fps), seconds for MCAP (real timestamps; speed as × real time).
+- One MCAP file is one episode. Splitting a file into episodes is deferred.
 
 ## Not built yet
 
@@ -35,4 +36,4 @@ Decoding in Web Workers, a saved episode index, caching, and the thesis's measur
 
 Done: `core` renamed to `@videodb/robopeek-rlds`.
 
-MCAP: built as `@videodb/robopeek-mcap` + `@videodb/robopeek-mcap-react` (see above); first release pending.
+MCAP: built as `@videodb/robopeek-mcap` + `@videodb/robopeek-react/mcap` (see above). The next release is 0.2.0 and breaking for RLDS imports (`/rlds`, reader as a peer).

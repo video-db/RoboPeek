@@ -11,7 +11,6 @@ export default defineConfig({
     conditions: ['robopeek-source', ...defaultClientConditions],
     alias: {
       '@videodb/robopeek-react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css'),
-      '@videodb/robopeek-mcap-react/styles.css': resolve(import.meta.dirname, '../../packages/mcap-react/src/styles/styles.css'),
     },
   },
   build: {

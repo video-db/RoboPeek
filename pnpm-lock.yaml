@@ -38,9 +38,9 @@ importers:
 
   apps/web:
     dependencies:
-      '@videodb/robopeek-mcap-react':
+      '@videodb/robopeek-mcap':
         specifier: workspace:^
-        version: link:../../packages/mcap-react
+        version: link:../../packages/mcap
       '@videodb/robopeek-react':
         specifier: workspace:^
         version: link:../../packages/react
@@ -101,43 +101,20 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2
 
-  packages/mcap-react:
-    dependencies:
+  packages/react:
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.3.0
+        version: 19.3.0(@types/react@19.3.0)
       '@videodb/robopeek-mcap':
         specifier: workspace:^
         version: link:../mcap
-    devDependencies:
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.3.0
-        version: 19.3.0(@types/react@19.3.0)
-      '@vitejs/plugin-react':
-        specifier: ^6.1.2
-        version: 6.1.2(vite@8.3.2(@types/node@24.19.1)(yaml@2.9.1))
-      react:
-        specifier: ^19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: ^19.3.0
-        version: 19.3.0(react@19.3.0)
-      vitest-browser-react:
-        specifier: ^2.3.0
-        version: 2.3.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.3)
-
-  packages/react:
-    dependencies:
       '@videodb/robopeek-rlds':
         specifier: workspace:^
         version: link:../rlds
-    devDependencies:
-      '@types/react':
-        specifier: ^19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.3.0
-        version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.2
         version: 6.1.2(vite@8.3.2(@types/node@24.19.1)(yaml@2.9.1))

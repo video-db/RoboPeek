@@ -1,4 +1,4 @@
-import type { Source } from '@videodb/robopeek-react'
+import type { Source } from '@videodb/robopeek-rlds'
 
 export type Sample = {
   id: string; dataset: string; file: string; size: string; notes: string

@@ -17,7 +17,7 @@ export function StylingPage() {
     <ExamplePage
       step="4"
       title="Styling"
-      pkg="@videodb/robopeek-react"
+      pkg="@videodb/robopeek-react @videodb/robopeek-rlds"
       intro={
         <p>
           The same <code>ShardViewer</code> in different looks. Start with the smallest change that gets you there: a prop (<code>colorScheme</code>),

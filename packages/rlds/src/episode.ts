@@ -134,3 +134,43 @@ export function episodeTitle(ep: Episode): string | undefined {
     if (v) return v
   }
 }
+
+type RawImage = Extract<ImageTrack, { kind: 'raw' }>
+
+/** Value range a raw track is scaled to: single-channel (depth) uses the track's finite min/max, colour assumes 0–1 or 0–255. */
+export function rawRange(t: RawImage): [number, number] {
+  let lo = Infinity
+  let hi = -Infinity
+  for (const v of t.data) {
+    if (!Number.isFinite(v)) continue
+    if (v < lo) lo = v
+    if (v > hi) hi = v
+  }
+  return lo < hi ? [lo, hi] : [0, 1]
+}
+
+/** RGBA pixels of frame `i` of a raw (numeric tensor) image track. */
+export function rgbaAt(t: RawImage, i: number, [lo, hi]: [number, number] = rawRange(t)): Uint8ClampedArray<ArrayBuffer> {
+  const [h, w, c] = t.shape
+  const off = i * h * w * c
+  const d = new Uint8ClampedArray(w * h * 4)
+  const scale = c === 1 ? 255 / (hi - lo) : hi <= 1 ? 255 : 1
+  for (let p = 0; p < h * w; p++) {
+    const o = p * 4
+    if (c === 1) {
+      const v = t.data[off + p]
+      d[o] = d[o + 1] = d[o + 2] = Number.isFinite(v) ? (v - lo) * scale : 0
+    } else {
+      d[o] = t.data[off + p * c] * scale
+      d[o + 1] = t.data[off + p * c + 1] * scale
+      d[o + 2] = t.data[off + p * c + 2] * scale
+    }
+    d[o + 3] = 255
+  }
+  return d
+}
+
+/** Frames in an image track. */
+export function frameCount(t: ImageTrack): number {
+  return t.kind === 'encoded' ? t.frames.length : t.data.length / (t.shape[0] * t.shape[1] * t.shape[2])
+}

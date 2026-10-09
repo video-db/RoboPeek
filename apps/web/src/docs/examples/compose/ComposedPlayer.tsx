@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Player, useEpisode, type Source } from '@videodb/robopeek-react'
+import type { Source } from '@videodb/robopeek-rlds'
+import { Player } from '@videodb/robopeek-react'
+import { EpisodePlayer, useEpisode } from '@videodb/robopeek-react/rlds'
 import { BigPlay, CurrentAction, EpisodeCard, EpisodeHeader, ScalarTile, SpeedChips } from './MyParts.tsx'
 import './compose.css'
 
-// Library parts (Player.*) and your own components (from MyParts.tsx) side by side in one Player.Root.
-// Everything inside Player.Root shares one playback state.
+// Library parts (Player.*) and your own components (from MyParts.tsx) side by side in one EpisodePlayer.
+// Everything inside it shares one playback state.
 export function ComposedPlayer({ source }: { source: Source }) {
   const [n, setN] = useState(0)
   const { episode, status, known } = useEpisode(source, n) // one episode at a time, no full download
@@ -12,9 +14,9 @@ export function ComposedPlayer({ source }: { source: Source }) {
 
   const last = known.complete ? known.count - 1 : Infinity
   return (
-    <Player.Root
+    <EpisodePlayer
       episode={episode}
-      defaultFps={10}
+      defaultRate={10}
       className="mm-player"
       onPrevEpisode={n > 0 ? () => setN(n - 1) : undefined}
       onNextEpisode={n < last ? () => setN(n + 1) : undefined}
@@ -48,6 +50,6 @@ export function ComposedPlayer({ source }: { source: Source }) {
         include={(key) => !key.includes('embedding')}
         renderItem={(key, track, fallback) => (track.dim === 1 ? <ScalarTile name={key} track={track} /> : fallback)}
       />
-    </Player.Root>
+    </EpisodePlayer>
   )
 }

@@ -1,7 +1,9 @@
-import { Player, ShardViewer, readText, usePlayer } from '@videodb/robopeek-react'
+import { readText } from '@videodb/robopeek-rlds'
+import { Player } from '@videodb/robopeek-react'
+import { ShardViewer, useCurrentEpisode } from '@videodb/robopeek-react/rlds'
 
 function MyMetadataCard() {
-  const episode = usePlayer((s) => s.episode)
+  const episode = useCurrentEpisode()
   return <aside>{readText(episode.metadata['episode_metadata/file_path'])?.[0] ?? `Episode ${episode.index}`}</aside>
 }
 
