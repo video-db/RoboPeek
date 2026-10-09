@@ -21,6 +21,7 @@ export default defineConfig({
         viewer: resolve(import.meta.dirname, 'viewer.html'),
         episode: resolve(import.meta.dirname, 'episode.html'),
         mcap: resolve(import.meta.dirname, 'mcap.html'),
+        mcapDocs: resolve(import.meta.dirname, 'MCAP/index.html'),
       },
     },
   },

@@ -3,10 +3,16 @@ import { ExamplePage } from '../shell/ExamplePage.tsx'
 import { PRESETS, ThemedViewer, type Tokens } from '../examples/styling/ThemedViewer.tsx'
 import viewerCode from '../examples/styling/ThemedViewer.tsx?raw'
 import themesCode from '../examples/styling/themes.css?raw'
+import { ThemedMcapViewer } from '../examples/mcap/styling/ThemedMcapViewer.tsx'
+import mcapViewerCode from '../examples/mcap/styling/ThemedMcapViewer.tsx?raw'
+import { useInput } from '../shell/Layout.tsx'
 
 const FONTS = { Inter: "'Inter', system-ui, sans-serif", 'JetBrains Mono': "'JetBrains Mono', monospace", Georgia: 'Georgia, serif' }
 
 export function StylingPage() {
+  const { format } = useInput()
+  const mcap = format === 'mcap'
+  const viewer = mcap ? 'McapViewer' : 'ShardViewer'
   const [presetId, setPresetId] = useState('default')
   const [tokens, setTokens] = useState<Tokens>({})
   const preset = PRESETS.find((p) => p.id === presetId)!
@@ -17,10 +23,10 @@ export function StylingPage() {
     <ExamplePage
       step="4"
       title="Styling"
-      pkg="@videodb/robopeek-react @videodb/robopeek-rlds"
+      pkg={`@videodb/robopeek-react @videodb/robopeek-${format}`}
       intro={
         <p>
-          The same <code>ShardViewer</code> in different looks. Start with the smallest change that gets you there: a prop (<code>colorScheme</code>),
+          The same <code>{viewer}</code> in different looks. Start with the smallest change that gets you there: a prop (<code>colorScheme</code>),
           then <code>--rp-*</code> tokens, then CSS on the public <code>rp-*</code> classes. Pick a preset, then adjust tokens on top of it.
         </p>
       }
@@ -52,11 +58,13 @@ export function StylingPage() {
       }
       files={[
         { name: 'Your tokens (CSS)', code: css ? `/* The tokens you set, as CSS */\n.my-viewer {\n${css}\n}` : '/* Change a token above and its CSS shows up here. */' },
-        { name: 'ThemedViewer.tsx', code: viewerCode },
+        mcap ? { name: 'ThemedMcapViewer.tsx', code: mcapViewerCode } : { name: 'ThemedViewer.tsx', code: viewerCode },
         { name: 'themes.css', code: themesCode },
       ]}
     >
-      {(input) => <ThemedViewer source={input.source} preset={preset} tokens={tokens} />}
+      {(input) => (mcap
+        ? <ThemedMcapViewer source={input.source} preset={preset} tokens={tokens} />
+        : <ThemedViewer source={input.source} preset={preset} tokens={tokens} />)}
     </ExamplePage>
   )
 }

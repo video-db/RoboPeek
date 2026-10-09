@@ -37,11 +37,13 @@ export function CodePanel({ files }: { files: CodeFile[] }) {
   </section>
 }
 
-export function InstallCommand({ pkg = '@videodb/robopeek-react @videodb/robopeek-rlds' }: { pkg?: string }) {
+type Format = 'rlds' | 'mcap'
+/** With `onFormat`, also offers RLDS / MCAP and installs that format's reader next to the React package. */
+export function InstallCommand({ pkg, format = 'rlds', onFormat }: { pkg?: string; format?: Format; onFormat?: (f: Format) => void }) {
   const [manager, setManager] = useState<'npm' | 'pnpm'>('npm')
-  const command = `${manager} ${manager === 'npm' ? 'i' : 'add'} ${pkg}`
+  const command = `${manager} ${manager === 'npm' ? 'i' : 'add'} ${pkg ?? `@videodb/robopeek-react @videodb/robopeek-${format}`}`
   return <div className="install-command">
-    <div className="install-top"><div role="group" aria-label="Package manager">{(['npm', 'pnpm'] as const).map(m => <button type="button" key={m} aria-pressed={manager === m} onClick={() => setManager(m)}>{m}</button>)}</div><CopyButton text={command} label="Copy install command" /></div>
+    <div className="install-top"><div role="group" aria-label="Package manager">{(['npm', 'pnpm'] as const).map(m => <button type="button" key={m} aria-pressed={manager === m} onClick={() => setManager(m)}>{m}</button>)}</div>{onFormat && <div role="group" aria-label="Dataset format">{(['rlds', 'mcap'] as const).map(f => <button type="button" key={f} aria-pressed={format === f} onClick={() => onFormat(f)}>{f.toUpperCase()}</button>)}</div>}<CopyButton text={command} label="Copy install command" /></div>
     <code><span aria-hidden="true">$</span> {command}</code>
   </div>
 }

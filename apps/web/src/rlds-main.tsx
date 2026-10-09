@@ -4,4 +4,4 @@ import './index.css'
 import './site.css'
 import './docs/docs.css'
 import { DocsApp } from './docs/DocsApp.tsx'
-createRoot(document.getElementById('root')!).render(<StrictMode><DocsApp /></StrictMode>)
+createRoot(document.getElementById('root')!).render(<StrictMode><DocsApp format="rlds" /></StrictMode>)

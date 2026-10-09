@@ -3,7 +3,8 @@ import type { Source } from '@videodb/robopeek-rlds'
 import type { Source as McapSource } from '@videodb/robopeek-mcap'
 import { ShardViewer } from '@videodb/robopeek-react/rlds'
 import { McapViewer } from '@videodb/robopeek-react/mcap'
-import { SiteHeader, SiteFooter, MCAP_DOCS } from './SiteChrome.tsx'
+import { SiteHeader, SiteFooter, MCAP_DOCS, RLDS_DOCS } from './SiteChrome.tsx'
+import { HeroMcapPreview } from './HeroMcapPreview.tsx'
 import { InstallCommand, CodePanel } from './CodeBlock.tsx'
 import { MCAP_SAMPLES, SAMPLES, type Sample } from './samples.ts'
 import { Icon } from './ui.tsx'
@@ -17,8 +18,9 @@ const DocsApp = lazy(() => import('./docs/DocsApp.tsx').then(module => ({ defaul
 // Preserve existing shared links to /?url=… while giving / a product homepage.
 export default function App() {
   // Static hosts may serve index.html for the extensionless documentation route.
-  if (/^\/rlds\/?$/i.test(location.pathname)) {
-    return <Suspense fallback={<div className="site-container" role="status">Loading the RLDS guide…</div>}><DocsApp /></Suspense>
+  const guide = /^\/(rlds|mcap)\/?$/i.exec(location.pathname)?.[1].toLowerCase() as 'rlds' | 'mcap' | undefined
+  if (guide) {
+    return <Suspense fallback={<div className="site-container" role="status">Loading the {guide.toUpperCase()} guide…</div>}><DocsApp format={guide} /></Suspense>
   }
   return new URLSearchParams(location.search).has('url') ? <ViewerApp /> : <HomePage />
 }
@@ -73,15 +75,17 @@ function HomePage() {
           <h1>A window into<br /><span>robotics datasets.</span></h1>
           <p>See what the robot sees. Explore its actions. Understand the episode.</p>
           <p className="hero-description">RoboPeek brings robotics data into your browser, with embeddable viewers and a lightweight reading library for your own applications.</p>
-          <div className="hero-actions"><a className="ui-button" data-variant="primary" href="#playground">Explore the viewer<Icon name="arrow" /></a><a className="ui-button" href="/RLDS/"><Icon name="code" />Build with RoboPeek</a></div>
-          <InstallCommand />
+          <div className="hero-actions"><a className="ui-button" data-variant="primary" href="#playground">Explore the viewer<Icon name="arrow" /></a><a className="ui-button" href={format === 'mcap' ? MCAP_DOCS : RLDS_DOCS}><Icon name="code" />Build with RoboPeek</a></div>
+          <InstallCommand format={format} onFormat={setFormat} />
           <div className="hero-availability"><span><span className="status-dot" />RLDS available</span><span className="availability-separator" /><span><span className="status-dot" />MCAP available</span></div>
         </div>
         <div className="hero-preview">
-          <div className="hero-preview-top"><span><Icon name="film" />Inside a robotics episode</span><span className="ui-badge">RLDS</span></div>
+          <div className="hero-preview-top"><span><Icon name="film" />{format === 'mcap' ? 'Inside a robot recording' : 'Inside a robotics episode'}</span><div className="hero-format" role="group" aria-label="Preview format">{FORMATS.map(f => <button type="button" key={f} aria-pressed={format === f} onClick={() => setFormat(f)}>{f.toUpperCase()}</button>)}</div></div>
+          {format === 'mcap' ? <HeroMcapPreview onPlay={() => { location.hash = ''; playgroundRef.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }) }} /> : <>
           <div className="hero-camera"><img src="/previews/pusht.png" alt="A robot arm pushing a red T-shaped object on a work surface" width="320" height="240" fetchPriority="high" /><span className="camera-label"><span className="status-dot" />Scene camera</span><div className="inset-camera"><img src="/previews/pusht-camera-2.png" alt="The same Push-T episode from the wrist camera" width="320" height="240" /><span>Wrist camera</span></div></div>
           <div className="hero-preview-info"><div><strong>Push-T</strong><span>2 cameras<span>·</span>271 steps<span>·</span>Manipulation</span></div><button type="button" aria-label="Preview the Push-T dataset" onClick={() => choose(SAMPLES[2], true)}><Icon name="play" /></button></div>
           <div className="hero-preview-caption"><span>Real observations. Straight from the dataset.</span><Icon name="arrow" /></div>
+          </>}
         </div>
       </section>
       <div className="principles-band"><div className="site-container principles">
@@ -90,7 +94,7 @@ function HomePage() {
         <div><Icon name="code" /><div><h2>Make it part of your app</h2><p>Use a viewer, its parts, or just the reader.</p></div></div>
       </div></div>
       <section id="playground" ref={playgroundRef} className="playground site-container">
-        <div className="section-heading"><div><p className="eyebrow">The playground</p><h2>Less setup. More understanding.</h2><p>Paste an RLDS or MCAP link, open a local file, or explore a sample. No setup needed.</p></div>{format === 'rlds' ? <a className="text-link" href="/RLDS/">Explore the RLDS toolkit<Icon name="arrow" /></a> : <a className="text-link" href={MCAP_DOCS} target="_blank" rel="noreferrer">Read the MCAP docs<Icon name="external" /></a>}</div>
+        <div className="section-heading"><div><p className="eyebrow">The playground</p><h2>Less setup. More understanding.</h2><p>Paste an RLDS or MCAP link, open a local file, or explore a sample. No setup needed.</p></div><a className="text-link" href={format === 'mcap' ? MCAP_DOCS : RLDS_DOCS}>Explore the {format.toUpperCase()} toolkit<Icon name="arrow" /></a></div>
         <div className="format-tabs" role="tablist" aria-label="Dataset format" onKeyDown={e => {
           if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
           e.preventDefault()
@@ -117,7 +121,7 @@ function HomePage() {
           </DropTarget>
         </div>}
       </section>
-      <section className="build-section"><div className="site-container build-grid"><div><p className="eyebrow">Built to be embedded</p><h2>Your application.<br />Your way to peek.</h2><p>RoboPeek is an npm library, too. Drop in a ready-made React viewer, compose your own controls, or use a framework-independent reader. Install the reader for the format you need; one React package serves both.</p><a className="text-link" href="/RLDS/#ready-made">See live examples and source code<Icon name="arrow" /></a><div className="package-lines"><div><Icon name="layers" /><div><code>@videodb/robopeek-react</code><span>Viewers, composable parts, and React hooks for every format</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-rlds</code><span>The RLDS reader: TFRecord shards into episodes, for any JavaScript app</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-mcap</code><span>The MCAP reader: ROS 1, ROS 2, protobuf and JSON recordings, for any JavaScript app</span></div></div></div></div><CodePanel files={[{ name: 'DatasetPreview.tsx', code: QUICKSTART }, { name: 'RecordingPreview.tsx', code: MCAP_QUICKSTART }]} /></div></section>
+      <section className="build-section"><div className="site-container build-grid"><div><p className="eyebrow">Built to be embedded</p><h2>Your application.<br />Your way to peek.</h2><p>RoboPeek is an npm library, too. Drop in a ready-made React viewer, compose your own controls, or use a framework-independent reader. Install the reader for the format you need; one React package serves both.</p><div className="build-links"><a className="text-link" href={`${RLDS_DOCS}#ready-made`}>RLDS examples and source code<Icon name="arrow" /></a><a className="text-link" href={`${MCAP_DOCS}#ready-made`}>MCAP examples and source code<Icon name="arrow" /></a></div><div className="package-lines"><div><Icon name="layers" /><div><code>@videodb/robopeek-react</code><span>Viewers, composable parts, and React hooks for every format</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-rlds</code><span>The RLDS reader: TFRecord shards into episodes, for any JavaScript app</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-mcap</code><span>The MCAP reader: ROS 1, ROS 2, protobuf and JSON recordings, for any JavaScript app</span></div></div></div></div><CodePanel files={[{ name: 'DatasetPreview.tsx', code: QUICKSTART }, { name: 'RecordingPreview.tsx', code: MCAP_QUICKSTART }]} /></div></section>
     </main>
     <SiteFooter />
   </div>
