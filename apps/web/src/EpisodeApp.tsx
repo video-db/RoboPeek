@@ -26,7 +26,7 @@ export default function EpisodeApp() {
         <SourceBar key={url} defaultUrl={url} episode={n} currentFile={source instanceof File ? source : undefined} onOpen={open} fileRef={fileRef} />
       }>
         <EpisodeViewer source={source} episode={n} onEpisodeChange={setN} autoFocus
-          empty={<Welcome single onSample={() => open(SAMPLE_URL, 40)} onBrowse={() => fileRef.current?.click()} />}
+          empty={<Welcome mode="episode" onSample={() => open(SAMPLE_URL, 40)} onBrowse={() => fileRef.current?.click()} />}
         />
       </AppShell>
     </DropTarget>

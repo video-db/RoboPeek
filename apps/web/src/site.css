@@ -72,6 +72,15 @@
   .format-intro p { color: #7c827d; font-size: 12px; margin-top: 5px; }
   .format-note { font-size: 10px; color: #8b918c; white-space: nowrap; }
   .dataset-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .sample-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .sample-list > button { display: flex; align-items: flex-start; gap: 10px; padding: 13px 15px; background: #fff; border: 1px solid var(--line); border-radius: 8px; text-align: left; transition: border-color 150ms, box-shadow 150ms; }
+  .sample-list > button:hover { border-color: #a4b9a9; }
+  .sample-list > button[aria-pressed='true'] { border-color: #64866d; box-shadow: 0 0 0 1px #64866d; }
+  .sample-list > button > .icon { width: 14px; height: 14px; margin-top: 2px; flex-shrink: 0; color: #427153; }
+  .sample-list div { display: grid; gap: 3px; min-width: 0; }
+  .sample-list strong { font-size: 12px; font-weight: 500; }
+  .sample-list span { font-size: 10px; color: #858b86; }
+  .sample-list code { font-size: 9px; color: #9aa09b; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .dataset-card { display: block; padding: 0; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 8px; text-align: left; transition: border-color 150ms, box-shadow 150ms; }
   .dataset-card:hover { border-color: #a4b9a9; box-shadow: 0 3px 10px rgb(0 0 0 / 4%); }
   .dataset-card[aria-pressed='true'] { border-color: #64866d; box-shadow: 0 0 0 1px #64866d; }
@@ -117,13 +126,6 @@
   .package-lines > div > div { display: grid; gap: 3px; }
   .package-lines code { font: 11px var(--mono); }
   .package-lines span { font-size: 10px; color: #7d867f; }
-  .roadmap { display: flex; align-items: center; gap: 25px; padding-block: 64px; }
-  .roadmap-icon { display: grid; place-items: center; width: 52px; height: 52px; border: 1px solid #e3e9e2; background: #f5f8f2; border-radius: 11px; flex-shrink: 0; color: #6b846c; }
-  .roadmap-icon .icon { width: 24px; height: 24px; }
-  .roadmap > div { flex: 1; }
-  .roadmap h2 { font-size: 21px; font-weight: 500; letter-spacing: -0.5px; margin-top: 8px; }
-  .roadmap > div > p:last-child { font-size: 12px; color: #7c857e; max-width: 600px; line-height: 1.8; margin-top: 8px; }
-  .roadmap > a { margin-left: auto; font-size: 11px; }
   .site-footer { border-top: 1px solid #e9ece8; background: #fcfdfb; }
   .site-footer-inner { max-width: 1280px; margin: auto; display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 32px 40px; }
   .site-footer .brand strong { font-size: 14px; }
@@ -161,7 +163,6 @@
     .site-header-byline { display: none; }
     .build-grid { gap: 35px; }
     .format-note { display: none; }
-    .roadmap { gap: 20px; }
   }
   @media (max-width: 800px) {
     .site-container { width: calc(100% - 40px); }
@@ -196,10 +197,6 @@
     .build-grid { grid-template-columns: 1fr; gap: 30px; }
     .build-grid > div > p:not(.eyebrow) { max-width: 500px; }
     .build-section h2 { font-size: 29px; }
-    .roadmap { flex-wrap: wrap; padding-block: 40px; align-items: flex-start; gap: 15px; }
-    .roadmap > div { flex-basis: calc(100% - 70px); }
-    .roadmap h2 { font-size: 19px; }
-    .roadmap > a { margin-left: 67px; }
     .site-footer-inner { flex-direction: column; align-items: start; padding: 25px 20px; }
   }
   @media (max-width: 560px) {
@@ -215,7 +212,7 @@
     .hero-actions { gap: 8px; }
     .hero-actions .ui-button { font-size: 11px; padding-inline: 12px; }
     .hero-actions .ui-button .icon { width: 13px; }
-    .dataset-gallery { grid-template-columns: 1fr; }
+    .dataset-gallery, .sample-list { grid-template-columns: 1fr; }
     .dataset-card { display: grid; grid-template-columns: 110px 1fr; }
     .dataset-image { height: 95px; }
     .dataset-card-info { display: grid; align-content: center; }

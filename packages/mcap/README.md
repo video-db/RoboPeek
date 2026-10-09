@@ -378,7 +378,8 @@ Helpers: `isKeyframe(format, data)` (H.264 IDR / H.265 IRAP NAL units) and `code
 | `ros1` | `ros1msg` | `@foxglove/rosmsg` + `@foxglove/rosmsg-serialization` |
 | `protobuf` | `protobuf` (FileDescriptorSet) | `protobufjs` (`int64` read as numbers) |
 | `json` | any, or none | `JSON.parse` |
-| anything else (`ros2idl`, flatbuffers, CBOR, …) | | Topic marked `other` with `error: 'Unsupported encoding …'` |
+| `cdr` | `ros2idl`, `omgidl` | Not supported: topic marked `other` with `error: 'Unsupported encoding …'` |
+| `flatbuffer`, `cbor`, custom strings | any | Not supported: same as above |
 
 | Chunk compression | Supported |
 |---|---|
