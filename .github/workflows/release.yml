@@ -12,6 +12,8 @@ concurrency: release-${{ github.ref }}
 
 permissions:
   contents: write
+  # changelog-github looks up each changeset's PR (link + author); without this the token can't read PRs.
+  pull-requests: read
 
 jobs:
   release:
