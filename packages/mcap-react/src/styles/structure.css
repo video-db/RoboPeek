@@ -1,0 +1,63 @@
+/* Layout only: display, grids, sizing, spacing. Pair with theme.css or your own look. */
+@layer robopeek {
+  /* Status strip on top, then the body (or `empty`) fills the rest. */
+  .rp-viewer { height: 100%; display: flex; flex-direction: column; position: relative; min-height: 0; }
+  .rp-viewer > :last-child { flex: 1; min-height: 0; }
+
+  /* Load status */
+  .rp-status { position: relative; }
+  .rp-status-bar { position: absolute; inset: 0 auto 0 0; }
+  .rp-status-text { position: relative; display: flex; gap: 16px; padding: 5px 16px; align-items: baseline; flex-wrap: wrap; }
+  .rp-status-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 50ch; }
+
+  .rp-mcap-viewer-body { min-height: 0; display: grid; }
+  .rp-waiting { display: grid; place-items: center; }
+  .rp-waiting[data-tone='error'] { padding: 16px; text-align: center; }
+
+  /* Player */
+  .rp-player { overflow-y: auto; min-height: 0; }
+  .rp-stage { padding: 16px; display: grid; gap: 12px; }
+  .rp-instructions { display: grid; gap: 12px; }
+  .rp-instruction { margin: 0; text-align: center; text-wrap: balance; }
+  .rp-frames { display: grid; gap: 12px; justify-content: center; }
+  .rp-frames[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rp-frames[data-count='3'] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Four or more cameras: as many columns as fit. */
+  .rp-frames[data-count='4'] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .rp-frames[data-count='4'] .rp-frame canvas { height: auto; width: 100%; max-height: 32vh; }
+  .rp-frame { margin: 0; display: grid; gap: 6px; justify-items: center; }
+  .rp-frame canvas { height: min(52vh, 520px); max-width: 100%; object-fit: contain; }
+  .rp-frame figcaption { display: flex; gap: 12px; }
+  .rp-frames-empty { text-align: center; margin: 40px 0; }
+
+  .rp-transport { display: flex; align-items: center; gap: 6px; }
+  .rp-transport-button { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; }
+  .rp-transport-button.rp-play { width: 40px; height: 40px; }
+  .rp-transport-button svg { width: 15px; height: 15px; }
+  .rp-scrubber { flex: 1; min-width: 60px; }
+  .rp-counter { min-width: 8ch; text-align: right; }
+
+  .rp-options { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .rp-speed { padding: 3px 8px; }
+  .rp-autonext { display: flex; gap: 6px; align-items: center; }
+
+  .rp-tracks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 12px; padding: 16px; }
+  .rp-chart, .rp-metadata { padding: 12px; display: grid; gap: 8px; min-width: 0; align-content: start; }
+  .rp-chart header { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .rp-chart h3 { min-width: 0; overflow-wrap: anywhere; }
+  .rp-chart header .rp-mono { flex-shrink: 0; white-space: nowrap; }
+  .rp-chart h3, .rp-metadata h3 { margin: 0; }
+  .rp-chart svg { width: 100%; height: 96px; display: block; touch-action: none; }
+  .rp-chart-collapsed { margin: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .rp-chart-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+  .rp-chart-legend button { display: flex; align-items: center; gap: 6px; padding: 2px 8px; }
+  .rp-chart-legend i { width: 8px; height: 8px; }
+  .rp-chart-legend .rp-mono { min-width: 7ch; text-align: right; }
+  .rp-metadata dl { margin: 0; display: grid; gap: 6px; }
+  .rp-metadata dd { margin: 0; overflow-wrap: anywhere; }
+
+  @media (max-width: 760px) {
+    .rp-frame canvas { height: auto; width: 100%; }
+    .rp-frames[data-count='2'], .rp-frames[data-count='3'], .rp-frames[data-count='4'] { grid-template-columns: 1fr; }
+  }
+}

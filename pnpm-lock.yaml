@@ -38,6 +38,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@videodb/robopeek-mcap-react':
+        specifier: workspace:^
+        version: link:../../packages/mcap-react
       '@videodb/robopeek-react':
         specifier: workspace:^
         version: link:../../packages/react
@@ -69,6 +72,59 @@ importers:
       vite:
         specifier: ^8.3.0
         version: 8.3.2(@types/node@24.19.1)(yaml@2.9.1)
+
+  packages/mcap:
+    dependencies:
+      '@foxglove/rosmsg':
+        specifier: ^5.0.5
+        version: 5.0.5
+      '@foxglove/rosmsg-serialization':
+        specifier: ^2.1.2
+        version: 2.1.2
+      '@foxglove/rosmsg2-serialization':
+        specifier: ^3.1.2
+        version: 3.1.2
+      '@mcap/core':
+        specifier: ^2.3.0
+        version: 2.3.0
+      fzstd:
+        specifier: ^0.1.1
+        version: 0.1.1
+      lz4js:
+        specifier: ^0.2.0
+        version: 0.2.0
+      protobufjs:
+        specifier: ^8.8.0
+        version: 8.8.0
+    devDependencies:
+      '@types/lz4js':
+        specifier: ^0.2.2
+        version: 0.2.2
+
+  packages/mcap-react:
+    dependencies:
+      '@videodb/robopeek-mcap':
+        specifier: workspace:^
+        version: link:../mcap
+    devDependencies:
+      '@types/react':
+        specifier: ^19.3.0
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.3.0
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.2
+        version: 6.1.2(vite@8.3.2(@types/node@24.19.1)(yaml@2.9.1))
+      react:
+        specifier: ^19.3.0
+        version: 19.3.0
+      react-dom:
+        specifier: ^19.3.0
+        version: 19.3.0(react@19.3.0)
+      vitest-browser-react:
+        specifier: ^2.3.0
+        version: 2.3.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@5.0.3)
 
   packages/react:
     dependencies:
@@ -198,6 +254,32 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
+  '@foxglove/cdr@3.5.1':
+    resolution: {integrity: sha512-Fubm04/xC1SkeNaviwUhbFk8nAiiNvIqlmP5MW7r6IVGFa35rsA0E3/Rg/pGdE77ZXf4XNwShZcQoEmje62ddQ==}
+    engines: {node: '>= 14'}
+
+  '@foxglove/crc@0.0.3':
+    resolution: {integrity: sha512-DjIZsnL3CyP/yQ/vUYA9cjrD0a/8YXejI5ZmsaOiT16cLfZcTwaCxIN01/ys4jsy+dZCQ/9DnWFn7AEFbiMDaA==}
+
+  '@foxglove/message-definition@0.5.0':
+    resolution: {integrity: sha512-B/2GvWn4wRSsPDywcmy6uNXgAfZRhiOAnmy3qAaS6MHVqiHQqs/RoDsoW6Gw9sXSweJpeH5qAqAihvm1pR9Thg==}
+
+  '@foxglove/rosmsg-serialization@2.1.2':
+    resolution: {integrity: sha512-k1vcPfOjCxUU27XRB+It4a4T2lVihtYNmzW9B8vm03khNjdfk/4t/DTUqWuVVALRt05AdCXe5zEuk/Se/xt9NQ==}
+    engines: {node: '>= 14'}
+
+  '@foxglove/rosmsg2-serialization@3.1.2':
+    resolution: {integrity: sha512-KKtmHuuIQy6I0JLUi01LFhV7hrZb5xd+LegtuGz2+9L9pftBxtVVKhoxO6B/kQREGocIUOLP8494kxLF58LMWw==}
+    engines: {node: '>= 20'}
+
+  '@foxglove/rosmsg@5.0.5':
+    resolution: {integrity: sha512-+qY6xW+4HdbPI3ItAlFFMjXgAiplXyRsv+kqdBk8OcWGH38BmEd7s6v/VnCkbYovAoB5rfR5giuKfmPRNzwbrA==}
+    engines: {node: '>= 14'}
+
+  '@foxglove/rostime@1.1.3':
+    resolution: {integrity: sha512-Gr3Xy4sNbo2NcXg0tBHb/jVUqIcDyZ1kgHj9dB7K+Y1A7AQ0oSCmSXIuf8oqeteSIs0pl8BJOWEwAtLNC99Izg==}
+    engines: {node: '>= 14'}
+
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
     engines: {node: '>=6.0.0'}
@@ -222,6 +304,9 @@ packages:
   '@manypkg/tools@2.1.2':
     resolution: {integrity: sha512-6QEf6yqFbETdwGITKq57aYoPfX/3K8XFNwsAlx0C1M7o8cb79sv1M3w+tWuWvIcSbNqrLF7OD7YpZMVVz335hQ==}
     engines: {node: '>=20.0.0'}
+
+  '@mcap/core@2.3.0':
+    resolution: {integrity: sha512-W28kxMOi3QmkhpnZv/45Hme5bTrJ2cNJ1y3Ti/BrWPdwVPa3Z0e4g87sadS2k2nm1tuTl+Ggxj38S4kfVVDJnA==}
 
   '@oxc-project/types@0.152.0':
     resolution: {integrity: sha512-oM/5rLBm2tPkg0iBgkH/FOeR3PCDpY19GTgAZjMFM8h9WI9VW7cLgzp6nwtarYKmovavIQZ+Fe/RKX/8C8O/Rw==}
@@ -473,6 +558,9 @@ packages:
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
+
+  '@types/lz4js@0.2.2':
+    resolution: {integrity: sha512-pqXfoJ2AwllcLTf1Nia0+HT1KHj8z4wWo3bBP6vn7Aen5ySywBqrh/u1TyBwWxuKDS+mPzVHkPbHivqZEfk6pA==}
 
   '@types/node@24.19.1':
     resolution: {integrity: sha512-aS3/DG0oM05K0RIXXP+hKjinGG5IgSSVGzswZxW3O0sS3pH4/fycXundUC9XsszgKCk4gHXylTEK6hyFxVxnoQ==}
@@ -847,6 +935,9 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  fzstd@0.1.1:
+    resolution: {integrity: sha512-dkuVSOKKwh3eas5VkJy1AW1vFpet8TA/fGmVA5krThl8YcOVE/8ZIoEA1+U1vEn5ckxxhLirSdY837azmbaNHA==}
+
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
@@ -858,6 +949,10 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+
+  heap-js@2.7.1:
+    resolution: {integrity: sha512-EQfezRg0NCZGNlhlDR3Evrw1FVL2G3LhU7EgPoxufQKruNBSYA8MiRPHeWbU+36o+Fhel0wMwM+sLEiBAlNLJA==}
+    engines: {node: '>=10.0.0'}
 
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
@@ -963,9 +1058,15 @@ packages:
     resolution: {integrity: sha512-WkUDrojuJs0xkgGf2udWxa3yGBRxPtxUkB79i6aCZLRgc7PM8fZe9TosfPDcvEpQZbuFASnHYmRLBLUbmLOIIA==}
     engines: {node: '>= 12.0.0'}
 
+  long@5.3.2:
+    resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==}
+
   lru-cache@11.5.3:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
     engines: {node: 20 || >=22}
+
+  lz4js@0.2.0:
+    resolution: {integrity: sha512-gY2Ia9Lm7Ep8qMiuGRhvUq0Q7qUereeldZPP1PMEJxPtEWHJLqw9pgX68oHajBH0nzJK4MaZEA/YNV3jT8u8Bg==}
 
   magic-string@1.4.3:
     resolution: {integrity: sha512-z12OxmaPGE0F4xlpGdjuAUckipLpQlTAuAmyGhNoD7ODpYUzvDfvtxUbjM/jwznyP178oju/KDdyi220wNJ0RQ==}
@@ -980,6 +1081,9 @@ packages:
     resolution: {integrity: sha512-jcByLnIFkd5gSXZmjNvS1TlmRhCXZjIzHYlaGkPlLIekG55JDR2Z4va9tZwCiP+/RDERiNhMOFu01xd6O5ct1Q==}
     engines: {node: '>= 16'}
     hasBin: true
+
+  md5-typescript@1.0.5:
+    resolution: {integrity: sha512-ovAc4EtiNt2dY8JPhPr/wkC9h4U5k/nuClNVcG0Ga3V1rMlYpAY24ZaaymFXJlz+ccJ6UMPo3FSaVKe7czBsXw==}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -1065,6 +1169,10 @@ packages:
   postcss@8.5.29:
     resolution: {integrity: sha512-49cGhUbXj8Qenv0iTMxA1cFBzxXoctpC9Ujd77t1WcbJIr6nF/eI7g/8MgxrYldFRuAXvja7xQRwavoW7kgrxQ==}
     engines: {node: ^10 || ^12 || >=14}
+
+  protobufjs@8.8.0:
+    resolution: {integrity: sha512-N3xhQ5yyBx3vQq4gubBfASzYhJGNzeDbjqBpu61g7UVylsN/qyffU96TKWD3GbbLOKF82VGNRNvv1+BFgE31Eg==}
+    engines: {node: '>=12.0.0'}
 
   publint@0.3.25:
     resolution: {integrity: sha512-WMMbn/d7JqRlfXQL/JUI4n5skC8cJ5WVr8/wT5mmiYWkUdENkZr1I5rgs2+dQPVRgoJd+JRYtB46MTsuDylw9g==}
@@ -1231,6 +1339,9 @@ packages:
         optional: true
       unrun:
         optional: true
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   typescript@5.6.1-rc:
     resolution: {integrity: sha512-E3b2+1zEFu84jB0YQi9BORDjz9+jGbwwy1Zi3G0LUNw7a7cePUrHMRNy8aPh53nXpkFGVHSxIZo5vKTfYaFiBQ==}
@@ -1562,6 +1673,29 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
+  '@foxglove/cdr@3.5.1': {}
+
+  '@foxglove/crc@0.0.3': {}
+
+  '@foxglove/message-definition@0.5.0': {}
+
+  '@foxglove/rosmsg-serialization@2.1.2':
+    dependencies:
+      '@foxglove/message-definition': 0.5.0
+
+  '@foxglove/rosmsg2-serialization@3.1.2':
+    dependencies:
+      '@foxglove/cdr': 3.5.1
+      '@foxglove/message-definition': 0.5.0
+      '@foxglove/rostime': 1.1.3
+
+  '@foxglove/rosmsg@5.0.5':
+    dependencies:
+      '@foxglove/message-definition': 0.5.0
+      md5-typescript: 1.0.5
+
+  '@foxglove/rostime@1.1.3': {}
+
   '@jridgewell/resolve-uri@3.1.2': {}
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
@@ -1589,6 +1723,12 @@ snapshots:
       jju: 1.4.0
       tinyglobby: 0.2.17
       yaml: 2.9.1
+
+  '@mcap/core@2.3.0':
+    dependencies:
+      '@foxglove/crc': 0.0.3
+      heap-js: 2.7.1
+      tslib: 2.8.1
 
   '@oxc-project/types@0.152.0': {}
 
@@ -1718,6 +1858,8 @@ snapshots:
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.9': {}
+
+  '@types/lz4js@0.2.2': {}
 
   '@types/node@24.19.1':
     dependencies:
@@ -1983,6 +2125,8 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
+  fzstd@0.1.1: {}
+
   get-caller-file@2.0.5: {}
 
   get-tsconfig@5.0.0-beta.6:
@@ -1990,6 +2134,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   has-flag@4.0.0: {}
+
+  heap-js@2.7.1: {}
 
   highlight.js@10.7.3: {}
 
@@ -2061,7 +2207,11 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.33.0
       lightningcss-win32-x64-msvc: 1.33.0
 
+  long@5.3.2: {}
+
   lru-cache@11.5.3: {}
+
+  lz4js@0.2.0: {}
 
   magic-string@1.4.3:
     dependencies:
@@ -2079,6 +2229,8 @@ snapshots:
       supports-hyperlinks: 3.2.0
 
   marked@9.1.6: {}
+
+  md5-typescript@1.0.5: {}
 
   mri@1.2.0: {}
 
@@ -2156,6 +2308,10 @@ snapshots:
       nanoid: 3.3.20
       picocolors: 1.1.1
       source-map-js: 1.2.2
+
+  protobufjs@8.8.0:
+    dependencies:
+      long: 5.3.2
 
   publint@0.3.25:
     dependencies:
@@ -2306,6 +2462,8 @@ snapshots:
       - '@vue/language-core'
       - oxc-resolver
       - vue-tsc
+
+  tslib@2.8.1: {}
 
   typescript@5.6.1-rc: {}
 

@@ -48,9 +48,9 @@ It's built as open-source npm packages, so any app can embed it: dataset catalog
 | Format | Used by | Status |
 |---|---|---|
 | **RLDS / TFDS** (TFRecord shards) | Open X-Embodiment, DROID, Bridge, RT-1, and most TFDS robotics datasets | ✅ Available |
-| **MCAP** | ROS 2 recordings, Foxglove | 🔜 Next |
+| **MCAP** | ROS 1 / ROS 2 recordings, Foxglove, FiftyOne exports | ✅ Available |
 
-Each format gets its own reader package, so an app that only needs RLDS never installs MCAP's decoders. The player and viewers are shared.
+Each format has its own reader and its own React package, so an app that only needs RLDS never installs MCAP's decoders, and the reverse. The two React packages share class names and theme tokens, so one theme covers both.
 
 ## Packages
 
@@ -58,12 +58,16 @@ Each format gets its own reader package, so an app that only needs RLDS never in
 |---|---|---|
 | [`@videodb/robopeek-react`](packages/react) | Ready-made viewers, a player you can rearrange, hooks and themeable CSS. Installs and re-exports the reader. | [README](packages/react#readme) |
 | [`@videodb/robopeek-rlds`](packages/rlds) | Reads RLDS episodes from TFRecord shards. No UI, no dependencies; works with any framework, or none, in the browser or Node. | [README](packages/rlds#readme) |
+| [`@videodb/robopeek-mcap-react`](packages/mcap-react) | MCAP viewer and a time-based player, hooks and the same themeable CSS. Installs and re-exports the MCAP reader. | [README](packages/mcap-react#readme) |
+| [`@videodb/robopeek-mcap`](packages/mcap) | Reads MCAP recordings (ROS 1, ROS 2, protobuf, JSON) into time-aligned camera, chart and text tracks. No UI; browser or Node. | [README](packages/mcap#readme) |
 
-**Which one do I install?** Building with React: `@videodb/robopeek-react` (it brings the reader with it). Anything else, such as Vue, Svelte, plain JS or a Node script: `@videodb/robopeek-rlds`.
+**Which one do I install?** Pick the format, then React or not. Building with React: `@videodb/robopeek-react` (RLDS) or `@videodb/robopeek-mcap-react` (MCAP); each brings its reader. Anything else, such as Vue, Svelte, plain JS or a Node script: the reader alone.
 
 ```sh
-npm install @videodb/robopeek-react   # viewers + reader
-npm install @videodb/robopeek-rlds    # reader only
+npm install @videodb/robopeek-react        # RLDS viewers + reader
+npm install @videodb/robopeek-rlds         # RLDS reader only
+npm install @videodb/robopeek-mcap-react   # MCAP viewer + reader
+npm install @videodb/robopeek-mcap         # MCAP reader only
 ```
 
 ## Quick start
@@ -226,7 +230,7 @@ Things to know:
 
 ## Roadmap
 
-- MCAP support (`@videodb/robopeek-mcap`)
+- MCAP: episode boundaries inside one file, seeking ahead of the download, H.265 / VP9 / AV1 video
 - Decoding in Web Workers
 - Caching and a saved episode index for faster re-opens
 - GZIP-compressed shards
@@ -237,16 +241,18 @@ See the [open issues](https://github.com/video-db/RoboPeek/issues) for more.
 
 ```
 packages/
-  rlds/     @videodb/robopeek-rlds: the RLDS reader
-  react/    @videodb/robopeek-react: viewers, player, hooks, CSS
+  rlds/        @videodb/robopeek-rlds: the RLDS reader
+  react/       @videodb/robopeek-react: RLDS viewers, player, hooks, CSS
+  mcap/        @videodb/robopeek-mcap: the MCAP reader
+  mcap-react/  @videodb/robopeek-mcap-react: MCAP viewer, player, hooks, CSS
 apps/
-  web/      the RoboPeek website and live demo
+  web/      the RoboPeek website and live demo (MCAP viewer at /mcap.html)
 docs/       architecture notes
 ```
 
 - [Architecture](docs/architecture.md): how the packages are built
 - [THESIS.md](THESIS.md) and [THESIS_REVIEW.md](THESIS_REVIEW.md): why RoboPeek exists and how it's shaped
-- Changelogs: [`@videodb/robopeek-rlds`](packages/rlds/CHANGELOG.md), [`@videodb/robopeek-react`](packages/react/CHANGELOG.md) (created on the first release)
+- Changelogs: [`@videodb/robopeek-rlds`](packages/rlds/CHANGELOG.md), [`@videodb/robopeek-react`](packages/react/CHANGELOG.md), `@videodb/robopeek-mcap` and `@videodb/robopeek-mcap-react` (created on their first release)
 
 ## Contributing
 

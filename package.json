@@ -6,7 +6,7 @@
     "build": "pnpm -r --filter './packages/*' build && pnpm --filter robopeek-web build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @videodb/robopeek-rlds exec attw --pack . --profile esm-only && pnpm --filter @videodb/robopeek-react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
+    "check:pkg": "pnpm -r --filter './packages/*' exec publint && pnpm --filter @videodb/robopeek-rlds exec attw --pack . --profile esm-only && pnpm --filter @videodb/robopeek-react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css && pnpm --filter @videodb/robopeek-mcap exec attw --pack . --profile esm-only && pnpm --filter @videodb/robopeek-mcap-react exec attw --pack . --profile esm-only --exclude-entrypoints ./styles.css ./structure.css ./theme.css",
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm install --lockfile-only",
     "release": "pnpm -r --filter './packages/*' build && pnpm check:pkg && changeset publish"

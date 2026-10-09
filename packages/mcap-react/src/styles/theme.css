@@ -1,0 +1,153 @@
+/* Look: colour, borders, radii, type. Every value comes from a --rp-* token. */
+@layer robopeek {
+  /* VideoDB Design System v2 usage tokens (DS name in comments). The DS is light-only; dark is opt-in below. */
+  :root,
+  [data-rp-scheme='light'] {
+    --rp-panel: #ffffff;  /* Background/Neutral/Primary */
+    --rp-sidebar: #efefef;  /* Background/Neutral/Secondary */
+    --rp-sunken: #f7f7f7;  /* Greyscale/50 (light fills) */
+    --rp-ink: #1d1a22;  /* Text/Neutral/Primary */
+    --rp-ink-secondary: #404040;  /* Text/Neutral/Secondary */
+    --rp-muted: #525252;  /* Text/Neutral/Tertiary */
+    --rp-disabled: #a3a3a3;  /* Text/Neutral/Disabled */
+    --rp-icon: #262626;  /* Icon/Neutral/Primary */
+    --rp-line: #efefef;  /* Border/Neutral/Primary */
+    --rp-line-hover: #d4d4d4;  /* Greyscale/300 */
+    --rp-accent: #ec5b16;  /* Background/Brand/Primary */
+    --rp-accent-hover: #c14103;  /* Orange/700 */
+    --rp-accent-ink: #fff5ec;  /* Text/Brand/Inverse */
+    --rp-accent-soft: #fff5ec;  /* Background/Brand/Tertiary */
+    --rp-progress: #ffe9d3;  /* Orange/100 */
+    --rp-danger: #b31d1d;  /* Text/Semantic/Error/Primary */
+    --rp-series-0: #0075ff;  /* Blue */
+    --rp-series-1: #ec5b16;  /* Orange */
+    --rp-series-2: #057a55;  /* Green */
+    --rp-series-3: #e02424;  /* Red */
+    --rp-series-4: #ca8a04;  /* Yellow */
+    --rp-series-5: #66acff;  /* Blue light */
+    --rp-series-6: #69af99;  /* Green light */
+    --rp-series-7: #737373;  /* Greyscale */
+
+    /* Stage: the DS "Dark video overlay" recipe, in both schemes. */
+    --rp-stage: #262626;  /* Background/Neutral Inverse/Secondary */
+    --rp-stage-ink: #f7f7f7;  /* Text/Neutral Inverse/Primary */
+    --rp-stage-soft: #efefef;  /* Text/Neutral Inverse/Secondary */
+    --rp-stage-muted: #d4d4d4;  /* Text/Neutral Inverse/Tertiary */
+    --rp-stage-off: #a3a3a3;  /* Text/Neutral/Disabled */
+    --rp-stage-line: #525252;  /* Border/Neutral Inverse/Primary */
+    --rp-stage-line-hover: #a3a3a3;  /* Greyscale/400 */
+    --rp-stage-accent: #ec5b16;  /* Background/Brand/Primary */
+    --rp-stage-accent-ink: #fff5ec;  /* Text/Brand/Inverse */
+    --rp-frame-bg: #000000;  /* Background/Neutral Inverse/Primary */
+
+    --rp-radius: 8px;  /* chip / label / control */
+    --rp-radius-card: 16px;  /* card */
+    --rp-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --rp-font-mono: var(--rp-font-sans);  /* DS: Inter for all product UI; numbers stay tabular */
+  }
+
+  /*
+   * Opt-in schemes (colorScheme prop). Plain redefinitions, not light-dark(): Lightning CSS (Tailwind v4)
+   * polyfills light-dark() into values that are invalid on :root. Theme a pinned subtree under these selectors.
+   */
+  [data-rp-scheme='light'] { color-scheme: light; }
+  /* Neutral Inverse tokens, or a lighter primitive where the DS has none. */
+  [data-rp-scheme='dark'] {
+    color-scheme: dark;
+    --rp-panel: #262626;
+    --rp-sidebar: #000000;
+    --rp-sunken: #171717;
+    --rp-ink: #f7f7f7;
+    --rp-ink-secondary: #efefef;
+    --rp-muted: #d4d4d4;
+    --rp-icon: #f7f7f7;
+    --rp-line: #404040;
+    --rp-line-hover: #525252;
+    --rp-accent-soft: rgb(236 91 22 / 0.2);
+    --rp-progress: rgb(236 91 22 / 0.25);
+    --rp-danger: #ec7c7c;
+    --rp-series-0: #3391ff;
+    --rp-series-1: #ff7e32;
+    --rp-series-2: #379577;
+    --rp-series-3: #e65050;
+    --rp-series-4: #facc15;
+    --rp-series-5: #99c8ff;
+    --rp-series-6: #9bcabb;
+    --rp-series-7: #a3a3a3;
+    --rp-stage: #000000;
+  }
+
+  .rp-viewer, .rp-player { font-family: var(--rp-font-sans); color: var(--rp-ink); }
+  .rp-viewer:focus, .rp-player:focus { outline: none; }
+  :is(.rp-viewer, .rp-player) :focus-visible { outline: 2px solid var(--rp-accent); outline-offset: 2px; }
+  .rp-mono { font-family: var(--rp-font-mono); font-variant-numeric: tabular-nums; }
+  .rp-dim { color: var(--rp-muted); }
+
+  /* Controls */
+  .rp-btn, .rp-input, .rp-speed, .rp-transport-button { font: inherit; color: inherit; }
+  .rp-btn {
+    border: 1px solid var(--rp-line); background: var(--rp-panel); border-radius: var(--rp-radius);
+    padding: 6px 12px; cursor: pointer; white-space: nowrap;
+  }
+  .rp-btn:hover:not(:disabled) { border-color: var(--rp-line-hover); }
+  .rp-btn:disabled, .rp-transport-button:disabled { opacity: 0.4; cursor: default; }
+  .rp-input { border: 1px solid var(--rp-line); background: var(--rp-panel); border-radius: var(--rp-radius); padding: 6px 10px; min-width: 0; }
+
+  /* Load status */
+  .rp-status { background: var(--rp-sunken); border-bottom: 1px solid var(--rp-line); }
+  .rp-status-bar { background: var(--rp-progress); transition: width 0.2s linear; }
+  .rp-status[data-phase='done'] .rp-status-bar { background: transparent; }
+  .rp-status-text { font-size: 12px; }
+  .rp-status-name { font-weight: 500; }
+  .rp-status-note { color: var(--rp-muted); }
+  .rp-status-note[data-tone='error'] { color: var(--rp-danger); }
+  .rp-waiting { color: var(--rp-muted); }
+  .rp-waiting[data-tone='error'] { color: var(--rp-danger); }
+
+  /* Stage */
+  .rp-stage { background: var(--rp-stage); color: var(--rp-stage-ink); }
+  .rp-instruction { font-size: 17px; font-weight: 500; }
+  .rp-frame canvas { background: var(--rp-frame-bg); border-radius: var(--rp-radius); }
+  .rp-frame figcaption { font-size: 11.5px; color: var(--rp-stage-muted); }
+  .rp-frame figcaption [data-tone='error'] { color: var(--rp-danger); }
+  /* Frame not in memory yet: the previous one stays up, dimmed. */
+  .rp-frame[data-pending] canvas { opacity: 0.55; }
+  .rp-frames-empty { color: var(--rp-stage-muted); }
+
+  .rp-transport-button {
+    background: transparent; border: 1px solid var(--rp-stage-line); border-radius: var(--rp-radius);
+    color: var(--rp-stage-ink); cursor: pointer;
+  }
+  .rp-transport-button:hover:not(:disabled) { border-color: var(--rp-stage-line-hover); }
+  /* Play is the primary action: DS "Primary CTA" recipe. */
+  .rp-transport-button.rp-play { background: var(--rp-stage-accent); color: var(--rp-stage-accent-ink); border-color: var(--rp-stage-accent); border-radius: 50%; }
+  .rp-transport-button.rp-play:hover:not(:disabled) { background: var(--rp-accent-hover); border-color: var(--rp-accent-hover); }
+  .rp-transport-button svg { fill: currentColor; }
+  .rp-scrubber { accent-color: var(--rp-stage-accent); }
+  .rp-counter { font-size: 13px; }
+  .rp-counter .rp-dim { color: var(--rp-stage-muted); }
+
+  .rp-options { font-size: 12.5px; }
+  .rp-speed { background: transparent; border: 1px solid var(--rp-stage-line); border-radius: var(--rp-radius); color: var(--rp-stage-ink); }
+  .rp-speed option { color: initial; }
+  .rp-autonext { cursor: pointer; color: var(--rp-stage-soft); }
+  .rp-autonext input { accent-color: var(--rp-stage-accent); }
+
+  /* Tracks */
+  .rp-chart, .rp-metadata { background: var(--rp-panel); border: 1px solid var(--rp-line); border-radius: var(--rp-radius-card); }
+  .rp-chart h3, .rp-metadata h3 { font: 600 12.5px var(--rp-font-mono); color: var(--rp-ink); }
+  .rp-chart header .rp-mono { font-size: 11px; }
+  .rp-chart svg { background: var(--rp-sunken); border-radius: var(--rp-radius); cursor: crosshair; }
+  .rp-chart path { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .rp-chart-zero { stroke: var(--rp-line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .rp-chart-cursor { stroke: var(--rp-ink); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .rp-chart-collapsed { font-size: 12px; }
+  .rp-chart-legend button { font-size: 11.5px; border-radius: var(--rp-radius); }
+  .rp-chart-legend button[data-off] { opacity: 0.4; }
+  .rp-chart-legend i { border-radius: 2px; }
+  .rp-metadata dt { font-size: 11.5px; color: var(--rp-muted); }
+  .rp-metadata dd { font-size: 12px; }
+  .rp-topics [data-kind='other'] dt, .rp-topics [data-tone='error'] { color: var(--rp-muted); }
+
+  @media (prefers-reduced-motion: reduce) { .rp-status-bar { transition: none; } }
+}

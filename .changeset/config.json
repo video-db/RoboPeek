@@ -15,6 +15,10 @@
     [
       "@videodb/robopeek-rlds",
       "@videodb/robopeek-react"
+    ],
+    [
+      "@videodb/robopeek-mcap",
+      "@videodb/robopeek-mcap-react"
     ]
   ],
   "linked": [],

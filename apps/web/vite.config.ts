@@ -9,7 +9,10 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     conditions: ['robopeek-source', ...defaultClientConditions],
-    alias: { '@videodb/robopeek-react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css') },
+    alias: {
+      '@videodb/robopeek-react/styles.css': resolve(import.meta.dirname, '../../packages/react/src/styles/styles.css'),
+      '@videodb/robopeek-mcap-react/styles.css': resolve(import.meta.dirname, '../../packages/mcap-react/src/styles/styles.css'),
+    },
   },
   build: {
     rollupOptions: {
@@ -18,6 +21,7 @@ export default defineConfig({
         rlds: resolve(import.meta.dirname, 'RLDS/index.html'),
         viewer: resolve(import.meta.dirname, 'viewer.html'),
         episode: resolve(import.meta.dirname, 'episode.html'),
+        mcap: resolve(import.meta.dirname, 'mcap.html'),
       },
     },
   },

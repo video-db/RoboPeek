@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "customConditions": ["robopeek-source"],
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "include": ["src", "test"]
+}
