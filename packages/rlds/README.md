@@ -18,7 +18,7 @@ Read RLDS robot-learning episodes straight from TFRecord shards, in the browser 
 
 [![npm](https://img.shields.io/npm/v/@videodb/robopeek-rlds?style=flat-square)](https://www.npmjs.com/package/@videodb/robopeek-rlds)
 
-Part of [RoboPeek](https://github.com/video-db/RoboPeek), which previews robotics datasets on the web. This package is the RLDS reader. It has no dependencies and no UI. For ready-made React viewers built on top of it, use [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react).
+Part of [RoboPeek](https://github.com/video-db/RoboPeek), which previews robotics datasets on the web. This package is the RLDS reader. It has no dependencies and no UI. For ready-made React viewers, install [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react) next to it and import from `@videodb/robopeek-react/rlds` (see [Using it with React](#using-it-with-react)).
 
 - **Stream a whole shard**: episodes arrive one by one while the file downloads.
 - **Open one episode by number** without downloading the rest of the shard (HTTP Range requests).
@@ -35,8 +35,10 @@ Part of [RoboPeek](https://github.com/video-db/RoboPeek), which previews robotic
 - [Feature specs (`features.json`)](#feature-specs-featuresjson)
 - [The `Episode` object](#the-episode-object)
 - [Helpers](#helpers)
+- [Pixels for raw images](#pixels-for-raw-images)
 - [Low-level API](#low-level-api)
 - [Recipes](#recipes)
+- [Using it with React](#using-it-with-react)
 - [Errors and limits](#errors-and-limits)
 - [API index](#api-index)
 
@@ -222,7 +224,7 @@ type ImageTrack =
 ```
 
 - **`encoded`**: one compressed image per step. `frames[step]` is a complete PNG/JPEG/WebP file, so `new Blob([frames[step]], { type: mime })` gives you something an `<img>` can show.
-- **`raw`**: numbers, such as float depth, stored row-major as `[length × h × w × c]`. You map them to colours yourself (or use `FrameCanvas` from `@videodb/robopeek-react`).
+- **`raw`**: numbers, such as float depth, stored row-major as `[length × h × w × c]`. `rgbaAt(track, step)` turns one frame into RGBA pixels; see [Pixels for raw images](#pixels-for-raw-images).
 
 ### `VectorTrack`
 
@@ -265,6 +267,28 @@ import { readText, readNumbers, formatFeature } from '@videodb/robopeek-rlds'
 readText(ep.metadata['episode_metadata/file_path'])?.[0]    // '/data/run_0042.npz'
 readNumbers(ep.metadata['episode_metadata/episode_id'])?.[0] // 42
 formatFeature(feature) // numbers: '0.1, 0.2, …' (first 16) · text: 'a | b' · other bytes: '2 × binary (1024 B)'
+```
+
+## Pixels for raw images
+
+Raw tracks hold numbers, not colours. These helpers turn them into RGBA, with no DOM and no React, so the same code works in a browser, a worker or Node.
+
+| Function | Returns | |
+|---|---|---|
+| `rawRange(track)` | `[lo, hi]` | The value range a raw track is scaled to. Single-channel tracks (depth) use the track's own finite min/max. Colour tracks assume 0–1 when `hi ≤ 1`, else 0–255. |
+| `rgbaAt(track, step, range?)` | `Uint8ClampedArray` | RGBA pixels (`w × h × 4`) for one step. Pass the same `range` for every step so brightness doesn't flicker; it defaults to `rawRange(track)`. Non-finite depth values become black. |
+| `frameCount(track)` | `number` | Frames in any image track (`encoded` or `raw`) |
+
+```ts
+import { rawRange, rgbaAt } from '@videodb/robopeek-rlds'
+
+const depth = ep.images['observation/depth']
+if (depth?.kind === 'raw') {
+  const range = rawRange(depth) // once per track
+  const [h, w] = depth.shape
+  const bmp = await createImageBitmap(new ImageData(rgbaAt(depth, step, range), w, h))
+  ctx.drawImage(bmp, 0, 0)
+}
 ```
 
 ## Low-level API
@@ -335,7 +359,29 @@ for await (const ep of streamEpisodes(url)) {
 
 ### Build your own player
 
-Combine `frames[step]`, `vectorAt(track, step)` and `text[key][step]` with your own clock. For a complete example (episode gallery, `<img>` player, SVG chart and metadata table in about 150 lines), see the `rlds-only` example in the [RoboPeek demo](https://github.com/video-db/RoboPeek). Or use [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react), which has all of this built in.
+Combine `frames[step]`, `rgbaAt(track, step)`, `vectorAt(track, step)` and `text[key][step]` with your own clock. Or use [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react), which has all of this built in.
+
+## Using it with React
+
+This package has no React code. React viewers for RLDS live in `@videodb/robopeek-react/rlds`, which imports this package as an **optional peer dependency**. Install both:
+
+```sh
+npm install @videodb/robopeek-react @videodb/robopeek-rlds
+```
+
+```tsx
+import { ShardViewer } from '@videodb/robopeek-react/rlds'
+import { streamEpisodes, type Episode } from '@videodb/robopeek-rlds' // the reader API comes from here, not from the React package
+import '@videodb/robopeek-react/styles.css'
+
+<ShardViewer source={url} />
+```
+
+- `@videodb/robopeek-react` doesn't install or re-export this package. Import reader functions and types (`Episode`, `Source`, `vectorAt`, …) from `@videodb/robopeek-rlds` directly.
+- Importing `@videodb/robopeek-react/rlds` without this package installed fails with a message naming `@videodb/robopeek-rlds`.
+- Installing this package never installs the MCAP reader or its decoders.
+
+See [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react) for the viewers, the player and the hooks.
 
 ## Errors and limits
 
@@ -358,6 +404,7 @@ Tested on CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berkeley UR5, Langu
 | `ShardIndex` | Read one episode by number |
 | `loadFeatureSpecs`, `parseFeatureSpecs` | Load tensor shapes from `features.json` |
 | `vectorAt`, `episodeTitle`, `readText`, `readNumbers`, `formatFeature` | Helpers |
+| `rawRange`, `rgbaAt`, `frameCount` | Pixels for raw images |
 | `blobReader`, `urlReader` | Built-in `RangeReader`s |
 | `openSource`, `readRecords`, `decodeExample`, `toEpisode` | Low-level stages |
 | `Episode`, `ImageTrack`, `VectorTrack`, `Feature`, `FeatureSpec`, `FeatureSpecs`, `Source`, `Progress`, `ReadOptions`, `RangeReader`, `RecordEntry` | Types |
@@ -365,7 +412,8 @@ Tested on CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berkeley UR5, Langu
 ## Related
 
 - [`@videodb/robopeek-react`](https://www.npmjs.com/package/@videodb/robopeek-react): viewers, a player and hooks. Install it next to this package and import from `@videodb/robopeek-react/rlds`.
-- [RoboPeek on GitHub](https://github.com/video-db/RoboPeek): source, issues, and the roadmap (MCAP is next).
+- [`@videodb/robopeek-mcap`](https://www.npmjs.com/package/@videodb/robopeek-mcap): the MCAP reader.
+- [RoboPeek on GitHub](https://github.com/video-db/RoboPeek): source, issues, and the roadmap.
 - [Changelog](https://github.com/video-db/RoboPeek/blob/main/packages/rlds/CHANGELOG.md)
 
 ---

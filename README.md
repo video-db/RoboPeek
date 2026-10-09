@@ -1,6 +1,7 @@
 <!-- PROJECT SHIELDS -->
 
 [![rlds version][rlds-shield]][rlds-url]
+[![mcap version][mcap-shield]][mcap-url]
 [![react version][react-shield]][react-url]
 [![CI][ci-shield]][ci-url]
 [![Issues][issues-shield]][issues-url]
@@ -16,7 +17,9 @@
     <br />
     <a href="packages/react#readme"><strong>React docs »</strong></a>
     ·
-    <a href="packages/rlds#readme"><strong>Reader docs »</strong></a>
+    <a href="packages/rlds#readme"><strong>RLDS reader docs »</strong></a>
+    ·
+    <a href="packages/mcap#readme"><strong>MCAP reader docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/video-db/RoboPeek/issues">Report Bug</a>
@@ -39,68 +42,126 @@
 
 Robotics datasets are huge, and they come in formats built for training, not for looking at. To check what a single demonstration contains, you normally download gigabytes of shards, set up Python and TensorFlow or ROS, and write a script.
 
-RoboPeek lets you open them in a web page instead. Point it at a dataset file, or a link to one, and it shows each episode's camera views, actions, robot state, language instruction and metadata, playing step by step. Everything runs in the browser. There's no server to host and nothing to convert. Where the file allows it, RoboPeek downloads only the episode you asked for.
+RoboPeek lets you open them in a web page instead. Point it at a dataset file, or a link to one, and it shows each episode's camera views, actions, robot state, language instruction and metadata, playing in sync. Everything runs in the browser. There's no server to host and nothing to convert. Where the file allows it, RoboPeek downloads only what you're looking at.
 
 It's built as open-source npm packages, so any app can embed it: dataset catalogues, labelling tools, research dashboards. [datasets.bot](https://datasets.bot) is the first.
 
 ### Formats
 
-| Format | Used by | Status |
-|---|---|---|
-| **RLDS / TFDS** (TFRecord shards) | Open X-Embodiment, DROID, Bridge, RT-1, and most TFDS robotics datasets | ✅ Available |
-| **MCAP** | ROS 1 / ROS 2 recordings, Foxglove, FiftyOne exports | ✅ Available |
-
-Each format has its own reader package, so an app that only needs RLDS never installs MCAP's decoders, and the reverse. One React package serves both: its `/rlds` and `/mcap` entry points hold each format's viewers, and the player, parts and theme are shared.
+| Format | Used by | Reader | React entry |
+|---|---|---|---|
+| **RLDS / TFDS** (TFRecord shards) | Open X-Embodiment, DROID, Bridge, RT-1, and most TFDS robotics datasets | `@videodb/robopeek-rlds` | `@videodb/robopeek-react/rlds` |
+| **MCAP** | ROS 1 / ROS 2 bags, Foxglove recordings, FiftyOne exports | `@videodb/robopeek-mcap` | `@videodb/robopeek-react/mcap` |
 
 ## Packages
 
-| Package | What it does | Docs |
-|---|---|---|
-| [`@videodb/robopeek-react`](packages/react) | Ready-made viewers, a player you can rearrange, hooks and themeable CSS, for every format. `/rlds` and `/mcap` hold each format's viewers; the root import works with any. | [README](packages/react#readme) |
-| [`@videodb/robopeek-rlds`](packages/rlds) | Reads RLDS episodes from TFRecord shards. No UI, no dependencies; works with any framework, or none, in the browser or Node. | [README](packages/rlds#readme) |
-| [`@videodb/robopeek-mcap`](packages/mcap) | Reads MCAP recordings (ROS 1, ROS 2, protobuf, JSON) into time-aligned camera, chart and text tracks. No UI; browser or Node. | [README](packages/mcap#readme) |
+| Package | What it does | Depends on | Docs |
+|---|---|---|---|
+| [`@videodb/robopeek-rlds`](packages/rlds) | Reads RLDS episodes from TFRecord shards: stream a whole shard, or open one episode by number with HTTP Range requests. No UI. Browser or Node. | nothing | [README](packages/rlds#readme) |
+| [`@videodb/robopeek-mcap`](packages/mcap) | Reads MCAP recordings (ROS 1, ROS 2, protobuf, JSON; H.264 video; 16-bit depth) into time-aligned camera, signal and text tracks. Keeps memory under a budget with Range refetch. No UI. Browser or Node. | `@mcap/core`, zstd/lz4, ROS and protobuf decoders | [README](packages/mcap#readme) |
+| [`@videodb/robopeek-react`](packages/react) | Ready-made viewers, a player you can take apart, hooks and themeable CSS. One package for every format. | `react`; the readers as **optional** peers | [README](packages/react#readme) |
 
-**Which one do I install?** The reader for your format, plus `@videodb/robopeek-react` if you use React. Nothing from the other format gets installed.
+## How the packages fit together
 
-```sh
-npm install @videodb/robopeek-react @videodb/robopeek-rlds   # RLDS in React  → import from '@videodb/robopeek-react/rlds'
-npm install @videodb/robopeek-react @videodb/robopeek-mcap   # MCAP in React  → import from '@videodb/robopeek-react/mcap'
-npm install @videodb/robopeek-rlds                          # reader only (Vue, Svelte, plain JS, Node)
-npm install @videodb/robopeek-mcap                          # reader only
+```
+             your app
+      ┌─────────┴──────────────────────────┐
+      ▼                                     ▼
+@videodb/robopeek-react/rlds     @videodb/robopeek-react/mcap      ← format glue: viewers, hooks, adapters
+      │          │                    │           │
+      │          └──────┐   ┌─────────┘           │
+      │                 ▼   ▼                     │
+      │        @videodb/robopeek-react            │                ← format-free player, parts, styles
+      ▼                                           ▼
+@videodb/robopeek-rlds                 @videodb/robopeek-mcap      ← readers: plain data, no UI
 ```
 
-Importing a format entry without its reader fails with a message that names the package to install; see [Entry points](packages/react#entry-points).
+**Concerns.**
+
+- Readers turn files into plain data: an RLDS `Episode`, an MCAP `Recording`. They know nothing about UI.
+- The React package's root entry is a player that reads one format-free shape, the **`Timeline`**: tracks of samples on a step or seconds axis. It knows nothing about file formats.
+- `@videodb/robopeek-react/rlds` and `/mcap` are the glue: an adapter from each reader's data to a `Timeline`, plus that format's viewers, hooks and parts (RLDS step flags, the MCAP topic list).
+
+**Dependencies.**
+
+- The readers are **optional peer dependencies** of the React package. Installing `@videodb/robopeek-react` installs neither, and you add the one you use. An RLDS app never downloads MCAP's decoders; an MCAP app never downloads the RLDS reader.
+- The root entry imports no reader. `/rlds` imports only the RLDS reader, `/mcap` only the MCAP reader, and neither imports the other. CI checks this on the built files (`check:boundaries`), including type-only imports.
+- Your bundle contains only what you import.
+
+**Guided failures.** Crossing a boundary fails with a message that says what to do:
+
+- **Importing `/mcap` without installing `@videodb/robopeek-mcap`.** The bundler or Node names the missing package. Vite says `Could not resolve "@videodb/robopeek-mcap" … Is it installed?`.
+- **Passing an RLDS `Episode` straight to the player.** `got an RLDS Episode. Convert it first: import { useEpisodeTimeline } from '@videodb/robopeek-react/rlds'`.
+- **Putting an RLDS part in an MCAP player.** `<Flags> comes from '@videodb/robopeek-react/rlds' … but this player shows a 'mcap' timeline`.
+
+The full table is in [the React docs](packages/react#when-a-boundary-is-crossed).
+
+## Install
+
+| You want | Run | Then import from |
+|---|---|---|
+| RLDS viewers in React | `npm install @videodb/robopeek-react @videodb/robopeek-rlds` | `@videodb/robopeek-react/rlds` |
+| MCAP viewers in React | `npm install @videodb/robopeek-react @videodb/robopeek-mcap` | `@videodb/robopeek-react/mcap` |
+| Both formats in React | `npm install @videodb/robopeek-react @videodb/robopeek-rlds @videodb/robopeek-mcap` | both |
+| The player for your own data | `npm install @videodb/robopeek-react` | `@videodb/robopeek-react` |
+| RLDS data, no React (Vue, Svelte, plain JS, workers, Node) | `npm install @videodb/robopeek-rlds` | `@videodb/robopeek-rlds` |
+| MCAP data, no React | `npm install @videodb/robopeek-mcap` | `@videodb/robopeek-mcap` |
+
+- **Module format:** all packages are ESM only, with types included.
+- **Runtimes:** the readers run in modern browsers and Node 20+.
+- **React:** the React package needs React 19.
+- **Versions:** all three packages share one version number, so keep them in step.
 
 ## Quick start
+
+RLDS shard:
 
 ```tsx
 import { ShardViewer } from '@videodb/robopeek-react/rlds'
 import '@videodb/robopeek-react/styles.css'
 
 export function App() {
-  return <ShardViewer source="https://huggingface.co/datasets/<org>/<dataset>/resolve/main/<split>.tfrecord-00000-of-00128" />
+  return (
+    <div style={{ height: 640 }}>
+      <ShardViewer source="https://huggingface.co/datasets/<org>/<dataset>/resolve/main/<split>.tfrecord-00000-of-00128" />
+    </div>
+  )
 }
 ```
 
-You get an episode list that fills in while the file downloads, and a player with the cameras, playback controls, a chart for every action and state track, and the episode's metadata.
+You get an episode list that fills in while the file downloads, and a player with the cameras, playback controls, a chart for every action and state track, step flags and the episode's metadata.
+
+MCAP recording:
+
+```tsx
+import { McapViewer } from '@videodb/robopeek-react/mcap'
+import '@videodb/robopeek-react/styles.css'
+
+export function App() {
+  return (
+    <div style={{ height: 640 }}>
+      <McapViewer source="https://huggingface.co/datasets/<org>/<dataset>/resolve/main/episode.mcap" />
+    </div>
+  )
+}
+```
+
+You get every camera (JPEG, PNG, depth, raw, H.264), a chart per signal (joint states with joint names, poses, commands), the task instruction, the file's metadata and a list of every topic. It plays in real time while the file is still downloading.
 
 ## Everything you can do
 
-Use as much or as little as you need. Each level gives you more control than the one before it.
+Use as much or as little as you need. Each level gives you more control than the one before it. Levels 2–6 work the same for every format, because the player and parts are shared.
 
 ### 1. Drop in a viewer
 
-Two components, one stylesheet.
-
 ```tsx
-// Every episode in a shard, streamed as it downloads
-<ShardViewer source={url} />
+import { ShardViewer, EpisodeViewer } from '@videodb/robopeek-react/rlds'
+import { McapViewer } from '@videodb/robopeek-react/mcap'
 
-// One episode by number, without downloading the rest of the shard
-<EpisodeViewer source={url} episode={n} onEpisodeChange={setN} />
-
-// A file the user picked
-<ShardViewer source={file} empty={<p>Pick a .tfrecord file</p>} />
+<ShardViewer source={url} />                                     // every episode in a shard, streamed
+<EpisodeViewer source={url} episode={n} onEpisodeChange={setN} /> // one episode, without the rest of the shard
+<McapViewer source={url} />                                      // one MCAP recording
+<ShardViewer source={file} empty={<p>Pick a .tfrecord file</p>} /> // a File the user picked
 ```
 
 → [Viewers](packages/react#viewers)
@@ -110,22 +171,26 @@ Two components, one stylesheet.
 The player is made of parts. List the ones you want, in the order you want; leave out the rest. Filter cameras and charts by key.
 
 ```tsx
-<ShardViewer source={url}>
+import { Player } from '@videodb/robopeek-react'
+
+<McapViewer source={url}>
   <Player.Stage>
-    <Player.Frames include={['observation/image']} />
+    <Player.Frames include={['/camera_left/color/compressed']} />
     <Player.Transport />
   </Player.Stage>
-  <Player.Tracks include={(key) => !key.includes('embedding')} />
-</ShardViewer>
+  <Player.Tracks include={(key) => key.startsWith('/joint_states')} />
+</McapViewer>
 ```
 
 → [The player](packages/react#the-player)
 
 ### 3. Add your own panels
 
-Any component inside the player can read the current episode and step with `usePlayer`, and re-renders only when what it reads changes.
+Any component inside the player can read the current state with `usePlayer`, and re-renders only when what it reads changes. For the format's own object, use `useCurrentEpisode()` (`/rlds`) or `useCurrentRecording()` (`/mcap`).
 
 ```tsx
+import { Player, rowAt, usePlayer } from '@videodb/robopeek-react'
+
 function RewardBadge() {
   const track = usePlayer((s) => s.timeline.vectors.reward)
   const step = usePlayer((s) => s.position)
@@ -164,7 +229,7 @@ function MyPlay() {
 
 ### 6. Restyle it
 
-Set a few CSS variables, target the `rp-*` classes, switch to dark, or import the layout-only stylesheet and style everything yourself. Library CSS sits in its own `@layer`, so your rules win without `!important`, and it works with Tailwind.
+Set a few CSS variables, target the `rp-*` classes, switch to dark, or import the layout-only stylesheet and style everything yourself. Library CSS sits in its own `@layer`, so your rules win without `!important`, and it works with Tailwind. One theme covers every format.
 
 ```css
 :root {
@@ -175,63 +240,125 @@ Set a few CSS variables, target the `rp-*` classes, switch to dark, or import th
 ```
 
 ```tsx
-<ShardViewer source={url} colorScheme="dark" className="my-viewer" />
+<McapViewer source={url} colorScheme="dark" className="my-viewer" />
 ```
 
 → [Styling](packages/react#styling)
 
 ### 7. Bring your own UI entirely (React)
 
-Use the data hooks for loading and playback, and render everything yourself.
+Use the data hooks for loading, and the playback hook for the clock. Render everything yourself.
 
 ```tsx
-const { episode, status } = useEpisode(url, n)
-const { step, toggle, playing } = usePlayback({ length: episode?.length ?? 0, resetKey: episode })
+import { usePlayback } from '@videodb/robopeek-react'
+import { useEpisode } from '@videodb/robopeek-react/rlds'
+
+const { episode } = useEpisode(url, n)
+const { position, toggle, playing } = usePlayback({ unit: 'step', end: (episode?.length ?? 1) - 1, resetKey: episode })
 ```
 
 → [Data hooks](packages/react#data-hooks)
 
-### 8. No React at all
+### 8. Your own format
 
-The reader gives you plain data: camera frames as image bytes, actions and states as typed arrays, instructions as strings. Use it in any framework, a worker, or a Node script.
+The player plays any `Timeline`. Write a reader for your format, plus a small adapter, and every part, viewer recipe and theme works with it.
+
+```tsx
+import { Player, steps, type Timeline } from '@videodb/robopeek-react'
+
+const times = steps(run.length)
+const timeline: Timeline = {
+  format: 'my-format', unit: 'step', end: run.length - 1,
+  images: {}, vectors: { torque: { times, dim: 7, data: run.torque } },
+  text: { goal: { times, values: run.goals } }, metadata: { robot: run.robot },
+}
+<Player timeline={timeline} />
+```
+
+→ [Adding your own format](packages/react#adding-your-own-format)
+
+### 9. No React at all
+
+The readers give you plain data. Use them in any framework, a worker, or a Node script.
 
 ```ts
 import { streamEpisodes, ShardIndex, episodeTitle, vectorAt } from '@videodb/robopeek-rlds'
 
-// Every episode, as the shard downloads
-for await (const ep of streamEpisodes(url)) {
-  console.log(ep.index, ep.length, episodeTitle(ep), Object.keys(ep.images))
-}
-
-// One episode, without downloading the rest
-const shard = await ShardIndex.open(url)
-const ep = await shard.episode(40)
-const action = vectorAt(ep!.vectors.action, 0)
+for await (const ep of streamEpisodes(url)) console.log(ep.index, ep.length, episodeTitle(ep))
+const ep = await (await ShardIndex.open(url)).episode(40) // one episode, without the rest of the shard
 ```
 
-→ [Reader docs](packages/rlds#readme)
+```ts
+import { readMcap, indexAt, vectorAt } from '@videodb/robopeek-mcap'
+
+const rec = await readMcap(url)
+const joints = rec.vectors['/joint_states/position']
+console.log(joints.names, vectorAt(joints, indexAt(joints.times, 2.5))) // joint values at t = 2.5 s
+```
+
+→ [RLDS reader docs](packages/rlds#readme) · [MCAP reader docs](packages/mcap#readme)
 
 ## How it works
 
-1. **Fetch.** For a whole shard, RoboPeek streams the file and hands you each episode as soon as its bytes arrive. For one episode, it uses HTTP Range requests to skip what it can, and fetches an episode it has already passed with a single exact request.
-2. **Decode.** It parses TFRecord framing and the `tf.train.Example` records in JavaScript, then sorts every feature by what it contains: images by their file signature, numbers into per-step tracks, text into instructions, the rest into metadata. Nothing depends on a particular dataset's field names.
+### RLDS
+
+1. **Fetch.** For a whole shard, RoboPeek streams the file and hands you each episode as soon as its bytes arrive. For one episode, it uses HTTP Range requests to skip what it can. An episode it has already passed comes back with a single exact request.
+2. **Decode.** It parses TFRecord framing and the `tf.train.Example` records in JavaScript, then sorts every feature by what it contains:
+   - images by their file signature;
+   - numbers into per-step tracks;
+   - text into instructions;
+   - the rest into metadata.
+
+   Nothing depends on a particular dataset's field names.
 3. **Restore shapes.** If the dataset ships a `features.json` (TFDS does), RoboPeek uses it to turn flat arrays back into depth images and matrices.
-4. **Play.** Frames are decoded to canvases on demand, a few steps ahead, so scrubbing stays smooth even on long episodes.
+4. **Play.** The player counts in steps, at a speed you choose (RLDS records no frame rate).
 
-## Supported datasets
+### MCAP
 
-Tested on one shard each of CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berkeley UR5, Language Table, Austin BUDS, NYU Door Opening, Stanford Hydra and DROID. Other RLDS datasets should work too. If one doesn't, please [open an issue](https://github.com/video-db/RoboPeek/issues).
+1. **Summary first.** A few small Range requests read the file's summary: topics, schemas, message counts and length. A 1.3 GB file takes 4 requests.
+2. **Stream.** One request streams the file. Messages are decoded as they arrive (ROS 2 CDR, ROS 1, protobuf, JSON; zstd and lz4 chunks).
+3. **Classify.**
+   - Cameras are recognised by schema (compressed, raw, H.264 video).
+   - Other messages are walked for numbers, which become charts named after their fields, with joint names where the message has them.
+   - Single strings become text tracks, such as task instructions.
+4. **Align in time.** Every sample keeps its timestamp, so cameras and signals at different rates line up. A robust origin ignores latched or mis-stamped messages that would otherwise stretch the timeline.
+5. **Stay within memory.** Frame bytes are capped. Frames released under the cap are read back on demand, about 4 MB at a time, from just the chunks that hold them.
+6. **Play.** The player counts in real time. H.264 decodes with WebCodecs from the nearest keyframe.
 
-Things to know:
+### Both
 
-- **CORS.** A browser can only read files from servers that allow cross-origin requests. Hugging Face does. The public Open X-Embodiment bucket on Google Cloud Storage doesn't; download the file and open it locally instead.
+Frames are decoded to canvases on demand, a few samples ahead, so scrubbing stays smooth. Charts of long, high-rate signals are drawn per pixel column, so 500 Hz joint states stay fast.
+
+## Supported data
+
+**RLDS.**
+
+- **Tested on:** one shard each of CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berkeley UR5, Language Table, Austin BUDS, NYU Door Opening, Stanford Hydra and DROID.
 - **One episode by number** needs a server with HTTP Range support. Local files always work.
 - **GZIP-compressed shards** aren't supported yet.
-- **Frame rate.** RLDS doesn't record one, so playback speed is a setting (10 fps by default).
+- **Frame rate:** RLDS doesn't record one, so playback speed is a setting (10 fps by default).
+
+**MCAP.**
+
+- **Tested on:**
+  - GR00T X-Embodiment Sim (protobuf, H.264);
+  - RoboMIND (JPEG and 16-bit depth PNG);
+  - a ROBOTIS AI Worker ROS 2 bag;
+  - the 1.3 GB Humanoid IKEA Assembly set.
+- **Not supported yet:**
+  - `ros2idl`, FlatBuffers and CBOR encodings, which are listed as topics but not shown;
+  - H.265, VP9 and AV1 video;
+  - splitting one file into several episodes.
+- **Range support:** without it, files still load, but frames beyond the memory budget can't be kept.
+
+**Both.**
+
+- **CORS:** a browser can only read files from servers that allow cross-origin requests. Hugging Face does. The public Open X-Embodiment bucket on Google Cloud Storage doesn't, so download the file and open it locally instead.
+- **Other datasets** should work too. If one doesn't, please [open an issue](https://github.com/video-db/RoboPeek/issues).
 
 ## Roadmap
 
-- MCAP: episode boundaries inside one file, seeking ahead of the download, H.265 / VP9 / AV1 video
+- MCAP: episode boundaries inside one file, seeking ahead of the download, H.265 / VP9 / AV1 video, `ros2idl` schemas
 - Decoding in Web Workers
 - Caching and a saved episode index for faster re-opens
 - GZIP-compressed shards
@@ -279,6 +406,8 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, how
 
 [rlds-shield]: https://img.shields.io/npm/v/@videodb/robopeek-rlds?style=for-the-badge
 [rlds-url]: https://www.npmjs.com/package/@videodb/robopeek-rlds
+[mcap-shield]: https://img.shields.io/npm/v/@videodb/robopeek-mcap?style=for-the-badge
+[mcap-url]: https://www.npmjs.com/package/@videodb/robopeek-mcap
 [react-shield]: https://img.shields.io/npm/v/@videodb/robopeek-react?style=for-the-badge
 [react-url]: https://www.npmjs.com/package/@videodb/robopeek-react
 [ci-shield]: https://img.shields.io/github/actions/workflow/status/video-db/RoboPeek/ci.yml?branch=main&style=for-the-badge&label=CI
