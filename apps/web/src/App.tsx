@@ -1,9 +1,11 @@
 import { lazy, Suspense, useLayoutEffect, useRef, useState } from 'react'
 import type { Source } from '@videodb/robopeek-rlds'
+import type { Source as McapSource } from '@videodb/robopeek-mcap'
 import { ShardViewer } from '@videodb/robopeek-react/rlds'
-import { SiteHeader, SiteFooter } from './SiteChrome.tsx'
+import { McapViewer } from '@videodb/robopeek-react/mcap'
+import { SiteHeader, SiteFooter, MCAP_DOCS } from './SiteChrome.tsx'
 import { InstallCommand, CodePanel } from './CodeBlock.tsx'
-import { SAMPLES, type Sample } from './samples.ts'
+import { MCAP_SAMPLES, SAMPLES, type Sample } from './samples.ts'
 import { Icon } from './ui.tsx'
 import { SourceBar } from './SourceBar.tsx'
 import { DropTarget } from './DropTarget.tsx'
@@ -21,7 +23,11 @@ export default function App() {
   return new URLSearchParams(location.search).has('url') ? <ViewerApp /> : <HomePage />
 }
 
+type Format = 'rlds' | 'mcap'
+const FORMATS: Format[] = ['rlds', 'mcap']
+
 function HomePage() {
+  const [format, setFormat] = useState<Format>(() => (location.hash === '#mcap' ? 'mcap' : 'rlds'))
   const [source, setSource] = useState<Source>(SAMPLES[0].url)
   const [selected, setSelected] = useState<Sample | undefined>(SAMPLES[0])
   const [episode, setEpisode] = useState(0)
@@ -33,8 +39,10 @@ function HomePage() {
   useLayoutEffect(() => {
     // On a fresh navigation, the browser checks the fragment before React mounts.
     const scrollToPlayground = () => {
+      if (location.hash === '#mcap') setFormat('mcap')
+      if (location.hash === '#custom-rlds') setFormat('rlds')
       const target = location.hash === '#custom-rlds' ? customSourceRef.current
-        : location.hash === '#playground' ? playgroundRef.current : null
+        : location.hash === '#playground' || location.hash === '#mcap' ? playgroundRef.current : null
       target?.scrollIntoView({ block: 'start', behavior: 'instant' })
     }
     scrollToPlayground()
@@ -51,6 +59,7 @@ function HomePage() {
   const scrollToPreview = () => previewRef.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
   const preview = (next: Source) => { open(next); scrollToPreview() }
   const choose = (sample: Sample, scroll = false) => {
+    setFormat('rlds')
     open(sample.url)
     if (scroll) scrollToPreview()
   }
@@ -66,7 +75,7 @@ function HomePage() {
           <p className="hero-description">RoboPeek brings robotics data into your browser, with embeddable viewers and a lightweight reading library for your own applications.</p>
           <div className="hero-actions"><a className="ui-button" data-variant="primary" href="#playground">Explore the viewer<Icon name="arrow" /></a><a className="ui-button" href="/RLDS/"><Icon name="code" />Build with RoboPeek</a></div>
           <InstallCommand />
-          <div className="hero-availability"><span><span className="status-dot" />RLDS available</span><span className="availability-separator" /><span>MCAP coming next</span></div>
+          <div className="hero-availability"><span><span className="status-dot" />RLDS available</span><span className="availability-separator" /><span><span className="status-dot" />MCAP available</span></div>
         </div>
         <div className="hero-preview">
           <div className="hero-preview-top"><span><Icon name="film" />Inside a robotics episode</span><span className="ui-badge">RLDS</span></div>
@@ -81,9 +90,18 @@ function HomePage() {
         <div><Icon name="code" /><div><h2>Make it part of your app</h2><p>Use a viewer, its parts, or just the reader.</p></div></div>
       </div></div>
       <section id="playground" ref={playgroundRef} className="playground site-container">
-        <div className="section-heading"><div><p className="eyebrow">The playground</p><h2>Less setup. More understanding.</h2><p>Paste an RLDS link, open a local file, or explore a sample. No setup needed.</p></div><a className="text-link" href="/RLDS/">Explore the RLDS toolkit<Icon name="arrow" /></a></div>
-        <div className="format-tabs" role="tablist" aria-label="Dataset format"><button type="button" id="rlds-tab" role="tab" aria-selected="true" aria-controls="rlds-playground"><Icon name="layers" />RLDS<span className="format-status">Available</span></button><button type="button" role="tab" aria-selected="false" disabled><Icon name="file" />MCAP<span className="ui-badge">Coming soon</span></button></div>
-        <div id="rlds-playground" role="tabpanel" aria-labelledby="rlds-tab">
+        <div className="section-heading"><div><p className="eyebrow">The playground</p><h2>Less setup. More understanding.</h2><p>Paste an RLDS or MCAP link, open a local file, or explore a sample. No setup needed.</p></div>{format === 'rlds' ? <a className="text-link" href="/RLDS/">Explore the RLDS toolkit<Icon name="arrow" /></a> : <a className="text-link" href={MCAP_DOCS} target="_blank" rel="noreferrer">Read the MCAP docs<Icon name="external" /></a>}</div>
+        <div className="format-tabs" role="tablist" aria-label="Dataset format" onKeyDown={e => {
+          if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+          e.preventDefault()
+          const next = FORMATS[(FORMATS.indexOf(format) + 1) % FORMATS.length]
+          setFormat(next)
+          document.getElementById(`${next}-tab`)?.focus()
+        }}>
+          <button type="button" id="rlds-tab" role="tab" aria-selected={format === 'rlds'} aria-controls="rlds-playground" tabIndex={format === 'rlds' ? 0 : -1} onClick={() => setFormat('rlds')}><Icon name="layers" />RLDS<span className="format-status">Available</span></button>
+          <button type="button" id="mcap-tab" role="tab" aria-selected={format === 'mcap'} aria-controls="mcap-playground" tabIndex={format === 'mcap' ? 0 : -1} onClick={() => setFormat('mcap')}><Icon name="file" />MCAP<span className="format-status">Available</span></button>
+        </div>
+        {format === 'mcap' ? <McapPlayground /> : <div id="rlds-playground" role="tabpanel" aria-labelledby="rlds-tab">
           <div className="format-intro"><div><h3>Explore RLDS datasets</h3><p>Browse TFRecord episodes with camera views, instructions, actions, and state.</p></div><span className="format-note">RLDS / TFDS · Uncompressed TFRecord</span></div>
           <div id="custom-rlds" ref={customSourceRef} className="custom-source" role="region" aria-labelledby="custom-rlds-title">
             <div className="custom-source-heading"><Icon name="link" /><div><h3 id="custom-rlds-title">Your RLDS link. Ready to preview.</h3><p>Take a quick look at your dataset before your next experiment.</p></div></div>
@@ -97,12 +115,41 @@ function HomePage() {
             <div className="preview-bar" ref={previewRef}><div><span className="status-dot" /><strong>{selected?.dataset ?? (source instanceof File ? source.name : 'Your dataset')}</strong><span className="preview-label">Live viewer</span></div>{url && <a className="text-link" href={`/viewer.html?url=${encodeURIComponent(url)}`}>Open full viewer<Icon name="external" /></a>}</div>
             <div className="home-viewer-frame"><ShardViewer key={previewVersion} source={source} selected={episode} onSelectedChange={setEpisode} specs={selected?.where === 'local' ? false : undefined} /></div>
           </DropTarget>
-        </div>
+        </div>}
       </section>
-      <section className="build-section"><div className="site-container build-grid"><div><p className="eyebrow">Built to be embedded</p><h2>Your application.<br />Your way to peek.</h2><p>RoboPeek is an npm library, too. Drop in a ready-made React viewer, compose your own controls, or use the framework-independent reader.</p><a className="text-link" href="/RLDS/#ready-made">See live examples and source code<Icon name="arrow" /></a><div className="package-lines"><div><Icon name="layers" /><div><code>@videodb/robopeek-react</code><span>Viewers, composable parts, and React hooks for every format</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-rlds</code> · <code>@videodb/robopeek-mcap</code><span>The readers, for any JavaScript application</span></div></div></div></div><CodePanel files={[{ name: 'DatasetPreview.tsx', code: QUICKSTART }]} /></div></section>
-      <section className="roadmap site-container"><span className="roadmap-icon"><Icon name="layers" /></span><div><p className="eyebrow">On the roadmap</p><h2>Next up: MCAP.</h2><p>Explore RLDS episodes today. MCAP support will let you preview robot logs and sensor messages in the same place.</p></div><a className="ui-button" href="https://github.com/video-db/RoboPeek" target="_blank" rel="noreferrer">Follow development<Icon name="external" /></a></section>
+      <section className="build-section"><div className="site-container build-grid"><div><p className="eyebrow">Built to be embedded</p><h2>Your application.<br />Your way to peek.</h2><p>RoboPeek is an npm library, too. Drop in a ready-made React viewer, compose your own controls, or use a framework-independent reader. Install the reader for the format you need; one React package serves both.</p><a className="text-link" href="/RLDS/#ready-made">See live examples and source code<Icon name="arrow" /></a><div className="package-lines"><div><Icon name="layers" /><div><code>@videodb/robopeek-react</code><span>Viewers, composable parts, and React hooks for every format</span></div></div><div><Icon name="terminal" /><div><code>@videodb/robopeek-rlds</code> · <code>@videodb/robopeek-mcap</code><span>The readers, for any JavaScript application</span></div></div></div></div><CodePanel files={[{ name: 'DatasetPreview.tsx', code: QUICKSTART }, { name: 'RecordingPreview.tsx', code: MCAP_QUICKSTART }]} /></div></section>
     </main>
     <SiteFooter />
+  </div>
+}
+
+function McapPlayground() {
+  const [source, setSource] = useState<McapSource>(MCAP_SAMPLES[0].url)
+  const [version, setVersion] = useState(0)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
+  const selected = MCAP_SAMPLES.find(s => s.url === source)
+  const url = typeof source === 'string' ? source : undefined
+  const open = (next: McapSource, scroll = false) => {
+    setSource(next)
+    // Allow retrying the same URL after a network error.
+    setVersion(v => v + 1)
+    if (scroll) previewRef.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' })
+  }
+  return <div id="mcap-playground" role="tabpanel" aria-labelledby="mcap-tab">
+    <div className="format-intro"><div><h3>Explore MCAP recordings</h3><p>Watch every camera and chart every signal on one timeline. Large files play while they download.</p></div><span className="format-note">MCAP · ROS 1 · ROS 2 · protobuf · JSON</span></div>
+    <div className="custom-source" role="region" aria-labelledby="custom-mcap-title">
+      <div className="custom-source-heading"><Icon name="link" /><div><h3 id="custom-mcap-title">Your MCAP link. Ready to preview.</h3><p>Check a recording before you train on it, without installing anything.</p></div></div>
+      <SourceBar key={source instanceof File ? source.name : url} format="mcap" defaultUrl={selected ? undefined : url} currentFile={source instanceof File ? source : undefined} fileRef={fileRef} onOpen={next => open(next, true)} submitLabel="Preview recording" descriptionId="custom-mcap-help" />
+      <p id="custom-mcap-help">Use a direct link to an .mcap file. The host must allow browser access (CORS); hosts that support Range requests open faster. Local files stay on your device.</p>
+    </div>
+    <h4 className="sample-heading">Or explore a sample</h4>
+    <div className="dataset-gallery" data-count="4">{MCAP_SAMPLES.map(s => <button type="button" key={s.id} className="dataset-card" aria-pressed={selected?.id === s.id} onClick={() => open(s.url)}><div className="dataset-image"><img src={s.image} alt={`${s.dataset} camera frame`} loading="lazy" /><span className="dataset-category">{s.category}</span><span className="dataset-selected"><Icon name={selected?.id === s.id ? 'check' : 'play'} /></span></div><div className="dataset-card-info"><div><strong>{s.dataset}</strong><span>{s.size}</span></div><p>{s.notes}</p></div></button>)}</div>
+    <p className="sample-note">Public recordings, streamed straight from Hugging Face. Choose a card to load its preview.</p>
+    <DropTarget className="playground-viewer" label="MCAP" onFile={file => open(file, true)}>
+      <div className="preview-bar" ref={previewRef}><div><span className="status-dot" /><strong>{selected?.dataset ?? (source instanceof File ? source.name : 'Your recording')}</strong><span className="preview-label">Live viewer</span></div>{url && <a className="text-link" href={`/mcap.html?url=${encodeURIComponent(url)}`}>Open full viewer<Icon name="external" /></a>}</div>
+      <div className="home-viewer-frame"><McapViewer key={version} source={source} /></div>
+    </DropTarget>
   </div>
 }
 
@@ -113,6 +160,18 @@ export function DatasetPreview({ url }: { url: string }) {
   return (
     <div style={{ height: 640 }}>
       <ShardViewer source={url} />
+    </div>
+  )
+}`
+
+const MCAP_QUICKSTART = `import { McapViewer } from '@videodb/robopeek-react/mcap'
+import '@videodb/robopeek-react/styles.css'
+
+// npm i @videodb/robopeek-react @videodb/robopeek-mcap
+export function RecordingPreview({ url }: { url: string }) {
+  return (
+    <div style={{ height: 640 }}>
+      <McapViewer source={url} />
     </div>
   )
 }`

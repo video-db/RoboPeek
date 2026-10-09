@@ -16,3 +16,13 @@ export const SAMPLES: Sample[] = [
 export type Input = { source: Source; label: string; detail: string; key: string }
 export const sampleInput = (s: Sample): Input => ({ source: s.url, label: s.dataset, detail: `${s.size} · ${s.notes}`, key: s.id })
 export const fileInput = (f: File): Input => ({ source: f, label: f.name, detail: `Local file · ${(f.size / 1e6).toFixed(1)} MB`, key: `file:${f.name}:${f.size}:${f.lastModified}` })
+
+export type McapSample = { id: string; dataset: string; size: string; notes: string; category: string; image: string; url: string }
+const HF = 'https://huggingface.co/datasets'
+// Public recordings covering what the MCAP reader handles: H.264 video, JPEG + 16-bit depth, a ROS 2 bag, and a 1.3 GB file.
+export const MCAP_SAMPLES: McapSample[] = [
+  { id: 'gr00t', dataset: 'GR00T sim', size: '3 MB', notes: '3 cameras · H.264 video', category: 'Simulation', image: '/previews/mcap-gr00t.jpg', url: `${HF}/Voxel51/GR00T-X-Embodiment-Sim/resolve/main/data/bimanual_panda_gripper.Transport/episode_000000/episode.fo.mcap` },
+  { id: 'robomind', dataset: 'RoboMIND Franka', size: '74 MB', notes: '3 cameras + 16-bit depth', category: 'Manipulation', image: '/previews/mcap-robomind.jpg', url: `${HF}/Voxel51/RoboMIND/resolve/main/data/franka/1022_111755/episode.fo.mcap` },
+  { id: 'robotis', dataset: 'ROBOTIS AI Worker', size: '43 MB', notes: 'ROS 2 bag · joint states', category: 'Mobile manipulation', image: '/previews/mcap-robotis.jpg', url: `${HF}/RobotisSW/rosbag_test4/resolve/main/0_0.mcap` },
+  { id: 'ikea', dataset: 'Humanoid IKEA assembly', size: '1.3 GB', notes: '7 cameras · streams under a memory budget', category: 'Humanoid', image: '/previews/mcap-ikea.jpg', url: `${HF}/Voxel51/2026-Humanoid-IKEA-Assembly-Challenge/resolve/main/data/episode_2026-05-14_13-10-27/episode.fo.mcap` },
+]

@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Icon } from './ui.tsx'
 
 /** Accepts a dropped file anywhere inside; shows an overlay while dragging. */
-export function DropTarget({ onFile, className, children }: { onFile: (f: File) => void; className?: string; children: ReactNode }) {
+export function DropTarget({ onFile, className, label = 'TFRecord', children }: { onFile: (f: File) => void; className?: string; label?: string; children: ReactNode }) {
   const [dragging, setDragging] = useState(false)
   return (
     <div className={className}
@@ -17,7 +17,7 @@ export function DropTarget({ onFile, className, children }: { onFile: (f: File) 
       }}
     >
       {children}
-      {dragging && <div className="drop-overlay"><div><Icon name="upload" /><strong>Drop your TFRecord file</strong><span>Release to open it in the viewer</span></div></div>}
+      {dragging && <div className="drop-overlay"><div><Icon name="upload" /><strong>Drop your {label} file</strong><span>Release to open it in the viewer</span></div></div>}
     </div>
   )
 }
