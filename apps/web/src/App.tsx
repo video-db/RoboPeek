@@ -144,8 +144,8 @@ function McapPlayground() {
       <p id="custom-mcap-help">Use a direct link to an .mcap file. The host must allow browser access (CORS); hosts that support Range requests open faster. Local files stay on your device.</p>
     </div>
     <h4 className="sample-heading">Or explore a sample</h4>
-    <div className="dataset-gallery" data-count="4">{MCAP_SAMPLES.map(s => <button type="button" key={s.id} className="dataset-card" aria-pressed={selected?.id === s.id} onClick={() => open(s.url)}><div className="dataset-image"><img src={s.image} alt={`${s.dataset} camera frame`} loading="lazy" /><span className="dataset-category">{s.category}</span><span className="dataset-selected"><Icon name={selected?.id === s.id ? 'check' : 'play'} /></span></div><div className="dataset-card-info"><div><strong>{s.dataset}</strong><span>{s.size}</span></div><p>{s.notes}</p></div></button>)}</div>
-    <p className="sample-note">Public recordings, streamed straight from Hugging Face. Choose a card to load its preview.</p>
+    <div className="sample-list">{MCAP_SAMPLES.map(s => <button type="button" key={s.id} aria-pressed={selected?.id === s.id} onClick={() => open(s.url)}><Icon name={selected?.id === s.id ? 'check' : 'play'} /><div><strong>{s.dataset}</strong><span>{s.size} · {s.notes}</span><code>{s.url}</code></div></button>)}</div>
+    <p className="sample-note">Public recordings, streamed straight from Hugging Face. Choose one to load it, or paste its URL above.</p>
     <DropTarget className="playground-viewer" label="MCAP" onFile={file => open(file, true)}>
       <div className="preview-bar" ref={previewRef}><div><span className="status-dot" /><strong>{selected?.dataset ?? (source instanceof File ? source.name : 'Your recording')}</strong><span className="preview-label">Live viewer</span></div>{url && <a className="text-link" href={`/mcap.html?url=${encodeURIComponent(url)}`}>Open full viewer<Icon name="external" /></a>}</div>
       <div className="home-viewer-frame"><McapViewer key={version} source={source} /></div>
