@@ -1,0 +1,10 @@
+/* Additions to custom.css for the MCAP version: a topic table instead of an episode gallery. */
+.cr-topics { list-style: none; margin: 0; padding: 10px; overflow-y: auto; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--cv-line); background: var(--cv-soft); }
+.cr-topics button { width: 100%; padding: 6px 8px; border: 2px solid transparent; border-radius: 6px; background: #fff; text-align: left; cursor: pointer; display: grid; gap: 2px; font: inherit; color: inherit; }
+.cr-topics button:disabled { cursor: default; background: transparent; }
+.cr-topics button[aria-pressed='true'] { border-color: var(--cv-brand); }
+.cr-topic { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.cr-sub { color: var(--cv-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+/* The scrolling detail column sizes its rows from the screen's min-height, so make room for the canvas there. */
+.cv-screen:has(> .cr-canvas) { min-height: 320px; }
+.cr-canvas { height: 300px; width: auto; max-width: 100%; object-fit: contain; display: block; }

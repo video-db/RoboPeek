@@ -30,12 +30,16 @@
   .hero-preview-top > span:first-child { display: flex; align-items: center; gap: 9px; font-size: 11px; color: #545f57; }
   .hero-preview-top > span:first-child .icon { width: 14px; }
   .hero-preview-top .ui-badge { font-size: 9px; padding: 1px 6px; }
+  .hero-format { display: flex; gap: 2px; padding: 2px; border: 1px solid #e2e6e0; border-radius: 6px; background: #fbfcfa; }
+  .hero-format button { padding: 2px 8px; border: 1px solid transparent; border-radius: 4px; background: transparent; font-size: 9px; color: #858c85; }
+  .hero-format button[aria-pressed='true'] { color: #38483a; border-color: #e2e6e0; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 2%); }
   .hero-camera { position: relative; background: #e7e9e5; margin: 0 10px; overflow: hidden; border-radius: 5px; }
-  .hero-camera > img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .hero-camera > img, .hero-camera > canvas, .hero-camera-wait { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .hero-camera-wait { display: grid; place-items: center; padding: 20px; text-align: center; font-size: 10px; color: #7b817c; }
   .camera-label { position: absolute; left: 12px; top: 12px; display: flex; align-items: center; gap: 6px; color: #fff; background: rgb(19 26 21 / 78%); border: 1px solid rgb(255 255 255 / 15%); border-radius: 4px; padding: 4px 7px; font-size: 9px; }
   .camera-label .status-dot { background: #a8d1aa; width: 5px; height: 5px; }
   .inset-camera { width: 28%; position: absolute; bottom: 12px; right: 12px; border: 2px solid rgb(255 255 255 / 85%); border-radius: 5px; overflow: hidden; background: #252c27; box-shadow: 0 2px 8px rgb(0 0 0 / 12%); }
-  .inset-camera img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+  .inset-camera img, .inset-camera canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
   .inset-camera span { display: block; font-size: 8px; color: #f4f7f4; padding: 4px 6px; }
   .hero-preview-info { display: flex; justify-content: space-between; align-items: center; padding: 17px 19px; }
   .hero-preview-info > div { display: grid; gap: 5px; }
@@ -119,7 +123,8 @@
   .build-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 75px; align-items: center; }
   .build-section h2 { font-size: 34px; line-height: 1.25; margin-top: 13px; }
   .build-grid > div > p:not(.eyebrow) { color: #778078; font-size: 13px; line-height: 1.85; max-width: 370px; margin: 17px 0; }
-  .build-grid > div > .text-link { color: #366d4b; }
+  .build-links { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+  .build-links .text-link { color: #366d4b; }
   .package-lines { display: grid; gap: 18px; margin-top: 30px; }
   .package-lines > div { display: flex; align-items: center; gap: 12px; }
   .package-lines .icon { width: 16px; color: #6f8a77; }
@@ -137,6 +142,7 @@
   .site-footer nav .icon { width: 12px; }
   .install-command { border: 1px solid #e2e6e0; border-radius: 7px; overflow: hidden; background: #fbfcfa; }
   .install-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 8px 0; }
+  .install-top > [aria-label='Dataset format'] { margin-left: auto; }
   .install-top > div { display: flex; gap: 2px; }
   .install-top > div button { padding: 3px 8px; border: 1px solid transparent; border-radius: 4px; background: transparent; font-size: 10px; color: #858c85; }
   .install-top > div button[aria-pressed='true'] { color: #38483a; border-color: #e2e6e0; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 2%); }

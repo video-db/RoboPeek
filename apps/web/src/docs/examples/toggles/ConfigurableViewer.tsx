@@ -27,9 +27,11 @@ export type Show = {
   flags: boolean
   tracks: boolean
   metadata: boolean
+  /** MCAP only: the topic list. */
+  topics: boolean
 }
 
-export type Keys = { cameras: string[]; tracks: string[]; metadata: string[] }
+export type Keys = { cameras: string[]; tracks: string[]; metadata: string[]; topics?: string[] }
 
 type Props = {
   source: Source

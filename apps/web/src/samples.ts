@@ -14,7 +14,9 @@ export const SAMPLES: Sample[] = [
   { id: 'drone', dataset: 'CognitiveDrone', file: 'cognitive_drone-train.tfrecord-00005-of-00128', size: '82 MB', notes: 'Remote shard · simulated flight', category: 'Aerial robotics', where: 'remote', url: 'https://huggingface.co/datasets/ArtemLykov/CognitiveDrone_dataset/resolve/main/data/rlds/train/cognitive_drone-train.tfrecord-00005-of-00128' },
 ]
 export type Input = { source: Source; label: string; detail: string; key: string }
-export const sampleInput = (s: Sample): Input => ({ source: s.url, label: s.dataset, detail: `${s.size} · ${s.notes}`, key: s.id })
+/** What every sample list shares, RLDS or MCAP. */
+export type SampleLike = { id: string; dataset: string; size: string; notes: string; url: string }
+export const sampleInput = (s: SampleLike): Input => ({ source: s.url, label: s.dataset, detail: `${s.size} · ${s.notes}`, key: s.id })
 export const fileInput = (f: File): Input => ({ source: f, label: f.name, detail: `Local file · ${(f.size / 1e6).toFixed(1)} MB`, key: `file:${f.name}:${f.size}:${f.lastModified}` })
 
 export type McapSample = { id: string; dataset: string; size: string; notes: string; url: string }

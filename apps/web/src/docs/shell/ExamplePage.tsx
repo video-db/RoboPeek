@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type ReactNode } from 'react'
-import { SAMPLES, fileInput, sampleInput, type Input } from '../../samples.ts'
+import { fileInput, sampleInput, type Input } from '../../samples.ts'
 import { useInput } from './Layout.tsx'
 import { SourceBar } from '../../SourceBar.tsx'
 import { DropTarget } from '../../DropTarget.tsx'
@@ -8,15 +8,15 @@ import { Icon } from '../../ui.tsx'
 
 type Props = { step: string; title: string; pkg: string; intro: ReactNode; files: CodeFile[]; controls?: ReactNode; aside?: ReactNode; children: (input: Input) => ReactNode }
 export function ExamplePage({ step, title, pkg, intro, files, controls, aside, children }: Props) {
-  const { input, setInput } = useInput()
+  const { format, samples, input, setInput } = useInput()
   const [view, setView] = useState<'preview' | 'code'>('preview')
   const id = useId()
   const picker = useRef<HTMLInputElement>(null)
   return <article className="doc-page">
     <header className="page-head"><p className="eyebrow">Example {step}<span className="eyebrow-divider">/</span>{pkg}</p><h1>{title}</h1><div className="intro">{intro}</div></header>
-    <DropTarget onFile={file => setInput(fileInput(file))} className="example-workspace">
-      <div className="example-source"><label htmlFor={`${id}-dataset`}>Example dataset</label><select id={`${id}-dataset`} value={SAMPLES.some(s => s.id === input.key) ? input.key : 'custom'} onChange={e => { const sample = SAMPLES.find(s => s.id === e.target.value); if (sample) setInput(sampleInput(sample)) }}>{!SAMPLES.some(s => s.id === input.key) && <option value="custom">{input.label}</option>}{SAMPLES.map(s => <option key={s.id} value={s.id}>{s.dataset} · {s.size}</option>)}</select><span>{input.detail}</span></div>
-      <details className="example-custom-source"><summary>Use your own URL or file<Icon name="chevron" /></summary><SourceBar key={input.key} fileRef={picker} currentFile={input.source instanceof File ? input.source : undefined} onOpen={src => setInput(typeof src === 'string' ? { source: src, label: 'Custom URL', detail: src, key: src } : fileInput(src))} /><p>Files are read locally. Remote URLs must allow CORS and are fetched as supplied.</p></details>
+    <DropTarget onFile={file => setInput(fileInput(file))} className="example-workspace" label={format === 'mcap' ? 'MCAP' : 'TFRecord'}>
+      <div className="example-source"><label htmlFor={`${id}-dataset`}>{format === 'mcap' ? 'Example recording' : 'Example dataset'}</label><select id={`${id}-dataset`} value={samples.some(s => s.id === input.key) ? input.key : 'custom'} onChange={e => { const sample = samples.find(s => s.id === e.target.value); if (sample) setInput(sampleInput(sample)) }}>{!samples.some(s => s.id === input.key) && <option value="custom">{input.label}</option>}{samples.map(s => <option key={s.id} value={s.id}>{s.dataset} · {s.size}</option>)}</select><span>{input.detail}</span></div>
+      <details className="example-custom-source"><summary>Use your own URL or file<Icon name="chevron" /></summary><SourceBar key={input.key} format={format} fileRef={picker} currentFile={input.source instanceof File ? input.source : undefined} onOpen={src => setInput(typeof src === 'string' ? { source: src, label: 'Custom URL', detail: src, key: src } : fileInput(src))} /><p>Files are read locally. Remote URLs must allow CORS and are fetched as supplied.</p></details>
       {controls && <div className="example-controls">{controls}</div>}
       <div className={aside ? 'with-aside' : undefined}>
         {aside && <aside className="side-controls">{aside}</aside>}
