@@ -1,0 +1,125 @@
+<!doctype html>
+<!-- Source for public/og/*.png. Variant via ?v=home|rlds|mcap; render with og/render.sh. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=block" />
+<style>
+  *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --ink: #1b231e; --green: #2c6753; --sage: #607b6b; --muted: #6f7770; --line: #dfe5e0; --orange: #ea6a1f; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body { font-family: Inter, sans-serif; color: var(--ink); background: #fbfcfa; position: relative; -webkit-font-smoothing: antialiased; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(#e9eee9 1px, transparent 1px), linear-gradient(90deg, #e9eee9 1px, transparent 1px); background-size: 42px 42px; mask-image: radial-gradient(ellipse 75% 90% at 78% 50%, #000 15%, transparent 72%); }
+  .glow { position: absolute; width: 760px; height: 760px; right: -170px; top: -90px; border-radius: 50%; background: radial-gradient(circle, rgb(234 106 31 / 9%), rgb(44 103 83 / 6%) 45%, transparent 70%); }
+  .rail { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: linear-gradient(var(--green), #4f8a6c); }
+
+  .copy { position: absolute; left: 76px; top: 64px; bottom: 60px; width: 560px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 62px; height: 62px; border-radius: 14px; background: #fff; border: 1px solid var(--line); box-shadow: 0 6px 16px -8px rgb(29 51 37 / 30%); }
+  .brand strong { font-size: 30px; font-weight: 700; letter-spacing: -0.8px; }
+  .brand span { margin-left: 4px; padding-left: 16px; border-left: 1.5px solid var(--line); font-size: 17px; color: var(--muted); font-weight: 500; }
+  .eyebrow { margin-top: 52px; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--green); }
+  .eyebrow i { width: 9px; height: 9px; border-radius: 50%; background: #438164; box-shadow: 0 0 0 4px rgb(67 129 100 / 15%); }
+  h1 { margin-top: 20px; font-size: 66px; line-height: 1.04; font-weight: 700; letter-spacing: -2.8px; }
+  h1 span { color: var(--sage); }
+  p.sub { margin-top: 24px; font-size: 23px; line-height: 1.45; color: #46504a; max-width: 520px; }
+  .chips { margin-top: auto; display: flex; gap: 10px; align-items: center; }
+  .chip { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 15px; border-radius: 9px; background: #fff; border: 1px solid var(--line); font-size: 16px; font-weight: 600; color: #37433b; white-space: nowrap; }
+  .chip i { width: 7px; height: 7px; border-radius: 50%; background: #438164; }
+  .chip.code { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 15px; color: var(--green); background: #edf4ef; border-color: #d4e4d9; }
+
+  /* Viewer mock */
+  .viewer { position: absolute; left: 678px; top: 58px; width: 470px; border-radius: 16px; background: #fff; border: 1px solid #d7ded8; box-shadow: 0 40px 70px -30px rgb(29 51 37 / 38%), 0 4px 12px rgb(0 0 0 / 4%); overflow: hidden; }
+  .bar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; }
+  .bar .title { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; color: #3e4a42; }
+  .dots { display: flex; gap: 6px; } .dots b { width: 10px; height: 10px; border-radius: 50%; background: #e4e8e4; }
+  .seg { display: flex; padding: 3px; gap: 2px; border: 1px solid #e2e6e0; border-radius: 8px; background: #f6f8f5; font-size: 12px; font-weight: 600; }
+  .seg span { padding: 3px 10px; border-radius: 5px; color: #8a918b; }
+  .seg span.on { background: #fff; color: #2f4436; box-shadow: 0 1px 2px rgb(0 0 0 / 8%); }
+  .cam { position: relative; margin: 0 12px; border-radius: 9px; overflow: hidden; aspect-ratio: 16 / 10; background: #252c27; }
+  .cam > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .label { position: absolute; left: 12px; top: 12px; display: flex; align-items: center; gap: 7px; padding: 5px 9px; border-radius: 6px; background: rgb(19 26 21 / 80%); color: #fff; font-size: 12px; font-weight: 500; }
+  .label i { width: 7px; height: 7px; border-radius: 50%; background: #a8d1aa; }
+  .inset { position: absolute; right: 12px; bottom: 12px; width: 31%; border: 2.5px solid rgb(255 255 255 / 90%); border-radius: 7px; overflow: hidden; background: #252c27; box-shadow: 0 4px 12px rgb(0 0 0 / 25%); }
+  .inset img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .signals { padding: 14px 16px 6px; }
+  .signals header { display: flex; justify-content: space-between; font-size: 12px; color: #7b827c; font-weight: 500; }
+  .signals header b { color: #3e4a42; font-weight: 600; }
+  .signals svg { display: block; margin-top: 6px; }
+  .scrub { display: flex; align-items: center; gap: 12px; padding: 8px 16px 16px; }
+  .play { width: 34px; height: 34px; border-radius: 8px; background: #263b2e; display: grid; place-items: center; }
+  .track { flex: 1; height: 6px; border-radius: 3px; background: #e6ebe6; position: relative; }
+  .track::before { content: ''; position: absolute; inset: 0 58% 0 0; border-radius: 3px; background: var(--green); }
+  .track::after { content: ''; position: absolute; left: 42%; top: 50%; width: 18px; height: 18px; margin: -9px; border-radius: 50%; background: #fff; border: 3px solid var(--green); }
+  .time { font: 500 12px 'JetBrains Mono', monospace; color: #7b827c; }
+
+</style>
+</head>
+<body>
+<div class="grid"></div><div class="glow"></div><div class="rail"></div>
+
+<section class="copy">
+  <div class="brand"><img src="../public/robopeek-logo.png" alt="" /><strong>RoboPeek</strong><span>by VideoDB</span></div>
+  <div class="eyebrow"><i></i><span id="eyebrow">Open-source robotics toolkit</span></div>
+  <h1 id="title">A window into<br /><span>robotics datasets.</span></h1>
+  <p class="sub" id="sub">See what the robot sees. Explore its actions. Understand the episode.</p>
+  <div class="chips" id="chips"></div>
+</section>
+
+<div class="viewer">
+  <div class="bar">
+    <div class="title"><div class="dots"><b></b><b></b><b></b></div><span id="file">Push-T · episode 0</span></div>
+    <div class="seg"><span id="seg-rlds">RLDS</span><span id="seg-mcap">MCAP</span></div>
+  </div>
+  <div class="cam">
+    <img src="../public/previews/pusht.png" alt="" />
+    <div class="label"><i></i><span id="cam">scene camera</span></div>
+    <div class="inset"><img src="../public/previews/pusht-camera-2.png" alt="" /></div>
+  </div>
+  <div class="signals">
+    <header><b id="sig">action</b><span>3 channels · 10 Hz</span></header>
+    <svg width="438" height="58" viewBox="0 0 438 58" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="184" y1="0" x2="184" y2="58" stroke="#2c6753" stroke-width="1.5" stroke-dasharray="3 4" />
+      <path stroke="#2c6753" d="M0 40 C 30 38, 50 18, 80 20 S 130 44, 170 36 S 230 10, 270 14 S 330 40, 370 30 S 420 16, 438 20" />
+      <path stroke="#ea6a1f" d="M0 22 C 40 26, 60 44, 100 42 S 150 18, 200 24 S 260 48, 300 44 S 380 18, 438 28" />
+      <path stroke="#a9bfb1" d="M0 50 C 50 50, 80 34, 130 38 S 210 52, 250 46 S 330 30, 380 40 S 420 46, 438 44" />
+    </svg>
+  </div>
+  <div class="scrub">
+    <div class="play"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1.5v11l9.5-5.5z" fill="#fff" /></svg></div>
+    <div class="track"></div>
+    <span class="time">00:04.2 / 00:10.0</span>
+  </div>
+</div>
+
+<script>
+  const variants = {
+    home: { chips: ['RLDS', 'MCAP'], code: 'npm i @videodb/robopeek-react', format: 'rlds' },
+    rlds: {
+      eyebrow: 'RLDS developer guide', title: 'Preview RLDS<br /><span>episodes in React.</span>',
+      sub: 'Stream TFRecord shards from anywhere and scrub camera frames and actions. No Python, no server.',
+      chips: ['TFRecord', 'Open X'], code: '@videodb/robopeek-rlds', format: 'rlds',
+    },
+    mcap: {
+      eyebrow: 'MCAP developer guide', title: 'Open MCAP files<br /><span>in the browser.</span>',
+      sub: 'Camera streams, joint states and ROS 2 topics, decoded client-side and ready to embed.',
+      chips: ['ROS 2', 'Topics'], code: '@videodb/robopeek-mcap', format: 'mcap',
+      file: 'episode.mcap', cam: '/camera/wrist', sig: '/joint_states',
+      img: '../public/previews/pusht-camera-2.png', inset: '../public/previews/pusht.png',
+    },
+  }
+  const v = variants[new URLSearchParams(location.search).get('v') || 'home']
+  const $ = id => document.getElementById(id)
+  if (v.eyebrow) $('eyebrow').textContent = v.eyebrow
+  if (v.title) $('title').innerHTML = v.title
+  if (v.sub) $('sub').textContent = v.sub
+  if (v.file) $('file').textContent = v.file
+  if (v.cam) $('cam').textContent = v.cam
+  if (v.sig) $('sig').textContent = v.sig
+  if (v.img) document.querySelector('.cam > img').src = v.img
+  if (v.inset) document.querySelector('.inset img').src = v.inset
+  $('seg-' + v.format).classList.add('on')
+  $('chips').innerHTML = v.chips.map(c => `<span class="chip"><i></i>${c}</span>`).join('') + `<span class="chip code">${v.code}</span>`
+</script>
+</body>
+</html>
