@@ -5,6 +5,9 @@ import { resolve } from 'node:path'
 // Product homepage, developer guide, and standalone viewers.
 // robopeek-source resolves workspace packages to their src/, so no package build is needed in dev.
 // CSS @import ignores resolve.conditions, so the stylesheet needs its own alias.
+// Origin for og:image/twitter:image in the HTML entries; crawlers need it absolute, so set it at deploy.
+process.env.VITE_SITE_URL ??= ''
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
