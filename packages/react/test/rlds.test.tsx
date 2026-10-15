@@ -72,6 +72,17 @@ describe('hotkeys', () => {
     await expect.element(screen.getByText('step 9')).toBeInTheDocument()
   })
 
+  test('h/l step like ←/→, Ctrl/Cmd combos pass through', async () => {
+    const screen = await render(
+      <EpisodePlayer episode={ep} data-testid="root" tabIndex={-1}>
+        <StepText />
+      </EpisodePlayer>,
+    )
+    ;(screen.getByTestId('root').element() as HTMLElement).focus()
+    await userEvent.keyboard('llh{Control>}l{/Control}')
+    await expect.element(screen.getByText('step 1')).toBeInTheDocument()
+  })
+
   test('hotkeys={false} disables them', async () => {
     const screen = await render(
       <EpisodePlayer episode={ep} hotkeys={false} data-testid="root" tabIndex={-1}>
