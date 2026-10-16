@@ -31,12 +31,8 @@
 
 <p align="center">
   Maintained by
-  <a href="https://videodb.io">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/videodb-logo-dark.png" />
-      <img src="assets/videodb-logo.png" alt="VideoDB" height="18" align="center" />
-    </picture>
-  </a>
+  <a href="https://videodb.io/#gh-light-mode-only"><img src="assets/videodb-logo.png" alt="VideoDB" height="18" align="center" /></a>
+  <a href="https://videodb.io/#gh-dark-mode-only"><img src="assets/videodb-logo-dark.png" alt="VideoDB" height="18" align="center" /></a>
 </p>
 
 ## What is RoboPeek?
@@ -399,12 +395,8 @@ MIT. See [LICENSE](LICENSE). Every published package (`@videodb/robopeek-rlds`, 
 
 <p align="center">
   Maintained by
-  <a href="https://videodb.io">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/videodb-logo-dark.png" />
-      <img src="assets/videodb-logo.png" alt="VideoDB" height="18" align="center" />
-    </picture>
-  </a>
+  <a href="https://videodb.io/#gh-light-mode-only"><img src="assets/videodb-logo.png" alt="VideoDB" height="18" align="center" /></a>
+  <a href="https://videodb.io/#gh-dark-mode-only"><img src="assets/videodb-logo-dark.png" alt="VideoDB" height="18" align="center" /></a>
 </p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
