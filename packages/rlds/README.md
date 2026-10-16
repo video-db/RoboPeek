@@ -416,6 +416,10 @@ Tested on CognitiveDrone, RT-1 (fractal), Bridge, TACO Play, Berkeley UR5, Langu
 - [RoboPeek on GitHub](https://github.com/video-db/RoboPeek): source, issues, and the roadmap.
 - [Changelog](https://github.com/video-db/RoboPeek/blob/main/packages/rlds/CHANGELOG.md)
 
+## License
+
+MIT. See [LICENSE](https://github.com/video-db/RoboPeek/blob/main/LICENSE).
+
 ---
 
 <p align="center">

@@ -60,3 +60,7 @@ Until 1.0, a minor release (0.2 → 0.3) may include breaking changes, including
 ### One-time setup (maintainers)
 
 - A `NODE_AUTH_TOKEN` secret (npm token with publish access to `@videodb`) in Settings → Secrets and variables → Actions.
+
+## License
+
+By contributing, you agree that your contributions are licensed under the [MIT License](LICENSE).

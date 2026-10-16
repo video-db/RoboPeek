@@ -723,6 +723,10 @@ Active while focus is inside the player (click it, or use `autoFocus` on a viewe
 - [RoboPeek on GitHub](https://github.com/video-db/RoboPeek): source, issues, roadmap and a live demo app.
 - [Changelog](https://github.com/video-db/RoboPeek/blob/main/packages/react/CHANGELOG.md)
 
+## License
+
+MIT. See [LICENSE](https://github.com/video-db/RoboPeek/blob/main/LICENSE).
+
 ---
 
 <p align="center">
