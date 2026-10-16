@@ -409,11 +409,11 @@ MIT. See [LICENSE](LICENSE). Every published package (`@videodb/robopeek-rlds`, 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[rlds-shield]: https://img.shields.io/npm/v/@videodb/robopeek-rlds?style=for-the-badge
+[rlds-shield]: https://img.shields.io/npm/v/@videodb/robopeek-rlds?style=for-the-badge&label=robopeek-rlds
 [rlds-url]: https://www.npmjs.com/package/@videodb/robopeek-rlds
-[mcap-shield]: https://img.shields.io/npm/v/@videodb/robopeek-mcap?style=for-the-badge
+[mcap-shield]: https://img.shields.io/npm/v/@videodb/robopeek-mcap?style=for-the-badge&label=robopeek-mcap
 [mcap-url]: https://www.npmjs.com/package/@videodb/robopeek-mcap
-[react-shield]: https://img.shields.io/npm/v/@videodb/robopeek-react?style=for-the-badge
+[react-shield]: https://img.shields.io/npm/v/@videodb/robopeek-react?style=for-the-badge&label=robopeek-react
 [react-url]: https://www.npmjs.com/package/@videodb/robopeek-react
 [ci-shield]: https://img.shields.io/github/actions/workflow/status/video-db/RoboPeek/ci.yml?branch=main&style=for-the-badge&label=CI
 [ci-url]: https://github.com/video-db/RoboPeek/actions/workflows/ci.yml
