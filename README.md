@@ -32,10 +32,8 @@
 <p align="center">
   Maintained by
   <a href="https://videodb.io">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/videodb-logo-dark.png" />
-      <img src="assets/videodb-logo.png" alt="VideoDB" height="18" align="center" />
-    </picture>
+    <img src="assets/videodb-logo.png#gh-light-mode-only" alt="VideoDB" height="18" align="center" />
+    <img src="assets/videodb-logo-dark.png#gh-dark-mode-only" alt="VideoDB" height="18" align="center" />
   </a>
 </p>
 
@@ -400,10 +398,8 @@ MIT. See [LICENSE](LICENSE). Every published package (`@videodb/robopeek-rlds`, 
 <p align="center">
   Maintained by
   <a href="https://videodb.io">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/videodb-logo-dark.png" />
-      <img src="assets/videodb-logo.png" alt="VideoDB" height="18" align="center" />
-    </picture>
+    <img src="assets/videodb-logo.png#gh-light-mode-only" alt="VideoDB" height="18" align="center" />
+    <img src="assets/videodb-logo-dark.png#gh-dark-mode-only" alt="VideoDB" height="18" align="center" />
   </a>
 </p>
 
