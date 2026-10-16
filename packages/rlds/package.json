@@ -1,6 +1,7 @@
 {
   "name": "@videodb/robopeek-rlds",
   "version": "0.2.0",
+  "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "node --test 'test/*.test.ts'",

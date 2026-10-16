@@ -1,6 +1,7 @@
 {
   "name": "@videodb/robopeek-react",
   "version": "0.2.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "tsdown",

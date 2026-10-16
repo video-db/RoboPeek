@@ -508,6 +508,10 @@ Tested on: GR00T X-Embodiment Sim (protobuf, H.264, 3 MB), RoboMIND Franka (JPEG
 - [RoboPeek on GitHub](https://github.com/video-db/RoboPeek)
 - [Changelog](https://github.com/video-db/RoboPeek/blob/main/packages/mcap/CHANGELOG.md)
 
+## License
+
+MIT. See [LICENSE](https://github.com/video-db/RoboPeek/blob/main/LICENSE).
+
 ---
 
 <p align="center">

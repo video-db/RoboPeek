@@ -5,6 +5,7 @@
 [![react version][react-shield]][react-url]
 [![CI][ci-shield]][ci-url]
 [![Issues][issues-shield]][issues-url]
+[![License][license-shield]][license-url]
 
 <br />
 <p align="center">
@@ -390,6 +391,10 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, how
 3. Commit your changes, with a changelog note if a package changed (`pnpm changeset`)
 4. Push the branch and open a pull request
 
+## License
+
+MIT. See [LICENSE](LICENSE). Every published package (`@videodb/robopeek-rlds`, `@videodb/robopeek-mcap`, `@videodb/robopeek-react`) ships under the same terms.
+
 ---
 
 <p align="center">
@@ -414,3 +419,5 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, how
 [ci-url]: https://github.com/video-db/RoboPeek/actions/workflows/ci.yml
 [issues-shield]: https://img.shields.io/github/issues/video-db/RoboPeek.svg?style=for-the-badge
 [issues-url]: https://github.com/video-db/RoboPeek/issues
+[license-shield]: https://img.shields.io/github/license/video-db/RoboPeek.svg?style=for-the-badge
+[license-url]: https://github.com/video-db/RoboPeek/blob/main/LICENSE
