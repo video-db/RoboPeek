@@ -1,5 +1,15 @@
 # @videodb/robopeek-react
 
+## 0.3.0
+
+### Minor Changes
+
+- [#8](https://github.com/video-db/RoboPeek/pull/8) [`f95c18a`](https://github.com/video-db/RoboPeek/commit/f95c18a2f81179e8af288e79e16798dd9489c40d) Thanks [@omgate234](https://github.com/omgate234)! - Player hotkeys accept vim keys: `h`/`l` step (Shift = 10), `k`/`j` previous/next episode.
+
+### Patch Changes
+
+- [#9](https://github.com/video-db/RoboPeek/pull/9) [`e44ff25`](https://github.com/video-db/RoboPeek/commit/e44ff25f1f669b39d08f5b23ac89ac54d5da5924) Thanks [@ashish-spext](https://github.com/ashish-spext)! - Declare the MIT license: `license: "MIT"` in the manifest and a `LICENSE` file in the published package.
+
 ## 0.2.0
 
 ### Minor Changes

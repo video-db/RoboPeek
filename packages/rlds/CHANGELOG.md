@@ -1,5 +1,11 @@
 # @videodb/robopeek-rlds
 
+## 0.2.1
+
+### Patch Changes
+
+- [#9](https://github.com/video-db/RoboPeek/pull/9) [`e44ff25`](https://github.com/video-db/RoboPeek/commit/e44ff25f1f669b39d08f5b23ac89ac54d5da5924) Thanks [@ashish-spext](https://github.com/ashish-spext)! - Declare the MIT license: `license: "MIT"` in the manifest and a `LICENSE` file in the published package.
+
 ## 0.2.0
 
 ### Minor Changes
